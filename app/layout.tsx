@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   description: 'Independent analysis of global digital policy',
 }
 
+// Force dynamic rendering for all pages to fix Lucide React icon issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function RootLayout({
   children,
 }: {
