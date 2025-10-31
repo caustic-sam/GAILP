@@ -13,15 +13,16 @@ import { StatusDot } from '@/components/ui/StatusDot';
 import { mockPolicies, mockArticles, mockThoughts, mockVideos, quickStats } from '@/lib/mockData';
 import { TermOfDay } from '@/components/widgets/TermOfDay';
 import { NISTAssistant } from '@/components/widgets/NISTAssistant';
+import { BreachCounter } from '@/components/widgets/BreachCounter';
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
     { id: 'home', label: 'Policy Updates', href: '/' },
-    { id: 'analysis', label: 'Expert Blog', href: '#' },
-    { id: 'videos', label: 'Live Hub', href: '#' },
-    { id: 'policies', label: 'Research', href: '#' },
+    { id: 'analysis', label: 'Expert Blog', href: '/articles' },
+    { id: 'videos', label: 'Live Hub', href: '/videos' },
+    { id: 'policies', label: 'Research', href: '/policies' },
     { id: 'components', label: 'Components', href: '/components' },
     { id: 'about', label: 'About', href: '#' }
   ];
@@ -397,8 +398,8 @@ export default function HomePage() {
             {/* Term of the Day */}
             <TermOfDay />
 
-            {/* NIST Assistant */}
-            <NISTAssistant />
+            {/* Breach Counter */}
+            <BreachCounter />
           </div>
         </div>
       </div>
