@@ -1,12 +1,9 @@
+'use client';
+
 import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { BookOpen, Search } from 'lucide-react';
 import { glossaryTerms, getCategories } from '@/data/glossary-terms';
-
-export const metadata = {
-  title: 'Digital Policy Glossary | World Papers',
-  description: 'Comprehensive glossary of digital policy, identity, blockchain, and cybersecurity terms.',
-};
 
 export default function GlossaryPage() {
   const categories = getCategories();

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // For Docker deployment
+  // output: 'standalone', // Commented out for Vercel deployment - use for Docker only
   
   // Image optimization
   images: {
@@ -58,6 +58,7 @@ const nextConfig = {
   // Experimental features
   experimental: {
     mdxRs: true,
+    appDir: true,
   },
   
   // Webpack config
