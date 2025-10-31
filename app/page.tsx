@@ -263,7 +263,7 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-6">
-              {mockArticles.map((article, idx) => (
+              {mockArticles.slice(0, 1).map((article, idx) => (
                 <Card key={article.id} hover className="overflow-hidden">
                   <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-sm">
                     Article Image Placeholder
