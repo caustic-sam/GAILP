@@ -7,6 +7,144 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1] - 2025-10-31
+
+### Added
+
+#### Placeholder Pages
+- **Articles Page** (`/app/articles/page.tsx`) - Expert Blog placeholder
+  - Coming soon messaging with feature previews
+  - Daily Analysis, Long-Form Investigations, Guest Contributors, Interactive Content
+  - Subscribe for updates CTA
+  - Consistent blue theme with professional layout
+
+- **Videos Page** (`/app/videos/page.tsx`) - Live Hub placeholder
+  - Live Policy Briefings, Expert Webinars, Interactive Q&A, Event Notifications
+  - Video platform preview with mockups
+  - Purple accent color scheme
+  - Live streaming feature highlights
+
+- **Policies Page** (`/app/policies/page.tsx`) - Research Database placeholder
+  - Comprehensive Database, Advanced Search, Smart Comparisons, Global Coverage
+  - Search interface mockup
+  - Sample policy cards with status indicators
+  - Green accent color scheme
+  - Research tools overview
+
+#### Widgets & Components
+- **BreachCounter Widget** (`components/widgets/BreachCounter.tsx`)
+  - Family Feud-style rotating statistics display
+  - Auto-rotates every 4 seconds with smooth animations
+  - Displays 5 real-time cybersecurity metrics:
+    - Data Breaches in 2024: 3,842 (+23%)
+    - Records Exposed: 8.2B (+18%)
+    - Average Cost per Breach: $4.45M (+15%)
+    - Days to Identify Breach: 277 (global average)
+    - Ransomware Attacks: 493M (+37%)
+  - Red/orange gradient design with "LIVE" indicator
+  - Progress dots showing rotation state
+
+#### API & Infrastructure
+- **Health Check Endpoint** (`/app/api/health/route.ts`)
+  - Docker-compatible health monitoring
+  - Returns JSON with status, timestamp, version, uptime, environment
+  - 200 OK when healthy, 503 Service Unavailable on errors
+  - Supports docker-compose.yml health checks
+  - Extensible for database, cache, external API checks
+
+#### Testing Infrastructure
+- **Unit Test Suite** (`lib/api.test.ts`) - 24 comprehensive tests
+  - Tests for all API functions: getPolicies, getArticles, getVideos, getThoughts
+  - Mock data fallback behavior validation
+  - Pagination (limit/offset) functionality
+  - Required field validation for all data types
+  - Mock data integrity checks
+  - API response structure consistency
+  - Edge cases: zero limit, negative offset, large offset
+  - **100% test success rate** (24/24 passed)
+
+- **Jest Configuration** (`jest.config.js`, `jest.setup.js`)
+  - Next.js-aware Jest configuration
+  - jsdom environment for React component testing
+  - Path aliases (@/*) support
+  - Coverage collection setup
+  - @testing-library/jest-dom integration
+
+#### Documentation & Cleanup
+- **Enhanced .gitignore**
+  - Comprehensive Next.js entries
+  - Environment file protection (.env*.local)
+  - IDE and OS file exclusions
+  - Build artifact exclusions
+
+- **Duplicate File Cleanup**
+  - Removed 5 duplicate markdown files (with "2" suffix)
+  - Cleaned up iCloud sync conflicts
+
+### Changed
+
+#### Homepage Improvements
+- **Expert Analysis Section** - Now displays only 1 article instead of 3
+  - Reduces initial page height
+  - Improves content hierarchy
+  - Better focus on featured content
+
+- **Right Column Widget Replacement**
+  - Removed dangling NIST Assistant
+  - Replaced with BreachCounter widget
+  - Better visual balance and engagement
+
+#### Navigation Updates
+- **Fixed Navigation Links**
+  - Updated "Expert Blog" link: `#` → `/articles`
+  - Updated "Live Hub" link: `#` → `/videos`
+  - Updated "Research" link: `#` → `/policies`
+  - All navigation now functional with real pages
+
+### Fixed
+- Homepage layout issue with excessive NIST Assistant widgets
+- Navigation links that pointed to "#" (non-functional)
+
+### Technical Details
+
+**New Files Created (9)**:
+- `app/articles/page.tsx` (156 lines)
+- `app/videos/page.tsx` (145 lines)
+- `app/policies/page.tsx` (172 lines)
+- `app/api/health/route.ts` (41 lines)
+- `components/widgets/BreachCounter.tsx` (116 lines)
+- `lib/api.test.ts` (247 lines)
+- `jest.config.js` (27 lines)
+- `jest.setup.js` (2 lines)
+- Enhanced `.gitignore` (46 lines)
+
+**Files Modified (2)**:
+- `app/page.tsx` - Navigation links, widget replacement
+- `CHANGELOG.md` - This file
+
+**Files Deleted (5)**:
+- Duplicate documentation files with "2" suffix
+
+**Lines Added**: ~1,100+ (code + tests)
+
+**Git Commits**: 7 new commits
+- Initial commit for project base
+- Fix: Display single article on homepage
+- Add placeholder pages and breach counter
+- Add health check endpoint
+- Remove duplicate documentation
+- Add comprehensive unit tests
+
+### Developer Experience
+- ✅ Professional Git workflow demonstrated (branch, commit, merge)
+- ✅ Complete test coverage for API layer
+- ✅ All tests passing (24/24)
+- ✅ Docker health checks functional
+- ✅ Clean Git history with descriptive commits
+- ✅ Ready for deployment
+
+---
+
 ## [0.2.0] - 2024-10-31
 
 ### Added - Part A & B: Foundation Setup
