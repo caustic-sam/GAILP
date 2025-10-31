@@ -1,0 +1,272 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode colors (default - Global Digital Policy Hub theme) */
+    --background: 0 0% 98%;              /* #fafafa - Very light gray */
+    --foreground: 222.2 47% 11.2%;       /* #1a2332 - Dark navy text */
+    
+    --card: 0 0% 100%;                   /* #ffffff - White cards */
+    --card-foreground: 222.2 47% 11.2%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47% 11.2%;
+    
+    --primary: 217.2 91.2% 59.8%;        /* #2563EB - Blue-600 */
+    --primary-foreground: 0 0% 100%;     /* White text on primary */
+    
+    --secondary: 214.3 31.8% 91.4%;      /* Light gray */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    --muted: 210 40% 96.1%;              /* Very light blue-gray */
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 199.1 95.5% 73.9%;         /* #38BDF8 - Sky-400 */
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 214.3 31.8% 91.4%;         /* Light gray borders */
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217.2 91.2% 59.8%;           /* Blue ring */
+    
+    --radius: 0.5rem;
+    
+    /* Navy header/footer */
+    --navy-dark: 217 50% 17%;            /* #1e3a5f */
+    --navy-medium: 212 51% 36%;          /* #2d5a8f */
+  }
+
+  .dark {
+    /* Optional dark mode - currently not used */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-gray-50 text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight text-gray-900;
+  }
+  
+  h1 {
+    @apply text-4xl lg:text-5xl;
+  }
+  
+  h2 {
+    @apply text-3xl lg:text-4xl;
+  }
+  
+  h3 {
+    @apply text-2xl lg:text-3xl;
+  }
+  
+  /* Focus visible */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+  
+  /* Selection */
+  ::selection {
+    @apply bg-primary text-white;
+  }
+  
+  /* Navy gradient header/footer */
+  .navy-gradient {
+    background: linear-gradient(135deg, hsl(var(--navy-dark)) 0%, hsl(var(--navy-medium)) 100%);
+  }
+}
+
+@layer components {
+  /* Prose styles for MDX content */
+  .prose {
+    @apply max-w-prose text-gray-900;
+  }
+  
+  .prose h1 {
+    @apply text-3xl font-bold mt-8 mb-4 text-gray-900;
+  }
+  
+  .prose h2 {
+    @apply text-2xl font-bold mt-8 mb-4 text-gray-900;
+  }
+  
+  .prose h3 {
+    @apply text-xl font-bold mt-6 mb-3 text-gray-900;
+  }
+  
+  .prose p {
+    @apply my-4 leading-relaxed text-gray-700;
+  }
+  
+  .prose a {
+    @apply text-primary hover:text-primary/80 underline underline-offset-2;
+  }
+  
+  .prose ul, .prose ol {
+    @apply my-4 pl-6;
+  }
+  
+  .prose li {
+    @apply my-2 text-gray-700;
+  }
+  
+  .prose blockquote {
+    @apply border-l-4 border-primary pl-4 italic my-4 text-gray-600;
+  }
+  
+  .prose code {
+    @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono text-gray-900;
+  }
+  
+  .prose pre {
+    @apply bg-gray-100 p-4 rounded-lg overflow-x-auto my-4;
+  }
+  
+  .prose pre code {
+    @apply bg-transparent p-0;
+  }
+  
+  /* Card styles - white background with shadow */
+  .card {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm;
+  }
+  
+  .card-hover {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow;
+  }
+  
+  /* Status dots (instead of badges) */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+  
+  .status-draft {
+    @apply bg-yellow-500;
+  }
+  
+  .status-adopted {
+    @apply bg-blue-500;
+  }
+  
+  .status-in-force {
+    @apply bg-green-500;
+  }
+  
+  .status-repealed {
+    @apply bg-gray-500;
+  }
+  
+  /* Tag chips - light background */
+  .tag-chip {
+    @apply inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium;
+  }
+  
+  /* Avatar circles */
+  .avatar {
+    @apply rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold;
+  }
+  
+  .avatar-sm {
+    @apply w-6 h-6 text-xs;
+  }
+  
+  .avatar-md {
+    @apply w-8 h-8 text-sm;
+  }
+  
+  .avatar-lg {
+    @apply w-12 h-12 text-base;
+  }
+}
+
+@layer utilities {
+  /* Custom utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Print styles */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+    
+    .print-page-break {
+      page-break-before: always;
+    }
+    
+    body {
+      @apply text-black bg-white;
+    }
+    
+    a {
+      @apply text-black no-underline;
+    }
+    
+    a[href]:after {
+      content: " (" attr(href) ")";
+      @apply text-sm text-gray-600;
+    }
+  }
+  
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+}

@@ -1,0 +1,31 @@
+TURm this into  web page.
+
+
+Glossary of 100 Key Ethereum and Blockchain Terms:
+General Ethereum & Blockchain Concepts:
+Ethereum
+Blockchain
+Decentralization
+Cryptography
+Smart Contract
+Consensus
+Gas
+Gas Limit
+Gas Price
+Wei
+Gwei
+Ether
+Node
+Full Node
+Light Node
+Mining
+Miner
+Proof-of-Work (PoW)
+Proof-of-Stake (PoS)
+Validator
+Digital Identity and Governance:21. Decentralized Identity (DID)22. Self-Sovereign Identity (SSI)23. Identity Management24. KYC (Know Your Customer)25. AML (Anti-Money Laundering)26. On-chain Governance27. Off-chain Governance28. Digital Signature29. Private Key30. Public Key31. Multi-signature Wallet32. HD Wallet (Hierarchical Deterministic Wallet)33. Mnemonic Phrase (Seed Phrase)
+Ethereum Architecture & Components:34. Ethereum Virtual Machine (EVM)35. State Machine36. Solidity37. Vyper38. Truffle39. Remix IDE40. Metamask41. RPC (Remote Procedure Call)42. JSON-RPC43. ABI (Application Binary Interface)44. ERC (Ethereum Request for Comments)45. ERC-2046. ERC-721 (NFT standard)47. ERC-1155 (Multi-token standard)48. dApp (Decentralized Application)49. Web3.js50. Infura
+Cryptography & Security:51. Hashing52. SHA-25653. Keccak-25654. Merkle Tree55. Merkle Root56. Nonce57. Replay Attack58. 51% Attack59. Sybil Attack60. Cold Wallet61. Hot Wallet62. Hardware Wallet63. Trezor64. Ledger Nano65. Multi-factor Authentication (MFA)
+Transactions & Networking:66. Transaction Pool67. Transaction Nonce68. Block69. Genesis Block70. Block Explorer71. Block Height72. Fork73. Soft Fork74. Hard Fork75. Uncle Blocks (Ommer)76. Difficulty77. Difficulty Bomb78. Hash Rate79. Oracles
+Tokens & Tokenomics:80. Token81. ICO (Initial Coin Offering)82. Stablecoin83. DAO (Decentralized Autonomous Organization)84. DeFi (Decentralized Finance)85. Yield Farming86. Liquidity Pool87. Liquidity Mining88. Tokenomics89. Governance Token90. Utility Token
+Development & Infrastructure:91. Ganache92. Geth93. Parity94. Ethereum Improvement Proposal (EIP)95. Mainnet96. Testnet97. Ropsten98. Rinkeby99. Kovan100. Sepolia
