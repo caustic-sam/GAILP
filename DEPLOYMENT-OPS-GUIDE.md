@@ -209,6 +209,16 @@ To restore:
 
 ## 🚀 Vercel Deployment
 
+### Keep Heavy Research Assets Out of the Build
+
+The `NIST_LLM/` workspace is intentionally **not** part of this repository or the Vercel bundle. It contains several hundred megabytes of notebooks, models, and scratch data that will overwhelm Vercel’s 100 MB build cache and slow down every deployment.
+
+- The directory now lives on the host outside git tracking (`.gitignore`) and is excluded from Vercel uploads (`.vercelignore`).
+- If you still need it locally, keep a sibling clone (for example `~/Projects/NIST_LLM`) or fork it into its own repository.
+- When you need assets from that workspace in the Next.js app, export the specific files (for example, into `public/nist-assets/`) instead of pointing to the entire folder.
+
+**Before deploying**, confirm the project root does **not** contain a `NIST_LLM/` directory. If it reappears, deployments will fail; move it out and commit the updated repo before retrying.
+
 ### Initial Setup
 
 1. **Install Vercel CLI:**

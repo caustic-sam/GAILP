@@ -60,3 +60,6 @@ __pycache__/
 *.swp
 *.swo
 *~
+
+# Local research sandbox (kept outside repo and deployments)
+NIST_LLM/

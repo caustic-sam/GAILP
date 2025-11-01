@@ -17,4 +17,7 @@ I. RSS OPS
 5.  DR
 6.  NIST_LLM
 7.  Ne
+8. VLOG STUDIO PAGE
+
+Weekly Newsletter Gernerator!
 
