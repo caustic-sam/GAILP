@@ -10,6 +10,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Supabase configuration
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -26,12 +27,18 @@ if (typeof window === 'undefined') {
 }
 
 // Create Supabase client for public/authenticated users (respects RLS)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const FALLBACK_SUPABASE_URL = 'https://placeholder.supabase.co';
+const FALLBACK_SUPABASE_ANON_KEY = 'public-anon-key';
+
+export const supabase: SupabaseClient = createClient(
+  supabaseUrl || FALLBACK_SUPABASE_URL,
+  supabaseAnonKey || FALLBACK_SUPABASE_ANON_KEY
+);
 
 // Create Supabase admin client for server-side operations (bypasses RLS)
 // This should ONLY be used in API routes, never in client components
 export const supabaseAdmin = supabaseServiceRoleKey
-  ? createClient(supabaseUrl, supabaseServiceRoleKey, {
+  ? createClient(supabaseUrl || FALLBACK_SUPABASE_URL, supabaseServiceRoleKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
