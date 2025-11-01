@@ -127,10 +127,23 @@ export async function GET(request: Request) {
 // POST: Create new article
 export async function POST(request: Request) {
   try {
+    console.log('📥 POST /api/admin/articles - Received request');
+
     const body = await request.json();
+    console.log('📋 Request body:', {
+      title: body.title,
+      slug: body.slug,
+      contentLength: body.content?.length,
+      status: body.status,
+    });
 
     // Validate required fields
     if (!body.title || !body.slug || !body.content) {
+      console.error('❌ Validation failed - missing fields:', {
+        hasTitle: !!body.title,
+        hasSlug: !!body.slug,
+        hasContent: !!body.content,
+      });
       return NextResponse.json(
         { error: 'Missing required fields: title, slug, content' },
         { status: 400 }
@@ -141,14 +154,15 @@ export async function POST(request: Request) {
     const wordsPerMinute = 200;
     const wordCount = body.content.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / wordsPerMinute);
+    console.log('📊 Calculated read time:', readTime, 'minutes');
 
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {
-      console.log('📝 Mock save (Supabase not configured)');
+      console.log('📝 Mock save mode (Supabase not configured)');
 
       // Simulate successful save
       const mockArticle = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: Math.random().toString(36).substring(2, 11),
         ...body,
         read_time: readTime,
         view_count: 0,
@@ -157,6 +171,8 @@ export async function POST(request: Request) {
         updated_at: new Date().toISOString(),
         author_name: 'Admin',
       };
+
+      console.log('✅ Mock article created:', mockArticle.id);
 
       return NextResponse.json({
         article: mockArticle,
@@ -201,12 +217,21 @@ export async function POST(request: Request) {
       message: 'Article saved successfully',
     });
   } catch (error) {
-    console.error('Error creating article:', error);
+    console.error('❌ Error creating article:', error);
+
+    // Provide detailed error information
+    const errorDetails = {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      type: error?.constructor?.name,
+    };
+
+    console.error('❌ Error details:', errorDetails);
 
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : 'Failed to create article',
-        details: error,
+        details: errorDetails,
       },
       { status: 500 }
     );

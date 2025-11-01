@@ -80,24 +80,31 @@ export default function NewArticlePage() {
         published_at: action === 'publish' ? new Date().toISOString() : null,
       };
 
+      console.log('📤 Sending article payload:', payload);
+
       const response = await fetch('/api/admin/articles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
+      console.log('📥 Response status:', response.status);
+
       const data = await response.json();
+      console.log('📥 Response data:', data);
 
       if (response.ok) {
         // Show success message
-        alert(`Article ${action === 'draft' ? 'saved as draft' : action === 'publish' ? 'published' : 'scheduled'}!`);
+        const actionText = action === 'draft' ? 'saved as draft' : action === 'publish' ? 'published' : 'scheduled';
+        alert(`✅ Article ${actionText}!\n\nID: ${data.article?.id}\nSource: ${data.source}`);
         router.push('/admin');
       } else {
-        alert(`Error: ${data.error || 'Failed to save article'}`);
+        console.error('❌ Save failed:', data);
+        alert(`❌ Error: ${data.error || 'Failed to save article'}\n\nDetails: ${JSON.stringify(data.details || {}, null, 2)}`);
       }
     } catch (error) {
-      console.error('Error saving article:', error);
-      alert('Failed to save article. Check console for details.');
+      console.error('❌ Error saving article:', error);
+      alert(`❌ Failed to save article.\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nCheck browser console for details.`);
     } finally {
       setSaving(false);
     }
