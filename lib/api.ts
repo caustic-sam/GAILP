@@ -8,8 +8,11 @@
  * @author World Papers Team
  */
 
-import { supabase, isSupabaseConfigured, Article, Policy, Video, Thought, RSSItem, Author } from './supabase';
+import { supabase, isSupabaseConfigured } from './supabase';
 import { mockArticles, mockPolicies, mockVideos, mockThoughts } from './mockData';
+
+// Re-export types for external use
+export type { Article, Policy, Video, Thought, RSSItem, Author } from './supabase';
 
 // =====================================================
 // POLICIES

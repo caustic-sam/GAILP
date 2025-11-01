@@ -142,7 +142,7 @@ class FreshRSSClient {
       const data = await response.json();
       const unreadCounts = data.unreadcounts || [];
       const totalUnread = unreadCounts.find(
-        (c: any) => c.id === 'user/-/state/com.google/reading-list'
+        (c: { id: string; count: number }) => c.id === 'user/-/state/com.google/reading-list'
       );
 
       return totalUnread?.count || 0;
