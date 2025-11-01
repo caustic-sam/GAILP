@@ -44,6 +44,7 @@ export const mockPolicies = [
 export const mockArticles = [
   {
     id: 1,
+    slug: "ai-governance-data-protection-global-perspective",
     title: "The Convergence of AI Governance and Data Protection: A Global Perspective",
     summary: "As artificial intelligence continues its evolution worldwide, policymakers are grappling with how to balance innovation with robust data protection frameworks. This analysis explores how different jurisdictions are approaching this complex challenge and what it means for global digital policy trends.",
     author: { name: "Dr. Sarah Chen", avatar: "SC", title: "Senior Policy Analyst" },
@@ -56,6 +57,7 @@ export const mockArticles = [
   },
   {
     id: 2,
+    slug: "digital-identity-estonia-roadmap",
     title: "Digital Identity Standards: Lessons from Estonia's Roadmap Program",
     summary: "Estonia's pioneering approach to digital identity frameworks is influencing global standards development.",
     author: { name: "Prof. Michael Rodriguez", avatar: "MR", title: "Digital Identity Expert" },
@@ -68,6 +70,7 @@ export const mockArticles = [
   },
   {
     id: 3,
+    slug: "cross-border-data-flows-regulatory-landscape",
     title: "Cross-Border Data Flows: Navigating the Regulatory Landscape",
     summary: "How emerging data localization requirements are reshaping international digital commerce.",
     author: { name: "Dr. Amara Okonkwo", avatar: "AO", title: "Data Governance Lead" },
