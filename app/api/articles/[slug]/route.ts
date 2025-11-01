@@ -1,0 +1,72 @@
+import { NextResponse } from 'next/server';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { mockArticles } from '@/lib/mockData';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+// GET: Fetch a single article by slug
+export async function GET(
+  request: Request,
+  { params }: { params: { slug: string } }
+) {
+  const { slug } = params;
+
+  try {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      console.log('📝 Using mock data (Supabase not configured)');
+
+      const article = mockArticles.find(a => a.slug === slug);
+
+      if (!article) {
+        return NextResponse.json(
+          { error: 'Article not found' },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        article,
+        source: 'mock',
+      });
+    }
+
+    // Fetch article from Supabase
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .single();
+
+    if (error || !data) {
+      return NextResponse.json(
+        { error: 'Article not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      article: data,
+      source: 'supabase',
+    });
+  } catch (error) {
+    console.error('Error fetching article:', error);
+
+    // Try mock data as fallback
+    const article = mockArticles.find(a => a.slug === slug);
+
+    if (article) {
+      return NextResponse.json({
+        article,
+        source: 'mock-fallback',
+      });
+    }
+
+    return NextResponse.json(
+      { error: 'Article not found' },
+      { status: 404 }
+    );
+  }
+}
