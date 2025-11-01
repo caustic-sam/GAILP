@@ -1,6 +1,43 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
 
+type ArticleStatus = 'draft' | 'scheduled' | 'published';
+
+interface ArticleUpdatePayload {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  category?: string;
+  tags?: string[];
+  featured_image_url?: string;
+  seo_title?: string;
+  seo_description?: string;
+  status: ArticleStatus;
+  scheduled_for?: string;
+  published_at?: string | null;
+}
+
+interface SupabaseErrorDetails {
+  message: string;
+  code?: string;
+  details?: unknown;
+  hint?: unknown;
+}
+
+function extractSupabaseError(error: unknown): SupabaseErrorDetails | null {
+  if (error && typeof error === 'object' && 'message' in error) {
+    const err = error as { message: string; code?: string | number; details?: unknown; hint?: unknown };
+    return {
+      message: err.message,
+      code: err.code ? String(err.code) : undefined,
+      details: err.details,
+      hint: err.hint,
+    };
+  }
+  return null;
+}
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -44,15 +81,13 @@ export async function GET(
   } catch (error) {
     console.error('❌ Error fetching article:', error);
 
-    const isSupabaseError = error && typeof error === 'object' && 'code' in error && 'message' in error;
+    const supabaseError = extractSupabaseError(error);
+    const fallbackMessage = error instanceof Error ? error.message : 'Failed to fetch article';
 
     return NextResponse.json(
       {
-        error: error instanceof Error
-          ? error.message
-          : isSupabaseError
-          ? (error as any).message
-          : 'Failed to fetch article',
+        error: supabaseError?.message ?? fallbackMessage,
+        details: supabaseError ?? undefined,
       },
       { status: 500 }
     );
@@ -68,7 +103,7 @@ export async function PUT(
     const { id } = params;
     console.log('📥 PUT /api/admin/articles/[id] - Updating article:', id);
 
-    const body = await request.json();
+    const body = (await request.json()) as ArticleUpdatePayload;
     console.log('📋 Request body:', {
       title: body.title,
       slug: body.slug,
@@ -105,7 +140,7 @@ export async function PUT(
     }
 
     // Update in Supabase - using base schema column names
-    const articleData: any = {
+    const articleData: Record<string, unknown> = {
       title: body.title,
       slug: body.slug,
       content: body.content,
@@ -141,29 +176,17 @@ export async function PUT(
   } catch (error) {
     console.error('❌ Error updating article:', error);
 
-    const isSupabaseError = error && typeof error === 'object' && 'code' in error && 'message' in error;
+    const supabaseError = extractSupabaseError(error);
+    const fallbackMessage = error instanceof Error ? error.message : 'Failed to update article';
 
-    const errorDetails = {
-      message: error instanceof Error
-        ? error.message
-        : isSupabaseError
-        ? (error as any).message
-        : 'Unknown error',
-      code: isSupabaseError ? (error as any).code : undefined,
-      details: isSupabaseError ? (error as any).details : undefined,
-      hint: isSupabaseError ? (error as any).hint : undefined,
-    };
-
-    console.error('❌ Error details:', errorDetails);
+    if (supabaseError) {
+      console.error('❌ Error details:', supabaseError);
+    }
 
     return NextResponse.json(
       {
-        error: error instanceof Error
-          ? error.message
-          : isSupabaseError
-          ? (error as any).message
-          : 'Failed to update article',
-        details: errorDetails,
+        error: supabaseError?.message ?? fallbackMessage,
+        details: supabaseError ?? undefined,
       },
       { status: 500 }
     );

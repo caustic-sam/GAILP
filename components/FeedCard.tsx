@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from './ui/Card';
 import { ExternalLink, RefreshCw } from 'lucide-react';
 
@@ -50,7 +50,8 @@ export function FeedCard({
   const [source, setSource] = useState<'freshrss' | 'freshrss-rss' | 'mock'>('mock');
   const [error, setError] = useState<string | null>(null);
 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
+    setLoading(true);
     try {
       setError(null);
       const response = await fetch(
@@ -70,7 +71,7 @@ export function FeedCard({
     } finally {
       setLoading(false);
     }
-  };
+  }, [category, itemCount]);
 
   useEffect(() => {
     fetchItems();
@@ -79,7 +80,7 @@ export function FeedCard({
     const interval = setInterval(fetchItems, refreshInterval);
 
     return () => clearInterval(interval);
-  }, [category, itemCount, refreshInterval]);
+  }, [fetchItems, refreshInterval]);
 
   const handleRefresh = () => {
     setLoading(true);

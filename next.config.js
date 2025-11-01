@@ -58,7 +58,6 @@ const nextConfig = {
   // Experimental features
   experimental: {
     mdxRs: true,
-    appDir: true,
   },
   
   // Webpack config

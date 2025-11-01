@@ -1,19 +1,43 @@
 import { NextResponse } from 'next/server';
+import Parser from 'rss-parser';
 import { getFreshRSSClient } from '@/lib/freshrss';
 
 export const dynamic = 'force-dynamic';
+
+type TestStatus = 'PASSED' | 'FAILED' | 'ERROR';
+
+interface TestResult {
+  status: TestStatus;
+  [key: string]: unknown;
+}
+
+interface DiagnosticsResponse {
+  timestamp: string;
+  config: {
+    apiUrl: string;
+    username: string;
+    passwordSet: boolean;
+    rssUrl: string;
+  };
+  tests: Record<string, TestResult>;
+  summary?: {
+    overall: string;
+    passedCount: number;
+    totalTests: number;
+  };
+}
 
 /**
  * Test endpoint to diagnose FreshRSS connection
  * Access at: http://localhost:3000/api/test-freshrss
  */
 export async function GET() {
-  const results: any = {
+  const results: DiagnosticsResponse = {
     timestamp: new Date().toISOString(),
     config: {
       apiUrl: process.env.FRESHRSS_API_URL || 'NOT_SET',
       username: process.env.FRESHRSS_API_USERNAME || 'NOT_SET',
-      passwordSet: !!process.env.FRESHRSS_API_PASSWORD,
+      passwordSet: Boolean(process.env.FRESHRSS_API_PASSWORD),
       rssUrl: process.env.FRESHRSS_RSS_URL || 'NOT_SET',
     },
     tests: {},
@@ -112,16 +136,17 @@ export async function GET() {
   // Test 6: Test RSS fallback
   console.log('🧪 Test 6: Testing RSS fallback...');
   try {
-    const Parser = require('rss-parser');
     const parser = new Parser();
-    const rssUrl = process.env.FRESHRSS_RSS_URL || results.config.apiUrl.replace('/api/greader.php', '/i/?a=rss');
+    const rssUrl =
+      process.env.FRESHRSS_RSS_URL ||
+      results.config.apiUrl.replace('/api/greader.php', '/i/?a=rss');
 
     const feed = await parser.parseURL(rssUrl);
     results.tests.rssFallback = {
       status: 'PASSED',
       feedTitle: feed.title,
       itemCount: feed.items?.length || 0,
-      sampleItems: feed.items?.slice(0, 2).map((item: any) => ({
+      sampleItems: feed.items?.slice(0, 2).map((item) => ({
         title: item.title,
         pubDate: item.pubDate,
       })),
@@ -135,13 +160,13 @@ export async function GET() {
 
   // Summary
   const allPassed = Object.values(results.tests).every(
-    (test: any) => test.status === 'PASSED'
+    (test) => test.status === 'PASSED'
   );
 
   results.summary = {
     overall: allPassed ? '✅ ALL TESTS PASSED' : '⚠️ SOME TESTS FAILED',
     passedCount: Object.values(results.tests).filter(
-      (test: any) => test.status === 'PASSED'
+      (test) => test.status === 'PASSED'
     ).length,
     totalTests: Object.keys(results.tests).length,
   };

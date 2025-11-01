@@ -1,12 +1,62 @@
 import { NextResponse } from 'next/server';
 import { supabase, supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
-import { mockArticles } from '@/lib/mockData';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+type ArticleStatus = 'draft' | 'scheduled' | 'published' | 'archived';
+
+interface AdminArticleSummary {
+  id: string;
+  title: string;
+  slug: string;
+  status: ArticleStatus;
+  published_at: string | null;
+  scheduled_for: string | null;
+  created_at: string;
+  updated_at: string;
+  author_name: string;
+  view_count: number;
+  revision_count: number;
+}
+
+interface ArticleCreatePayload {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  status?: ArticleStatus;
+  featured_image_url?: string;
+  published_at?: string | null;
+  seo_description?: string;
+}
+
+interface SupabaseErrorDetails {
+  message: string;
+  code?: string;
+  details?: unknown;
+  hint?: unknown;
+}
+
+function extractSupabaseError(error: unknown): SupabaseErrorDetails | null {
+  if (error && typeof error === 'object' && 'message' in error) {
+    const err = error as { message: string; code?: string | number; details?: unknown; hint?: unknown };
+    return {
+      message: err.message,
+      code: err.code ? String(err.code) : undefined,
+      details: err.details,
+      hint: err.hint,
+    };
+  }
+  return null;
+}
+
+function isArticleStatus(value: string): value is ArticleStatus {
+  return ['draft', 'scheduled', 'published', 'archived'].includes(value);
+}
+
 // Mock data for development
-const mockAdminArticles = [
+const mockAdminArticles: AdminArticleSummary[] = [
   {
     id: '1',
     title: 'Getting Started with Digital Policy Analysis',
@@ -63,7 +113,8 @@ const mockAdminArticles = [
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const status = searchParams.get('status');
+  const statusParam = searchParams.get('status');
+  const statusFilter = statusParam && isArticleStatus(statusParam) ? statusParam : null;
 
   try {
     // Check if Supabase is configured
@@ -72,8 +123,8 @@ export async function GET(request: Request) {
 
       // Filter mock data by status if provided
       let filtered = mockAdminArticles;
-      if (status && status !== 'all') {
-        filtered = mockAdminArticles.filter(a => a.status === status);
+      if (statusFilter) {
+        filtered = mockAdminArticles.filter(a => a.status === statusFilter);
       }
 
       return NextResponse.json({
@@ -91,8 +142,8 @@ export async function GET(request: Request) {
       .order('updated_at', { ascending: false });
 
     // Apply status filter
-    if (status && status !== 'all') {
-      query = query.eq('status', status);
+    if (statusFilter) {
+      query = query.eq('status', statusFilter);
     }
 
     const { data, error } = await query;
@@ -121,8 +172,8 @@ export async function GET(request: Request) {
 
     // Fallback to mock data
     let filtered = mockAdminArticles;
-    if (status && status !== 'all') {
-      filtered = mockAdminArticles.filter(a => a.status === status);
+    if (statusFilter) {
+      filtered = mockAdminArticles.filter(a => a.status === statusFilter);
     }
 
     return NextResponse.json({
@@ -139,7 +190,7 @@ export async function POST(request: Request) {
   try {
     console.log('📥 POST /api/admin/articles - Received request');
 
-    const body = await request.json();
+    const body = (await request.json()) as ArticleCreatePayload;
     console.log('📋 Request body:', {
       title: body.title,
       slug: body.slug,
@@ -193,7 +244,7 @@ export async function POST(request: Request) {
 
     // Insert into Supabase - using base schema column names
     // Base schema uses: summary (not excerpt), read_time_minutes (not read_time)
-    const articleData: any = {
+    const articleData: Record<string, unknown> = {
       title: body.title,
       slug: body.slug,
       content: body.content,
@@ -226,33 +277,17 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('❌ Error creating article:', error);
 
-    // Handle Supabase errors (which are plain objects, not Error instances)
-    const isSupabaseError = error && typeof error === 'object' && 'code' in error && 'message' in error;
+    const supabaseError = extractSupabaseError(error);
+    const fallbackMessage = error instanceof Error ? error.message : 'Failed to create article';
 
-    // Provide detailed error information
-    const errorDetails = {
-      message: error instanceof Error
-        ? error.message
-        : isSupabaseError
-        ? (error as any).message
-        : 'Unknown error',
-      code: isSupabaseError ? (error as any).code : undefined,
-      details: isSupabaseError ? (error as any).details : undefined,
-      hint: isSupabaseError ? (error as any).hint : undefined,
-      stack: error instanceof Error ? error.stack : undefined,
-      type: error?.constructor?.name,
-    };
-
-    console.error('❌ Error details:', errorDetails);
+    if (supabaseError) {
+      console.error('❌ Error details:', supabaseError);
+    }
 
     return NextResponse.json(
       {
-        error: error instanceof Error
-          ? error.message
-          : isSupabaseError
-          ? (error as any).message
-          : 'Failed to create article',
-        details: errorDetails,
+        error: supabaseError?.message ?? fallbackMessage,
+        details: supabaseError ?? undefined,
       },
       { status: 500 }
     );

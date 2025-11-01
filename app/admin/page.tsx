@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import {
@@ -29,16 +29,15 @@ interface Article {
   revision_count: number;
 }
 
+type FilterOption = 'all' | 'draft' | 'scheduled' | 'published';
+const FILTER_OPTIONS: FilterOption[] = ['all', 'draft', 'scheduled', 'published'];
+
 export default function AdminDashboard() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [filter, setFilter] = useState<'all' | 'draft' | 'scheduled' | 'published'>('all');
+  const [filter, setFilter] = useState<FilterOption>('all');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchArticles();
-  }, [filter]);
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -52,7 +51,11 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -170,10 +173,10 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-gray-700">Filter:</span>
             <div className="flex gap-2">
-              {['all', 'draft', 'scheduled', 'published'].map((status) => (
+              {FILTER_OPTIONS.map((status) => (
                 <button
                   key={status}
-                  onClick={() => setFilter(status as any)}
+                  onClick={() => setFilter(status)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     filter === status
                       ? 'bg-blue-600 text-white'

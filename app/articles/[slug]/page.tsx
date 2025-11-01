@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Clock, Calendar } from 'lucide-react';
@@ -74,10 +75,13 @@ export default function ArticlePage() {
         {/* Header */}
         <header className="mb-8">
           {article.featured_image_url && (
-            <img
+            <Image
               src={article.featured_image_url}
               alt={article.title}
+              width={1200}
+              height={384}
               className="w-full h-96 object-cover rounded-lg mb-8"
+              unoptimized
             />
           )}
 
