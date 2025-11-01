@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Globe, Mail, Twitter, Linkedin, Rss, ArrowRight, 
-  MessageCircle, Clock, Heart, Play, Send, 
-  ThumbsUp, Menu, X, FileStack, BarChart3, Network 
+import {
+  Globe, Mail, Twitter, Linkedin, Rss, ArrowRight,
+  MessageCircle, Clock, Heart, Play, Send,
+  ThumbsUp, Menu, X, FileStack, BarChart3, Network, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -14,9 +14,16 @@ import { mockPolicies, mockArticles, mockThoughts, mockVideos, quickStats } from
 import { TermOfDay } from '@/components/widgets/TermOfDay';
 import { NISTAssistant } from '@/components/widgets/NISTAssistant';
 import { BreachCounter } from '@/components/widgets/BreachCounter';
+import { FeedCard } from '@/components/FeedCard';
+import { GlobalFeedStream } from '@/components/GlobalFeedStream';
+import { AnimatedGlobe } from '@/components/AnimatedGlobe';
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleRefreshAll = () => {
+    window.location.reload();
+  };
 
   const navItems = [
     { id: 'home', label: 'Policy Updates', href: '/' },
@@ -116,17 +123,41 @@ export default function HomePage() {
       </header>
 
       {/* Hero Banner */}
-      <section className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] text-white">
+      <section className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] text-white relative overflow-hidden">
+        {/* Globe as backdrop - absolute positioning behind content */}
+        <div className="absolute inset-0 flex items-center justify-start pointer-events-none">
+          <div className="transform scale-[2.5] opacity-20 -ml-32">
+            <AnimatedGlobe />
+          </div>
+        </div>
+
         <div className="max-w-7xl mx-auto px-6 py-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight bg-gradient-to-r from-gray-100 via-gray-50 to-gray-200 bg-clip-text text-transparent drop-shadow-sm">
-            Navigate the Future of<br />Digital Policy
-          </h1>
-          <p className="text-lg text-blue-100 mb-8 max-w-2xl">
-            Your trusted source for comprehensive analysis, expert insights, and real-time updates on global digital governance, data protection, and identity policies.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Button size="lg" variant="primary">Explore Insights</Button>
-            <Button size="lg" variant="secondary">Join Community</Button>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Left: Content */}
+            <div className="relative z-10">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight bg-gradient-to-r from-gray-100 via-gray-50 to-gray-200 bg-clip-text text-transparent drop-shadow-sm">
+                Navigate the Future of<br />Digital Policy
+              </h1>
+              <p className="text-lg text-blue-100 mb-8 max-w-2xl">
+                Your trusted source for comprehensive analysis, expert insights, and real-time updates on global digital governance, data protection, and identity policies.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" variant="primary">Explore Insights</Button>
+                <Button size="lg" variant="secondary">Join Community</Button>
+                <button
+                  onClick={handleRefreshAll}
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-all flex items-center gap-2 border border-white/20"
+                >
+                  <RefreshCw className="w-5 h-5" />
+                  Refresh Feeds
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Breach Counter */}
+            <div className="hidden lg:block relative z-10">
+              <BreachCounter />
+            </div>
           </div>
         </div>
       </section>
@@ -315,6 +346,11 @@ export default function HomePage() {
               ))}
             </div>
 
+            {/* Global Feed Stream */}
+            <div className="mt-6">
+              <GlobalFeedStream />
+            </div>
+
             {/* Video Insights */}
             <Card className="p-5 mt-6">
               <h3 className="text-lg font-bold text-gray-900 mb-1">Video Insights</h3>
@@ -395,11 +431,17 @@ export default function HomePage() {
               </button>
             </Card>
 
+            {/* Live FreshRSS Feed */}
+            <FeedCard
+              title="Live Policy Feed"
+              icon={<Rss className="w-5 h-5 text-blue-600" />}
+              category="policy"
+              itemCount={5}
+              refreshInterval={300000}
+            />
+
             {/* Term of the Day */}
             <TermOfDay />
-
-            {/* Breach Counter */}
-            <BreachCounter />
           </div>
         </div>
       </div>
