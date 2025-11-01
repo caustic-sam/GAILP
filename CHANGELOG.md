@@ -7,7 +7,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Planned - Next Micro-Sprint
+
+#### WordPress Content Migration
+- WordPress (.wpress) data import and parsing
+- Draft post preservation and migration
+- Content filtering (remove non-content files)
+- Database schema mapping (WordPress → Supabase)
+- Import script for bulk content transfer
+- Media migration to Supabase Storage
+- **Documentation**: [docs/WORDPRESS-MIGRATION-PLAN.md](docs/WORDPRESS-MIGRATION-PLAN.md)
+- **Estimated Time**: 11-17 hours across 2-3 sessions
+
+#### FreshRSS Integration
+- Live feed updates to homepage cards
+- RSS item sync automation
+- Feed source management
+- Real-time policy intelligence updates
+- FeedCard component with auto-refresh
+- Caching layer for performance
+- Admin panel for feed management
+- **Documentation**: [docs/FRESHRSS-INTEGRATION-PLAN.md](docs/FRESHRSS-INTEGRATION-PLAN.md)
+- **Estimated Time**: 4-6 hours
+
+#### NIST RAG Enhancement
+- Complete RAG pipeline (chunking, embedding, FAISS indexing)
+- MCP (Model Context Protocol) server implementation
+- NIST Assistant backend connection
+- Vector search for SP 800 series queries
+- FastAPI endpoints for Q&A
+- Integration with World Papers homepage widget
+- **Documentation**: [docs/NIST-RAG-MCP-PLAN.md](docs/NIST-RAG-MCP-PLAN.md)
+- **Estimated Time**: 25-36 hours across 4-5 sessions
+
+### Planning & Documentation
+
+#### Migration & Integration Plans Created
+- **WordPress Migration Plan** - Comprehensive guide for porting .wpress data
+  - .wpress file structure and extraction
+  - Database schema mapping (WordPress → Supabase)
+  - Draft post preservation strategy
+  - Media file filtering and upload
+  - TypeScript migration script template
+  - Rollback procedures and validation checklists
+
+- **FreshRSS Integration Plan** - Live feed integration architecture
+  - Existing FreshRSS client assessment
+  - API routes for feed fetching
+  - FeedCard component with auto-refresh
+  - Caching strategy (5-minute TTL)
+  - Admin panel for subscription management
+  - Feed categorization logic (policy, research, analysis)
+
+- **NIST RAG + MCP Plan** - AI-powered NIST assistant implementation
+  - Existing NIST_LLM implementation analysis
+  - Complete RAG pipeline design (sentence-transformers + FAISS)
+  - MCP server architecture and tool definitions
+  - World Papers integration strategy
+  - Deployment options (embedded, serverless, dedicated service)
+  - 25-36 hour implementation timeline
+
+---
+
 ## [0.2.1] - 2025-10-31
+
+### Added
+
+#### Deployment
+- **Vercel Deployment** - Successfully deployed to production
+  - Live URL: https://gailp.vercel.app (auto-generated)
+  - Automatic deployments on git push
+  - Global CDN with HTTPS
+  - Dynamic rendering for optimal performance
 
 ### Added
 
