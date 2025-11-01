@@ -5,8 +5,6 @@ import Parser from 'rss-parser';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const rssParser = new Parser();
-
 interface FeedItem {
   id: string;
   title: string;
@@ -79,10 +77,15 @@ function categorizeRSSItem(title: string, categories?: string[]): 'policy' | 're
 
 // Fetch RSS feed directly
 async function fetchRSSFeed(count: number, category: string | null): Promise<FeedItem[]> {
-  const rssUrl = process.env.FRESHRSS_RSS_URL || 'http://192.168.1.133:8082/i/?a=rss';
+  const rssUrl = process.env.FRESHRSS_RSS_URL;
+
+  if (!rssUrl) {
+    throw new Error('FRESHRSS_RSS_URL not configured');
+  }
 
   try {
-    const feed = await rssParser.parseURL(rssUrl);
+    const parser = new Parser();
+    const feed = await parser.parseURL(rssUrl);
 
     const items: FeedItem[] = (feed.items || []).map((item, index) => ({
       id: item.guid || `rss-${index}`,
