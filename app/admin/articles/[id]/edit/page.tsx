@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import {
   Save,
@@ -30,8 +30,12 @@ interface ArticleFormData {
   scheduled_for: string;
 }
 
-export default function NewArticlePage() {
+export default function EditArticlePage() {
   const router = useRouter();
+  const params = useParams();
+  const articleId = params.id as string;
+
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showScheduler, setShowScheduler] = useState(false);
   const [tagInput, setTagInput] = useState('');
@@ -50,7 +54,49 @@ export default function NewArticlePage() {
     scheduled_for: '',
   });
 
-  // Auto-generate slug from title
+  // Fetch existing article data
+  useEffect(() => {
+    async function fetchArticle() {
+      try {
+        console.log('📥 Fetching article:', articleId);
+        const response = await fetch(`/api/admin/articles/${articleId}`);
+        const data = await response.json();
+
+        if (response.ok && data.article) {
+          const article = data.article;
+          console.log('✅ Article loaded:', article.title);
+
+          setFormData({
+            title: article.title || '',
+            slug: article.slug || '',
+            content: article.content || '',
+            excerpt: article.summary || '',
+            category: article.category || '',
+            tags: article.tags || [],
+            featured_image_url: article.featured_image_url || '',
+            seo_title: article.meta_title || '',
+            seo_description: article.meta_description || '',
+            status: article.status || 'draft',
+            scheduled_for: article.scheduled_for || '',
+          });
+        } else {
+          console.error('❌ Failed to load article:', data.error);
+          alert(`Failed to load article: ${data.error || 'Unknown error'}`);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching article:', error);
+        alert(`Error loading article: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (articleId) {
+      fetchArticle();
+    }
+  }, [articleId]);
+
+  // Auto-generate slug from title (only for empty slugs)
   useEffect(() => {
     if (formData.title && !formData.slug) {
       const generatedSlug = formData.title
@@ -61,7 +107,7 @@ export default function NewArticlePage() {
     }
   }, [formData.title]);
 
-  // Auto-generate excerpt from content
+  // Auto-generate excerpt from content (only for empty excerpts)
   useEffect(() => {
     if (formData.content && !formData.excerpt) {
       const plainText = formData.content.replace(/<[^>]*>/g, '');
@@ -80,10 +126,10 @@ export default function NewArticlePage() {
         published_at: action === 'publish' ? new Date().toISOString() : null,
       };
 
-      console.log('📤 Sending article payload:', payload);
+      console.log('📤 Updating article:', articleId, payload);
 
-      const response = await fetch('/api/admin/articles', {
-        method: 'POST',
+      const response = await fetch(`/api/admin/articles/${articleId}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -99,12 +145,12 @@ export default function NewArticlePage() {
         alert(`✅ Article ${actionText}!\n\nID: ${data.article?.id}\nSource: ${data.source}`);
         router.push('/admin');
       } else {
-        console.error('❌ Save failed:', data);
-        alert(`❌ Error: ${data.error || 'Failed to save article'}\n\nDetails: ${JSON.stringify(data.details || {}, null, 2)}`);
+        console.error('❌ Update failed:', data);
+        alert(`❌ Error: ${data.error || 'Failed to update article'}\n\nDetails: ${JSON.stringify(data.details || {}, null, 2)}`);
       }
     } catch (error) {
-      console.error('❌ Error saving article:', error);
-      alert(`❌ Failed to save article.\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nCheck browser console for details.`);
+      console.error('❌ Error updating article:', error);
+      alert(`❌ Failed to update article.\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nCheck browser console for details.`);
     } finally {
       setSaving(false);
     }
@@ -140,9 +186,9 @@ export default function NewArticlePage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">New Article</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Edit Article</h1>
               <p className="text-sm text-gray-600 mt-1">
-                {formData.content ? `${formData.content.split(/\s+/).length} words · ${calculateReadTime()} min read` : 'Start writing...'}
+                {formData.content ? `${formData.content.split(/\s+/).length} words · ${calculateReadTime()} min read` : 'Loading...'}
               </p>
             </div>
 
