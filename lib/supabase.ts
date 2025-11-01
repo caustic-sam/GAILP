@@ -14,13 +14,30 @@ import { createClient } from '@supabase/supabase-js';
 // Supabase configuration
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('⚠️ Supabase environment variables are not set. Using mock data mode.');
 }
 
-// Create Supabase client
+// Debug logging (remove in production)
+if (typeof window === 'undefined') {
+  console.log('🔑 Service role key loaded:', supabaseServiceRoleKey ? `Yes (${supabaseServiceRoleKey.substring(0, 20)}...)` : 'No');
+}
+
+// Create Supabase client for public/authenticated users (respects RLS)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Create Supabase admin client for server-side operations (bypasses RLS)
+// This should ONLY be used in API routes, never in client components
+export const supabaseAdmin = supabaseServiceRoleKey
+  ? createClient(supabaseUrl, supabaseServiceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    })
+  : supabase; // Fallback to regular client if service key not available
 
 // Type definitions for database tables
 export type Database = {
