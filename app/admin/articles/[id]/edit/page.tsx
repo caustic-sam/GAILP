@@ -1,18 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import {
   Save,
-  Eye,
   Send,
   Clock,
   Image as ImageIcon,
   Tag,
   Globe,
   X,
-  Calendar,
   Upload,
 } from 'lucide-react';
 
@@ -35,7 +34,6 @@ export default function EditArticlePage() {
   const params = useParams();
   const articleId = params.id as string;
 
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showScheduler, setShowScheduler] = useState(false);
   const [tagInput, setTagInput] = useState('');
@@ -86,8 +84,6 @@ export default function EditArticlePage() {
       } catch (error) {
         console.error('❌ Error fetching article:', error);
         alert(`Error loading article: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -105,7 +101,7 @@ export default function EditArticlePage() {
         .replace(/^-+|-+$/g, '');
       setFormData(prev => ({ ...prev, slug: generatedSlug }));
     }
-  }, [formData.title]);
+  }, [formData.slug, formData.title]);
 
   // Auto-generate excerpt from content (only for empty excerpts)
   useEffect(() => {
@@ -114,7 +110,7 @@ export default function EditArticlePage() {
       const excerpt = plainText.substring(0, 160) + (plainText.length > 160 ? '...' : '');
       setFormData(prev => ({ ...prev, excerpt }));
     }
-  }, [formData.content]);
+  }, [formData.content, formData.excerpt]);
 
   const handleSave = async (action: 'draft' | 'schedule' | 'publish') => {
     setSaving(true);
@@ -314,10 +310,13 @@ export default function EditArticlePage() {
               </label>
               {formData.featured_image_url ? (
                 <div className="relative">
-                  <img
+                  <Image
                     src={formData.featured_image_url}
                     alt="Featured"
+                    width={640}
+                    height={160}
                     className="w-full h-40 object-cover rounded-lg"
+                    unoptimized
                   />
                   <button
                     onClick={() => setFormData(prev => ({ ...prev, featured_image_url: '' }))}
