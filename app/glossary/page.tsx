@@ -40,7 +40,7 @@ export default function GlossaryPage() {
           <div className="flex items-center gap-3 text-gray-600">
             <Search className="w-5 h-5" />
             <p className="text-sm">
-              Browse {glossaryTerms.length} terms across {categories.length} categories. Use your browser's search (Cmd+F / Ctrl+F) to find specific terms.
+              Browse {glossaryTerms.length} terms across {categories.length} categories. Use your browser&apos;s search (Cmd+F / Ctrl+F) to find specific terms.
             </p>
           </div>
         </Card>

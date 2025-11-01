@@ -71,6 +71,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0] - 2025-11-01
+
+### Added
+- FreshRSS regression tests covering API fallback tiers and environment handling to enforce the three-tier feed strategy.
+
+### Changed
+- Simplified the Jest setup polyfills to cooperate with Node's native web APIs, keeping `NextResponse.json` functional during tests.
+- Updated `/api/feeds` to require an explicit `FRESHRSS_RSS_URL` and construct a fresh RSS parser per request, removing hard-coded LAN defaults and making the fallback behavior predictable.
+
+### Fixed
+- Documented `FRESHRSS_RSS_URL` in `.env.example` so local, CI, and production environments include the required fallback configuration.
+
 ## [0.2.1] - 2025-10-31
 
 ### Added

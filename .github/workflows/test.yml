@@ -1,0 +1,148 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, integration/*, feature/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Run tests
+        run: pnpm test:ci
+        env:
+          # Mock environment variables for testing
+          FRESHRSS_API_URL: http://test.freshrss.local/api/greader.php
+          FRESHRSS_API_USERNAME: testuser
+          FRESHRSS_API_PASSWORD: testpass
+          FRESHRSS_RSS_URL: http://test.freshrss.local/feed
+          NODE_ENV: test
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: matrix.node-version == '20.x'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: Build
+        run: pnpm build
+        env:
+          # Production-like build test
+          NODE_ENV: production
+          FRESHRSS_API_URL: http://test.freshrss.local/api/greader.php
+          FRESHRSS_API_USERNAME: testuser
+          FRESHRSS_API_PASSWORD: testpass
+
+  freshrss-tests:
+    name: FreshRSS Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run FreshRSS tests
+        run: pnpm test:freshrss
+        env:
+          FRESHRSS_API_URL: http://test.freshrss.local/api/greader.php
+          FRESHRSS_API_USERNAME: testuser
+          FRESHRSS_API_PASSWORD: testpass
+          FRESHRSS_RSS_URL: http://test.freshrss.local/feed
+          NODE_ENV: test
+
+  validate:
+    name: Full Validation
+    runs-on: ubuntu-latest
+    needs: [test, freshrss-tests]
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run full validation
+        run: pnpm validate
+        env:
+          FRESHRSS_API_URL: http://test.freshrss.local/api/greader.php
+          FRESHRSS_API_USERNAME: testuser
+          FRESHRSS_API_PASSWORD: testpass
+          NODE_ENV: test
+
+      - name: Comment PR with test results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ All tests passed! FreshRSS integration tests successful.'
+            })

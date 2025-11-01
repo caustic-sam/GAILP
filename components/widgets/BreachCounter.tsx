@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/Card';
 import { AlertTriangle, TrendingUp, Shield } from 'lucide-react';
 
 interface BreachStat {
@@ -64,7 +63,7 @@ export function BreachCounter() {
   const currentStat = breachStats[currentIndex];
 
   return (
-    <Card className="p-5 bg-gradient-to-br from-red-50 to-orange-50 border-red-100">
+    <div className="p-6 bg-white/60 backdrop-blur-sm border border-white/40 shadow-lg rounded-xl max-w-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-gray-900">Global Cyber Threats</h3>
         <div className="flex items-center gap-1">
@@ -110,6 +109,6 @@ export function BreachCounter() {
           Real-time cybersecurity statistics
         </p>
       </div>
-    </Card>
+    </div>
   );
 }

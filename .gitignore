@@ -44,3 +44,19 @@ next-env.d.ts
 # OS
 .DS_Store
 Thumbs.db
+**/.DS_Store
+
+# Python (for submodule support)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+*.swp
+*.swo
+*~

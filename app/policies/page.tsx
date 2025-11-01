@@ -63,7 +63,7 @@ export default function PoliciesPage() {
             Coming Soon
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            The World's Digital Policy Library
+            The World&apos;s Digital Policy Library
           </h2>
           <p className="text-lg text-gray-600 mb-8">
             Access the most comprehensive database of digital policies, regulations, and frameworks
@@ -118,7 +118,7 @@ export default function PoliciesPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <StatusDot status={policy.status as any} />
+                      <StatusDot status={policy.status as 'draft' | 'in_force' | 'adopted'} />
                       <span className="text-xs font-medium text-gray-500 uppercase">
                         {policy.status.replace('_', ' ')}
                       </span>

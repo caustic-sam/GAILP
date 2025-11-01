@@ -59,7 +59,7 @@ export default function ArticlesPage() {
             Your Daily Source for Policy Intelligence
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            We're building a comprehensive platform for expert analysis, breaking news, and deep dives
+            We&apos;re building a comprehensive platform for expert analysis, breaking news, and deep dives
             into the policies shaping our digital future. Subscribe to be notified when we launch.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

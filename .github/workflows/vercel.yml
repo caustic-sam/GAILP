@@ -1,0 +1,111 @@
+name: Vercel Deployment
+
+on:
+  push:
+    branches: [main]
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  pre-deploy-tests:
+    name: Pre-Deployment Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run validation suite
+        run: pnpm validate
+        env:
+          # Use test credentials for validation
+          FRESHRSS_API_URL: http://test.freshrss.local/api/greader.php
+          FRESHRSS_API_USERNAME: testuser
+          FRESHRSS_API_PASSWORD: testpass
+          NODE_ENV: test
+
+      - name: FreshRSS integration tests
+        run: pnpm test:freshrss --coverage
+        env:
+          FRESHRSS_API_URL: http://test.freshrss.local/api/greader.php
+          FRESHRSS_API_USERNAME: testuser
+          FRESHRSS_API_PASSWORD: testpass
+          FRESHRSS_RSS_URL: http://test.freshrss.local/feed
+          NODE_ENV: test
+
+  deploy-production:
+    name: Deploy to Vercel Production
+    runs-on: ubuntu-latest
+    needs: pre-deploy-tests
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          # Production FreshRSS configuration (from Vercel secrets)
+          FRESHRSS_API_URL: ${{ secrets.FRESHRSS_API_URL }}
+          FRESHRSS_API_USERNAME: ${{ secrets.FRESHRSS_API_USERNAME }}
+          FRESHRSS_API_PASSWORD: ${{ secrets.FRESHRSS_API_PASSWORD }}
+          FRESHRSS_RSS_URL: ${{ secrets.FRESHRSS_RSS_URL }}
+
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> $GITHUB_OUTPUT
+
+      - name: Post-deployment smoke test
+        run: |
+          echo "Testing deployment at ${{ steps.deploy.outputs.url }}"
+          # Test main page
+          curl -f -s "${{ steps.deploy.outputs.url }}" > /dev/null
+          # Test feeds API (should fall back to mock data if FreshRSS unreachable)
+          curl -f -s "${{ steps.deploy.outputs.url }}/api/feeds?count=5" > /dev/null
+          echo "✅ Smoke tests passed"
+
+      - name: Comment on commit with deployment URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: `🚀 Deployed to production: ${{ steps.deploy.outputs.url }}\n\n✅ All tests passed\n✅ FreshRSS integration tests successful`
+            })

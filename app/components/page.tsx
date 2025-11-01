@@ -181,7 +181,7 @@ export default function ComponentGallery() {
                     </div>
                     <h4 className="font-semibold text-gray-900 mb-2">EU AI Act</h4>
                     <p className="text-gray-600 text-sm mb-4">
-                      New compliance requirements for large online platforms under Europe's largest digital regulation.
+                      New compliance requirements for large online platforms under Europe&apos;s largest digital regulation.
                     </p>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">European Union</span>

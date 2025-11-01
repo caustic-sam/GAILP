@@ -23,7 +23,6 @@ export function NISTAssistant({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isOnline, setIsOnline] = useState<boolean | null>(null); // null = checking, true = online, false = offline
 
   // Check API health on mount
@@ -116,19 +115,17 @@ export function NISTAssistant({
 
   if (compact) {
     return (
-      <div onClick={() => setIsExpanded(true)} className="cursor-pointer">
-        <Card className="p-4 hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
-              <Shield className="w-5 h-5 text-indigo-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs text-gray-500 font-medium mb-1">NIST ASSISTANT</div>
-              <p className="text-xs text-gray-600">Ask about NIST cybersecurity standards</p>
-            </div>
+      <Card className="p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+            <Shield className="w-5 h-5 text-indigo-600" />
           </div>
-        </Card>
-      </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs text-gray-500 font-medium mb-1">NIST ASSISTANT</div>
+            <p className="text-xs text-gray-600">Ask about NIST cybersecurity standards</p>
+          </div>
+        </div>
+      </Card>
     );
   }
 
