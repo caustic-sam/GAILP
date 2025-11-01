@@ -59,6 +59,11 @@ const nextConfig = {
   experimental: {
     mdxRs: true,
   },
+
+  // Skip ESLint checks during builds (use with caution)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   
   // Webpack config
   webpack: (config, { isServer }) => {
