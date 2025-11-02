@@ -235,13 +235,13 @@ export default function AdminDashboard() {
                   articles.map((article) => (
                     <tr key={article.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
+                        <Link href={`/admin/articles/${article.id}/edit`} className="flex items-center gap-3 group">
                           {getStatusIcon(article.status)}
                           <div>
-                            <p className="font-medium text-gray-900">{article.title}</p>
+                            <p className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{article.title}</p>
                             <p className="text-sm text-gray-500">/{article.slug}</p>
                           </div>
-                        </div>
+                        </Link>
                       </td>
                       <td className="px-6 py-4">
                         {getStatusBadge(article.status)}

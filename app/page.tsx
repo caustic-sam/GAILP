@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  Globe, Mail, Twitter, Linkedin, Rss, ArrowRight, 
-  MessageCircle, Clock, Heart, Play, Send, 
-  ThumbsUp, Menu, X, FileStack, BarChart3, Network 
+import React, { useState, useEffect } from 'react';
+import {
+  Globe, Mail, Twitter, Linkedin, Rss, ArrowRight,
+  MessageCircle, Clock, Heart, Play, Send,
+  ThumbsUp, Menu, X, FileStack, BarChart3, Network
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -14,9 +14,36 @@ import { mockPolicies, mockArticles, mockThoughts, mockVideos, quickStats } from
 import { TermOfDay } from '@/components/widgets/TermOfDay';
 import { NISTAssistant } from '@/components/widgets/NISTAssistant';
 import { BreachCounter } from '@/components/widgets/BreachCounter';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [publishedArticles, setPublishedArticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    loadPublishedArticles();
+  }, []);
+
+  async function loadPublishedArticles() {
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('status', 'published')
+        .not('published_at', 'is', null)
+        .order('published_at', { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      setPublishedArticles(data || []);
+    } catch (error) {
+      console.error('Error loading articles:', error);
+    }
+  }
 
   const navItems = [
     { id: 'home', label: 'Policy Updates', href: '/' },
@@ -167,7 +194,7 @@ export default function HomePage() {
                   <div className="flex items-start gap-3">
                     <StatusDot status={policy.status} />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1 hover:text-blue-600 cursor-pointer">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-1 hover:text-blue-600 cursor-pointer">
                         {policy.title}
                       </h3>
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">
@@ -258,33 +285,39 @@ export default function HomePage() {
           <div className="lg:col-span-6">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Expert Analysis</h2>
-                <button className="text-blue-600 text-sm font-medium hover:text-blue-700">View All Posts</button>
+                <h2 className="text-2xl font-bold text-gray-900">Expert Analysis</h2>
+                <a href="/admin" className="text-blue-600 text-sm font-medium hover:text-blue-700">
+                  Admin →
+                </a>
               </div>
             </div>
 
             <div className="space-y-6">
-              {mockArticles.slice(0, 1).map((article, idx) => (
+              {(publishedArticles.length > 0 ? publishedArticles : mockArticles).slice(0, 1).map((article, idx) => (
                 <Card key={article.id} hover className="overflow-hidden">
-                  <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-sm">
-                    Article Image Placeholder
-                  </div>
+                  {article.featured_image_url ? (
+                    <img src={article.featured_image_url} alt={article.title} className="w-full h-48 object-cover" />
+                  ) : (
+                    <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-sm">
+                      {article.title}
+                    </div>
+                  )}
                   <div className="p-5">
                     <div className="flex items-center gap-3 mb-3">
-                      <Avatar size="md">{article.author.avatar}</Avatar>
+                      <Avatar size="md">MS</Avatar>
                       <div>
-                        <div className="font-semibold text-sm text-gray-900">{article.author.name}</div>
-                        <div className="text-xs text-gray-500">{article.author.title}</div>
+                        <div className="font-semibold text-sm text-gray-900">malSicario</div>
+                        <div className="text-xs text-gray-500">Digital Policy Analyst</div>
                       </div>
                     </div>
 
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer">
                       {article.title}
                     </h3>
 
                     {idx === 0 && (
                       <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-                        {article.summary}
+                        {article.excerpt || article.summary || article.content?.substring(0, 150)}
                       </p>
                     )}
 
@@ -292,11 +325,11 @@ export default function HomePage() {
                       <div className="flex items-center gap-4 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {article.readTime}
+                          {article.readTime || '5 min'}
                         </span>
-                        <span>{article.date}</span>
+                        <span>{article.published_at ? new Date(article.published_at).toLocaleDateString() : article.date}</span>
                         <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
-                          {article.category}
+                          {article.category || 'Analysis'}
                         </span>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-gray-500">

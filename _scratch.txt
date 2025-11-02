@@ -7,3 +7,6 @@ git commit -m "Initial commit: GAILP v0.0.1
 - Component library and design system
 - Docker configuration for production
 - Comprehensive documentation"
+
+
+lsof -ti:3000 | xargs kill -
