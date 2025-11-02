@@ -7,7 +7,6 @@
 
 import { readFile } from 'fs/promises';
 import axios from 'axios';
-import { glob } from 'glob';
 
 const INSTANCE_URL = process.env.CONFLUENCE_BASE_URL || process.env.ATLASSIAN_INSTANCE_URL || 'https://cortexaillc.atlassian.net';
 const USERNAME = process.env.CONFLUENCE_USERNAME || process.env.ATLASSIAN_USERNAME || 'malsicario@malsicario.com';

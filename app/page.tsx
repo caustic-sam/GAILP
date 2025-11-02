@@ -150,7 +150,7 @@ export default function HomePage() {
       <section className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] text-white relative overflow-hidden">
         {/* Globe as backdrop - absolute positioning behind content */}
         <div className="absolute inset-0 flex items-center justify-start pointer-events-none">
-          <div className="transform scale-[2.5] opacity-40 ml-[468px]">
+          <div className="transform scale-[2.5] opacity-40 ml-[393px]">
             <AnimatedGlobe />
           </div>
         </div>
