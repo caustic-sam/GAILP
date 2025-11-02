@@ -120,13 +120,33 @@ export default function HomePage() {
             </nav>
           )}
         </div>
+
+        {/* Secondary Navigation Bar - Light Grey */}
+        <div className="bg-gray-200 border-t border-gray-300">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex items-center justify-end h-12 gap-6">
+              <a href="/" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                Home
+              </a>
+              <a href="/articles" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                Articles
+              </a>
+              <a href="/policies" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                Policies
+              </a>
+              <a href="/glossary" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                Glossary
+              </a>
+            </div>
+          </div>
+        </div>
       </header>
 
       {/* Hero Banner */}
       <section className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] text-white relative overflow-hidden">
         {/* Globe as backdrop - absolute positioning behind content */}
         <div className="absolute inset-0 flex items-center justify-start pointer-events-none">
-          <div className="transform scale-[2.5] opacity-20 -ml-32">
+          <div className="transform scale-[2.5] opacity-30 ml-[218px]">
             <AnimatedGlobe />
           </div>
         </div>

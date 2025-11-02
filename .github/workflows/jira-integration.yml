@@ -1,0 +1,116 @@
+name: Jira Integration
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, closed]
+  push:
+    branches:
+      - main
+
+jobs:
+  update-jira:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Extract Jira Issue Key
+        id: jira
+        run: |
+          # Extract GAILP-XXX from PR title or branch name
+          ISSUE_FROM_TITLE=$(echo "${{ github.event.pull_request.title }}" | grep -oP 'GAILP-\d+' | head -1 || echo "")
+          ISSUE_FROM_BRANCH=$(echo "${{ github.head_ref }}" | grep -oP 'GAILP-\d+' | head -1 || echo "")
+          ISSUE="${ISSUE_FROM_TITLE:-$ISSUE_FROM_BRANCH}"
+          echo "issue=$ISSUE" >> $GITHUB_OUTPUT
+          echo "Found issue: $ISSUE"
+
+      - name: Update Jira Issue Status
+        if: steps.jira.outputs.issue != ''
+        uses: atlassian/gajira-transition@v3
+        with:
+          issue: ${{ steps.jira.outputs.issue }}
+          transition: ${{ github.event.action == 'closed' && github.event.pull_request.merged == true && 'Done' || github.event.action == 'ready_for_review' && 'In Review' || 'In Progress' }}
+        env:
+          JIRA_BASE_URL: https://cortexaillc.atlassian.net
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+      - name: Add PR Link to Jira
+        if: steps.jira.outputs.issue != '' && github.event.action == 'opened'
+        run: |
+          curl -X POST \
+            -u "${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "https://cortexaillc.atlassian.net/rest/api/3/issue/${{ steps.jira.outputs.issue }}/comment" \
+            -d "{
+              \"body\": {
+                \"type\": \"doc\",
+                \"version\": 1,
+                \"content\": [{
+                  \"type\": \"paragraph\",
+                  \"content\": [{
+                    \"type\": \"text\",
+                    \"text\": \"Pull Request opened: ${{ github.event.pull_request.html_url }}\"
+                  }]
+                }]
+              }
+            }"
+
+      - name: Comment on PR
+        if: steps.jira.outputs.issue != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🔗 Linked to Jira: [GAILP-${{ steps.jira.outputs.issue }}](https://cortexaillc.atlassian.net/browse/${{ steps.jira.outputs.issue }})'
+            })
+
+  link-commits:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Process commits
+        run: |
+          # Get commit messages from this push
+          git log --format="%s|%H" ${{ github.event.before }}..${{ github.event.after }} | while IFS='|' read -r message hash; do
+            # Extract GAILP-XXX from commit message
+            ISSUE=$(echo "$message" | grep -oP 'GAILP-\d+' | head -1 || echo "")
+
+            if [ -n "$ISSUE" ]; then
+              echo "Found issue $ISSUE in commit $hash"
+
+              # Add commit link to Jira issue
+              curl -X POST \
+                -u "${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}" \
+                -H "Content-Type: application/json" \
+                "https://cortexaillc.atlassian.net/rest/api/3/issue/$ISSUE/comment" \
+                -d "{
+                  \"body\": {
+                    \"type\": \"doc\",
+                    \"version\": 1,
+                    \"content\": [{
+                      \"type\": \"paragraph\",
+                      \"content\": [{
+                        \"type\": \"text\",
+                        \"text\": \"Commit: $message\"
+                      }, {
+                        \"type\": \"text\",
+                        \"text\": \" \"
+                      }, {
+                        \"type\": \"text\",
+                        \"text\": \"${{ github.server_url }}/${{ github.repository }}/commit/$hash\",
+                        \"marks\": [{\"type\": \"link\", \"attrs\": {\"href\": \"${{ github.server_url }}/${{ github.repository }}/commit/$hash\"}}]
+                      }]
+                    }]
+                  }
+                }" || echo "Failed to update $ISSUE"
+            fi
+          done
