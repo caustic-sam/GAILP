@@ -17,6 +17,7 @@ import { BreachCounter } from '@/components/widgets/BreachCounter';
 import { FeedCard } from '@/components/FeedCard';
 import { GlobalFeedStream } from '@/components/GlobalFeedStream';
 import { AnimatedGlobe } from '@/components/AnimatedGlobe';
+import { RightSidebar } from '@/components/RightSidebar';
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,12 +27,12 @@ export default function HomePage() {
   };
 
   const navItems = [
-    { id: 'home', label: 'Policy Updates', href: '/' },
-    { id: 'analysis', label: 'Expert Blog', href: '/articles' },
+    { id: 'home', label: 'Policy Updates', href: '/policy-updates' },
+    { id: 'analysis', label: 'Expert Blog', href: '/blog' },
     { id: 'videos', label: 'Live Hub', href: '/videos' },
     { id: 'policies', label: 'Research', href: '/policies' },
     { id: 'components', label: 'Components', href: '/components' },
-    { id: 'about', label: 'About', href: '#' }
+    { id: 'about', label: 'About', href: '/about' }
   ];
 
   const resourceCards = [
@@ -59,7 +60,10 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Right Sidebar */}
+      <RightSidebar />
+
       {/* Header */}
       <header className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6">
@@ -146,7 +150,7 @@ export default function HomePage() {
       <section className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] text-white relative overflow-hidden">
         {/* Globe as backdrop - absolute positioning behind content */}
         <div className="absolute inset-0 flex items-center justify-start pointer-events-none">
-          <div className="transform scale-[2.5] opacity-30 ml-[218px]">
+          <div className="transform scale-[2.5] opacity-40 ml-[468px]">
             <AnimatedGlobe />
           </div>
         </div>
@@ -218,7 +222,7 @@ export default function HomePage() {
                   <div className="flex items-start gap-3">
                     <StatusDot status={policy.status} />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1 hover:text-blue-600 cursor-pointer">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-1 hover:text-blue-600 cursor-pointer">
                         {policy.title}
                       </h3>
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">
