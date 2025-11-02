@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Globe, Mail, Twitter, Linkedin, Rss, ArrowRight,
   MessageCircle, Clock, Heart, Play, Send,
-  ThumbsUp, Menu, X, FileStack, BarChart3, Network, RefreshCw
+  ThumbsUp, FileStack, BarChart3, Network, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -13,27 +13,15 @@ import { StatusDot } from '@/components/ui/StatusDot';
 import { mockPolicies, mockArticles, mockThoughts, mockVideos, quickStats } from '@/lib/mockData';
 import { TermOfDay } from '@/components/widgets/TermOfDay';
 import { NISTAssistant } from '@/components/widgets/NISTAssistant';
-import { BreachCounter } from '@/components/widgets/BreachCounter';
+import { DataBoxes } from '@/components/widgets/DataBoxes';
 import { FeedCard } from '@/components/FeedCard';
 import { GlobalFeedStream } from '@/components/GlobalFeedStream';
 import { AnimatedGlobe } from '@/components/AnimatedGlobe';
-import { RightSidebar } from '@/components/RightSidebar';
 
 export default function HomePage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const handleRefreshAll = () => {
     window.location.reload();
   };
-
-  const navItems = [
-    { id: 'home', label: 'Policy Updates', href: '/policy-updates' },
-    { id: 'analysis', label: 'Expert Blog', href: '/blog' },
-    { id: 'videos', label: 'Live Hub', href: '/videos' },
-    { id: 'policies', label: 'Research', href: '/policies' },
-    { id: 'components', label: 'Components', href: '/components' },
-    { id: 'about', label: 'About', href: '/about' }
-  ];
 
   const resourceCards = [
     {
@@ -61,91 +49,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      {/* Right Sidebar */}
-      <RightSidebar />
-
-      {/* Header */}
-      <header className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <button className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-              <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center">
-                <Globe className="w-6 h-6 text-blue-600" />
-              </div>
-              <div className="text-left">
-                <div className="text-white font-bold text-base leading-tight">World Papers</div>
-                <div className="text-blue-200 text-xs">Global Policy Analysis</div>
-              </div>
-            </button>
-
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-1">
-              {navItems.map((item) => (
-                <a
-                  key={item.id}
-                  href={item.href}
-                  className="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-blue-100 hover:text-white hover:bg-white/5"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-
-            {/* CTA Button */}
-            <div className="hidden md:block">
-              <Button variant="primary" size="sm">Subscribe</Button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-white hover:bg-white/10 transition-colors"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-
-          {/* Mobile Nav */}
-          {mobileMenuOpen && (
-            <nav className="md:hidden py-4 space-y-1 border-t border-white/10">
-              {navItems.map((item) => (
-                <a
-                  key={item.id}
-                  href={item.href}
-                  className="block w-full px-4 py-2 rounded-lg text-left text-sm font-medium transition-colors text-blue-100 hover:text-white hover:bg-white/5"
-                >
-                  {item.label}
-                </a>
-              ))}
-              <div className="pt-2">
-                <Button variant="primary" size="sm" className="w-full">Subscribe</Button>
-              </div>
-            </nav>
-          )}
-        </div>
-
-        {/* Secondary Navigation Bar - Light Grey */}
-        <div className="bg-gray-200 border-t border-gray-300">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center justify-end h-12 gap-6">
-              <a href="/" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
-                Home
-              </a>
-              <a href="/articles" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
-                Articles
-              </a>
-              <a href="/policies" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
-                Policies
-              </a>
-              <a href="/glossary" className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
-                Glossary
-              </a>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Banner */}
       <section className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] text-white relative overflow-hidden">
         {/* Globe as backdrop - absolute positioning behind content */}
@@ -178,9 +81,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Breach Counter */}
+            {/* Right: Data Boxes */}
             <div className="hidden lg:block relative z-10">
-              <BreachCounter />
+              <DataBoxes />
             </div>
           </div>
         </div>
@@ -321,7 +224,7 @@ export default function HomePage() {
             <div className="space-y-6">
               {mockArticles.slice(0, 1).map((article, idx) => (
                 <Card key={article.id} hover className="overflow-hidden">
-                  <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-sm">
+                  <div className="w-full h-48 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] flex items-center justify-center text-blue-100 text-sm">
                     Article Image Placeholder
                   </div>
                   <div className="p-5">
@@ -383,7 +286,7 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {mockVideos.map(video => (
                   <div key={video.id} className="group cursor-pointer">
-                    <div className="relative rounded-lg overflow-hidden mb-2 bg-gradient-to-br from-blue-600 to-blue-800 h-36 flex items-center justify-center">
+                    <div className="relative rounded-lg overflow-hidden mb-2 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] h-36 flex items-center justify-center">
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
                         <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
                           <Play className="w-6 h-6 text-blue-600 ml-1" />

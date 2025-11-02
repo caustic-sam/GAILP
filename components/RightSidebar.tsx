@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
 
 export function RightSidebar() {
   return (
-    <aside className="hidden xl:block fixed right-0 top-0 w-48 h-screen overflow-y-auto bg-gradient-to-b from-[#1e3a5f] to-[#2d5a8f] border-l border-blue-900/20 z-40">
+    <aside className="hidden xl:block fixed right-0 top-0 w-48 h-screen overflow-y-auto bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-l border-blue-900/20 z-40">
       <nav className="p-4 pt-20">
         <h3 className="text-xs font-semibold text-blue-200 uppercase tracking-wider mb-3">
           Quick Nav
