@@ -241,7 +241,9 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-3">
                           {getStatusIcon(article.status)}
                           <div>
-                            <p className="font-medium text-gray-900">{article.title}</p>
+                            <Link href={`/admin/articles/${article.id}/edit`} className="font-medium text-gray-900 hover:text-blue-600">
+                              {article.title}
+                            </Link>
                             <p className="text-sm text-gray-500">/{article.slug}</p>
                           </div>
                         </div>

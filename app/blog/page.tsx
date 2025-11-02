@@ -52,6 +52,7 @@ export default function BlogPage() {
 
   const getExcerpt = (article: Article) => {
     if (article.excerpt) return article.excerpt;
+    if (!article.content) return 'No content available...';
     // Fallback: extract first 150 characters from content
     const plainText = article.content.replace(/<[^>]*>/g, '');
     return plainText.substring(0, 150) + '...';

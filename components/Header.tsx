@@ -11,7 +11,6 @@ const navItems = [
   { id: 'analysis', label: 'Expert Blog', href: '/blog' },
   { id: 'videos', label: 'Live Hub', href: '/videos' },
   { id: 'policies', label: 'Research', href: '/policies' },
-  { id: 'components', label: 'Components', href: '/components' },
   { id: 'about', label: 'About', href: '/about' }
 ];
 
