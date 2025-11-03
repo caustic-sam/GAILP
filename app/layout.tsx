@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
-import Navigation from '@/components/Navigation'
+import { Header } from '@/components/Header'
+import { RightSidebar } from '@/components/RightSidebar'
 
 export const metadata: Metadata = {
   title: 'GAILP - Global AI & Digital Policy Hub',
@@ -18,9 +19,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <Navigation />
-        <main className="pt-16">{children}</main>
+      <body className="antialiased bg-gray-50">
+        <Header />
+        <RightSidebar />
+        {children}
       </body>
     </html>
   )
