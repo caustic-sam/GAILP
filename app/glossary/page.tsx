@@ -4,6 +4,7 @@ import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { BookOpen, Search } from 'lucide-react';
 import { glossaryTerms, getCategories } from '@/data/glossary-terms';
+import { PageHero } from '@/components/PageHero';
 
 export default function GlossaryPage() {
   const categories = getCategories();
@@ -16,22 +17,19 @@ export default function GlossaryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center">
-              <BookOpen className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Digital Policy Glossary</h1>
-              <p className="text-blue-100">
-                {glossaryTerms.length} terms covering digital identity, blockchain, cybersecurity, and compliance
-              </p>
-            </div>
+      <PageHero title="Digital Policy Glossary">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center">
+            <BookOpen className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Digital Policy Glossary</h1>
+            <p className="text-blue-100 text-lg">
+              {glossaryTerms.length} terms covering digital identity, blockchain, cybersecurity, and compliance
+            </p>
           </div>
         </div>
-      </div>
+      </PageHero>
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -104,14 +102,14 @@ export default function GlossaryPage() {
         ))}
 
         {/* Footer CTA */}
-        <Card className="p-8 text-center bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="p-8 text-center bg-white border-gray-200">
           <h3 className="text-xl font-bold text-gray-900 mb-2">Want to contribute?</h3>
           <p className="text-gray-600 mb-4">
             Help us expand this glossary by suggesting new terms or improvements.
           </p>
           <a
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] hover:opacity-90 text-white font-medium rounded-lg transition-opacity"
           >
             Back to Home
           </a>
