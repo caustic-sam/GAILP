@@ -7,6 +7,7 @@
 
 import { readFile } from 'fs/promises';
 import axios from 'axios';
+import { Remarkable } from 'remarkable';
 
 const INSTANCE_URL = process.env.CONFLUENCE_BASE_URL || process.env.ATLASSIAN_INSTANCE_URL || 'https://cortexaillc.atlassian.net';
 const USERNAME = process.env.CONFLUENCE_USERNAME || process.env.ATLASSIAN_USERNAME || 'malsicario@malsicario.com';
@@ -46,44 +47,25 @@ const DOC_MAPPING: Record<string, string> = {
   'CHANGELOG.md': 'Changelog'
 };
 
+// Initialize markdown parser with safe HTML rendering
+const md = new Remarkable({
+  html: true,
+  breaks: true,
+  typographer: true,
+});
+
 function markdownToConfluenceStorage(markdown: string): string {
-  // Basic markdown to Confluence storage format conversion
-  // This is simplified - for production, use a proper converter library
+  // Use Remarkable library for safe markdown to HTML conversion
+  let html = md.render(markdown);
 
-  let html = markdown;
+  // Post-process for Confluence-specific macros
+  // Convert code blocks to Confluence code macro
+  html = html.replace(/<pre><code class="language-(\w+)">([\s\S]+?)<\/code><\/pre>/g,
+    '<ac:structured-macro ac:name="code"><ac:parameter ac:name="language">$1</ac:parameter><ac:plain-text-body><![CDATA[$2]]></ac:plain-text-body></ac:structured-macro>');
 
-  // Convert headers
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
-
-  // Convert bold
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
-
-  // Convert italic
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  html = html.replace(/_(.+?)_/g, '<em>$1</em>');
-
-  // Convert inline code
-  html = html.replace(/`(.+?)`/g, '<code>$1</code>');
-
-  // Convert code blocks
-  html = html.replace(/```(\w+)?\n([\s\S]+?)```/g, '<ac:structured-macro ac:name="code"><ac:parameter ac:name="language">$1</ac:parameter><ac:plain-text-body><![CDATA[$2]]></ac:plain-text-body></ac:structured-macro>');
-
-  // Convert links
-  html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
-
-  // Convert lists
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>');
-
-  // Wrap consecutive <li> in <ul>
-  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-
-  // Convert paragraphs
-  html = html.replace(/^(?!<[hul]|<ac:)(.+)$/gm, '<p>$1</p>');
+  // Convert plain code blocks
+  html = html.replace(/<pre><code>([\s\S]+?)<\/code><\/pre>/g,
+    '<ac:structured-macro ac:name="code"><ac:plain-text-body><![CDATA[$1]]></ac:plain-text-body></ac:structured-macro>');
 
   return html;
 }

@@ -188,14 +188,13 @@ export async function GET(request: Request) {
 // POST: Create new article
 export async function POST(request: Request) {
   try {
-    console.log('📥 POST /api/admin/articles - Received request');
-
     const body = (await request.json()) as ArticleCreatePayload;
-    console.log('📋 Request body:', {
-      title: body.title,
-      slug: body.slug,
+    // Sanitized logging - only log metadata, never content
+    console.log('📥 POST /api/admin/articles', {
+      hasTitle: !!body.title,
+      hasSlug: !!body.slug,
       contentLength: body.content?.length,
-      status: body.status,
+      status: body.status || 'draft',
     });
 
     // Validate required fields
@@ -215,15 +214,15 @@ export async function POST(request: Request) {
     const wordsPerMinute = 200;
     const wordCount = body.content.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / wordsPerMinute);
-    console.log('📊 Calculated read time:', readTime, 'minutes');
 
     // Check if Supabase is configured
     if (!isSupabaseConfigured()) {
       console.log('📝 Mock save mode (Supabase not configured)');
 
       // Simulate successful save
+      const mockId = Math.random().toString(36).substring(2, 11);
       const mockArticle = {
-        id: Math.random().toString(36).substring(2, 11),
+        id: mockId,
         ...body,
         read_time: readTime,
         view_count: 0,
@@ -233,7 +232,7 @@ export async function POST(request: Request) {
         author_name: 'Admin',
       };
 
-      console.log('✅ Mock article created:', mockArticle.id);
+      console.log('✅ Mock article created:', mockId);
 
       return NextResponse.json({
         article: mockArticle,

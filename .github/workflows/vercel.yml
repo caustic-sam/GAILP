@@ -70,7 +70,7 @@ jobs:
           version: 8
 
       - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
+        run: pnpm add -g vercel@37.17.3
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
