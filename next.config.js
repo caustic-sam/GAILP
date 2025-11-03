@@ -16,7 +16,7 @@ const nextConfig = {
   // MDX support
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   
-  // Headers for security
+  // Comprehensive security headers
   async headers() {
     return [
       {
@@ -27,6 +27,10 @@ const nextConfig = {
             value: 'on'
           },
           {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
+          {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN'
           },
@@ -35,8 +39,20 @@ const nextConfig = {
             value: 'nosniff'
           },
           {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin'
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co https://vercel.live; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
           },
         ],
       },
