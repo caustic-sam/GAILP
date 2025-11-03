@@ -132,29 +132,35 @@ export default function HomePage() {
 
             <div className="space-y-4">
               {mockPolicies.map(policy => (
-                <Card key={policy.id} hover className="p-4">
-                  <div className="flex items-start gap-3">
-                    <StatusDot status={policy.status} />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-gray-900 mb-1 hover:text-blue-600 cursor-pointer">
-                        {policy.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                        {policy.summary}
-                      </p>
-                      <div className="flex items-center gap-3 text-xs text-gray-500">
-                        <span>{policy.date}</span>
-                        <span>•</span>
-                        <span>{policy.category}</span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle className="w-3 h-3" />
-                          {policy.comments}
-                        </span>
+                <button
+                  key={policy.id}
+                  onClick={() => showComingSoon('Policy Details')}
+                  className="w-full text-left"
+                >
+                  <Card hover className="p-4 border-2 border-orange-500 hover:border-orange-600 hover:bg-orange-50 transition-all">
+                    <div className="flex items-start gap-3">
+                      <StatusDot status={policy.status} />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-1 hover:text-orange-600 cursor-pointer">
+                          {policy.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                          {policy.summary}
+                        </p>
+                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                          <span>{policy.date}</span>
+                          <span>•</span>
+                          <span>{policy.category}</span>
+                          <span>•</span>
+                          <span className="flex items-center gap-1">
+                            <MessageCircle className="w-3 h-3" />
+                            {policy.comments}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </button>
               ))}
             </div>
 
