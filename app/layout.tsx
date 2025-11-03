@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from 'next'
 import '../styles/globals.css'
 import { Header } from '@/components/Header'
@@ -25,6 +26,7 @@ export default function RootLayout({
           <Header />
           <RightSidebar />
           {children}
+          <Analytics />
         </AuthProvider>
       </body>
     </html>
