@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { Globe, Menu, X, Settings, User, LogOut, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
+import { ComingSoonModal } from '@/components/ui/ComingSoonModal';
+import { useComingSoon } from '@/hooks/useComingSoon';
 
 const navItems = [
   { id: 'home', label: 'Policy Updates', href: '/policy-updates' },
@@ -21,6 +23,7 @@ export function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const { user, signOut } = useAuth();
+  const { isOpen, feature, showComingSoon, closeModal } = useComingSoon();
 
   return (
     <header className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20 sticky top-0 z-50">
@@ -104,7 +107,9 @@ export function Header() {
                     Sign In
                   </Button>
                 </Link>
-                <Button variant="primary" size="sm">Subscribe</Button>
+                <Button variant="coming-soon" size="sm" onClick={() => showComingSoon('Newsletter Subscription')}>
+                  Subscribe
+                </Button>
               </>
             )}
           </div>
@@ -150,11 +155,16 @@ export function Header() {
               <span>Studio</span>
             </Link>
             <div className="pt-2">
-              <Button variant="primary" size="sm" className="w-full">Subscribe</Button>
+              <Button variant="coming-soon" size="sm" className="w-full" onClick={() => showComingSoon('Newsletter Subscription')}>
+                Subscribe
+              </Button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Coming Soon Modal */}
+      <ComingSoonModal isOpen={isOpen} onClose={closeModal} feature={feature} />
     </header>
   );
 }

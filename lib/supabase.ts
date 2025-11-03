@@ -21,11 +21,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('⚠️ Supabase environment variables are not set. Using mock data mode.');
 }
 
-// Debug logging (remove in production)
-if (typeof window === 'undefined') {
-  console.log('🔑 Service role key loaded:', supabaseServiceRoleKey ? `Yes (${supabaseServiceRoleKey.substring(0, 20)}...)` : 'No');
-}
-
 // Create Supabase client for public/authenticated users (respects RLS)
 const FALLBACK_SUPABASE_URL = 'https://placeholder.supabase.co';
 const FALLBACK_SUPABASE_ANON_KEY = 'public-anon-key';

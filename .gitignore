@@ -63,3 +63,7 @@ __pycache__/
 
 # Local research sandbox (kept outside repo and deployments)
 NIST_LLM/
+
+# Environment variables (contains secrets)
+.env.local
+.env.*.local

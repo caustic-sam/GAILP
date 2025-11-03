@@ -5,14 +5,21 @@ import React from 'react';
 import Link from 'next/link';
 import { RightSidebar } from '@/components/RightSidebar';
 import { getFreshRSSClient, FreshRSSClient, FreshRSSItem } from '@/lib/freshrss';
+import { WorldClocks } from '@/components/WorldClocks';
 
 
 export default async function PolicyPulsePage() {
   const client = getFreshRSSClient();
   let items: FreshRSSItem[] = [];
+
   if (client) {
-    // Fetch more items to ensure enough headlines per category
-    items = await client.getItems({ count: 60, excludeRead: false });
+    try {
+      // Fetch more items to ensure enough headlines per category
+      items = await client.getItems({ count: 60, excludeRead: false });
+    } catch (error) {
+      console.error('Failed to fetch FreshRSS items:', error);
+      // Continue with empty items array - page will show "No headlines available"
+    }
   }
   // --- Scarecrow categorization logic ---
   const CATEGORIES = [
@@ -58,8 +65,14 @@ export default async function PolicyPulsePage() {
 
   return (
     <div className="min-h-screen bg-blue-50 flex flex-row">
-      {/* Flag Sidebar */}
-      <aside className="flex flex-col items-center justify-start py-8 px-2 bg-white rounded-2xl shadow-lg m-4 w-32 min-w-[100px]">
+      {/* Flag Sidebar with Clocks */}
+      <aside className="flex flex-col items-center justify-start py-8 px-2 bg-white rounded-2xl shadow-lg m-4 w-32 min-w-[100px] gap-8">
+        {/* World Clocks */}
+        <div className="border-b border-gray-200 pb-6">
+          <WorldClocks />
+        </div>
+
+        {/* Flags */}
         <div className="flex flex-col gap-6">
           <span className="block w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow"><img src="/images/flags/us.png" alt="US" className="w-12 h-12 rounded-full" /></span>
           <span className="block w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow"><img src="/images/flags/uk.png" alt="UK" className="w-12 h-12 rounded-full" /></span>

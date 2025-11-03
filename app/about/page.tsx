@@ -1,17 +1,12 @@
+import { PageHero } from '@/components/PageHero';
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20">
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">About World Papers</h1>
-            <p className="text-xl text-blue-100">
-              Your trusted source for global digital policy analysis and insights.
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHero
+        title="About World Papers"
+        subtitle="Your trusted source for global digital policy analysis and insights."
+      />
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-12">
