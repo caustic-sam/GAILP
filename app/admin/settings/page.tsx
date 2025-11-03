@@ -8,15 +8,17 @@ import { Shield, Clock, Save } from 'lucide-react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function AdminSettingsPage() {
-  const { user, hasRole } = useAuth();
+  const { user, hasRole, loading } = useAuth();
   const [sessionDuration, setSessionDuration] = useState(1);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    if (user) {
-      setSessionDuration(user.session_duration_hours || 1);
+    if (user?.session_duration_hours != null) {
+      setSessionDuration(user.session_duration_hours);
+    } else if (user) {
+      setSessionDuration(1);
     }
   }, [user]);
 
@@ -42,7 +44,31 @@ export default function AdminSettingsPage() {
     }
   };
 
-  if (!hasRole(['admin'])) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="p-8 text-center">
+          <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4 animate-spin" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Loading settings…</h1>
+          <p className="text-gray-600">One moment while we verify your access.</p>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="p-8 text-center">
+          <Shield className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Sign In Required</h1>
+          <p className="text-gray-600">Please sign in to access admin settings.</p>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!hasRole('admin')) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="p-8 text-center">
@@ -82,7 +108,10 @@ export default function AdminSettingsPage() {
                 min="1"
                 max="168"
                 value={sessionDuration}
-                onChange={(e) => setSessionDuration(parseInt(e.target.value))}
+                onChange={(e) => {
+                  const nextValue = Number(e.target.value);
+                  setSessionDuration(Number.isNaN(nextValue) ? 1 : nextValue);
+                }}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <p className="mt-2 text-sm text-gray-500">

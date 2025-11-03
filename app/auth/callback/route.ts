@@ -11,6 +11,9 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  // Redirect to admin dashboard after successful auth
-  return NextResponse.redirect(new URL('/admin', requestUrl.origin));
+  const redirectTo = requestUrl.searchParams.get('redirectTo');
+  const safeRedirect =
+    redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/admin';
+
+  return NextResponse.redirect(new URL(safeRedirect, requestUrl.origin));
 }

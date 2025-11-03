@@ -18,10 +18,12 @@ export async function middleware(req: NextRequest) {
 
   // Redirect to login if accessing protected route without session
   if (isProtectedRoute && !session) {
-    const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = '/login';
-    redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
-    return NextResponse.redirect(redirectUrl);
+    const redirectPath = `${req.nextUrl.pathname}${req.nextUrl.search}` || '/admin';
+    const loginUrl = new URL('/login', req.url);
+    const safeRedirect =
+      redirectPath.startsWith('/') && !redirectPath.startsWith('//') ? redirectPath : '/admin';
+    loginUrl.searchParams.set('redirectTo', safeRedirect);
+    return NextResponse.redirect(loginUrl);
   }
 
   // Check user role for admin routes

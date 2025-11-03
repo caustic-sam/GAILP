@@ -11,7 +11,7 @@ import axios from 'axios';
 const INSTANCE_URL = process.env.ATLASSIAN_INSTANCE_URL || 'https://cortexaillc.atlassian.net';
 const USERNAME = process.env.ATLASSIAN_USERNAME || 'malsicario@malsicario.com';
 const API_TOKEN = process.env.ATLASSIAN_API_TOKEN;
-const PROJECT_KEY = 'GAILP';
+const PROJECT_KEY = process.env.ATLASSIAN_PROJECT_KEY || 'GAILP';
 
 if (!API_TOKEN) {
   console.error('❌ ATLASSIAN_API_TOKEN environment variable is required');
@@ -157,7 +157,20 @@ async function createJiraIssue(item: BacklogItem) {
     console.log(`  ✅ ${response.data.key}: ${item.title}`);
     return response.data;
   } catch (error: any) {
-    console.error(`  ❌ Failed to create "${item.title}":`, error.response?.data?.errors || error.message);
+    const errorData = error.response?.data;
+    const detailedMessage =
+      errorData?.errors && Object.keys(errorData.errors).length > 0
+        ? errorData.errors
+        : errorData?.errorMessages?.length
+          ? errorData.errorMessages
+          : error.message;
+
+    console.error(`  ❌ Failed to create "${item.title}":`, detailedMessage);
+
+    if (errorData) {
+      console.error('     ↳ Raw response:', JSON.stringify(errorData, null, 2));
+    }
+
     return null;
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Mail, Shield, CheckCircle } from 'lucide-react';
 
@@ -12,7 +12,8 @@ export default function LoginPage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
   const { signIn } = useAuth();
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirectTo') ?? undefined;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      await signIn(email);
+      await signIn(email, redirectTo);
       setSent(true);
     } catch (err: any) {
       setError(err.message || 'Failed to send magic link');
