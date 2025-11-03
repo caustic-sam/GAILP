@@ -44,10 +44,10 @@ export const runtime = 'nodejs';
 // GET: Fetch single article by ID
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     console.log('📥 GET /api/admin/articles/[id] - Fetching article:', id);
 
     if (!isSupabaseConfigured()) {
@@ -97,10 +97,10 @@ export async function GET(
 // PUT: Update existing article
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     console.log('📥 PUT /api/admin/articles/[id] - Updating article:', id);
 
     const body = (await request.json()) as ArticleUpdatePayload;

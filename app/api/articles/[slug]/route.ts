@@ -8,9 +8,9 @@ export const runtime = 'nodejs';
 // GET: Fetch a single article by slug
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = params;
+  const { slug } = await params;
 
   try {
     // Check if Supabase is configured

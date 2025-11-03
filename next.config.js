@@ -4,7 +4,12 @@ const nextConfig = {
   
   // Image optimization
   images: {
-    domains: ['via.placeholder.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+    ],
     formats: ['image/avif', 'image/webp'],
   },
   
@@ -60,12 +65,16 @@ const nextConfig = {
     mdxRs: true,
   },
 
+  // Turbopack config (empty object to silence Next.js 16 warning)
+  // Most apps work fine with Turbopack without custom config
+  turbopack: {},
+
   // Skip ESLint checks during builds (use with caution)
   // eslint: {
   //   ignoreDuringBuilds: true,
   // },
-  
-  // Webpack config
+
+  // Webpack config (only used when --webpack flag is passed)
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Don't resolve 'fs' module on the client
