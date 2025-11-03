@@ -23,8 +23,9 @@ export default function LoginPage() {
     try {
       await signIn(email, redirectTo);
       setSent(true);
-    } catch (err: any) {
-      setError(err.message || 'Failed to send magic link');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to send magic link';
+      setError(message);
     } finally {
       setLoading(false);
     }

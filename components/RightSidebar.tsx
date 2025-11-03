@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card } from '@/components/ui/Card';
-import { Home, FileText, Users, BookOpen, Briefcase, Mail } from 'lucide-react';
+import { Home, FileText, Users, BookOpen, Mail } from 'lucide-react';
 
 interface NavItem {
   label: string;

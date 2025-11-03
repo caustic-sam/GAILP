@@ -54,16 +54,16 @@ const nextConfig = {
     NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'World Papers',
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   },
-  
+
   // Experimental features
   experimental: {
     mdxRs: true,
   },
 
   // Skip ESLint checks during builds (use with caution)
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
   
   // Webpack config
   webpack: (config, { isServer }) => {

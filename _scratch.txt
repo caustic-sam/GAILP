@@ -24,3 +24,91 @@ Weekly Newsletter Gernerator!
 
 
 s
+
+
+www-GAILP-prd ❯ nslookup registry.npmjs.org
+nslookup registry.npmmirror.com
+Server:         192.168.1.20
+Address:        192.168.1.20#53
+
+Non-authoritative answer:
+Name:   registry.npmjs.org
+Address: 104.16.1.35
+Name:   registry.npmjs.org
+Address: 104.16.28.34
+Name:   registry.npmjs.org
+Address: 104.16.26.34
+Name:   registry.npmjs.org
+Address: 104.16.2.35
+Name:   registry.npmjs.org
+Address: 104.16.27.34
+Name:   registry.npmjs.org
+Address: 104.16.30.34
+Name:   registry.npmjs.org
+Address: 104.16.24.34
+Name:   registry.npmjs.org
+Address: 104.16.29.34
+Name:   registry.npmjs.org
+Address: 104.16.0.35
+Name:   registry.npmjs.org
+Address: 104.16.31.34
+Name:   registry.npmjs.org
+Address: 104.16.25.34
+Name:   registry.npmjs.org
+Address: 104.16.3.35
+
+Server:         192.168.1.20
+Address:        192.168.1.20#53
+
+Non-authoritative answer:
+registry.npmmirror.com  canonical name = registry.npmmirror.com.w.cdngslb.com.
+Name:   registry.npmmirror.com.w.cdngslb.com
+Address: 155.102.130.201
+Name:   registry.npmmirror.com.w.cdngslb.com
+Address: 155.102.130.197
+Name:   registry.npmmirror.com.w.cdngslb.com
+Address: 155.102.130.199
+Name:   registry.npmmirror.com.w.cdngslb.com
+Address: 155.102.130.202
+Name:   registry.npmmirror.com.w.cdngslb.com
+Address: 155.102.130.204
+Name:   registry.npmmirror.com.w.cdngslb.com
+Address: 155.102.130.203
+Name:   registry.npmmirror.com.w.cdngslb.com
+Address: 155.102.130.198
+Name:   registry.npmmirror.com.w.cdngslb.com
+Address: 155.102.130.200
+
+www-GAILP-prd ❯ curl -I https://registry.npmjs.org/
+curl -I https://registry.npmmirror.com/
+
+HTTP/2 200 
+date: Mon, 03 Nov 2025 03:42:18 GMT
+content-type: application/json
+cf-ray: 9988dc63ff18e946-DFW
+cache-control: public, immutable, max-age=31557600
+set-cookie: _cfuvid=vAXoV7h2ucHSiPWv54avYghkPPrSQdPEpsAo8XYxaXo-1762141338252-0.0.1.1-604800000; path=/; domain=.npmjs.org; HttpOnly; Secure; SameSite=None
+server: cloudflare
+
+HTTP/2 200 
+server: Tengine
+content-type: application/json; charset=utf-8
+content-length: 1306
+strict-transport-security: max-age=5184000
+date: Mon, 03 Nov 2025 03:42:18 GMT
+vary: Origin
+request-id: a09c3884-d412-47af-a9a8-06d8bc3cac55
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+x-content-type-options: nosniff
+x-download-options: noopen
+x-readtime: 0.695
+via: us37.l1, ens-cache6.us37, l2us5.l2, ens-cache6.l2us5, npmmirror-x86-20220823002, ens-cache6.l2us5[204,212,200-0,M], ens-cache15.l2us5[216,0], ens-cache6.us37[217,217,200-0,M], ens-cache8.us37[219,0]
+ali-swift-global-savetime: 1762141338
+x-cache: MISS TCP_MISS dirn:-2:-2
+x-swift-savetime: Mon, 03 Nov 2025 03:42:18 GMT
+x-swift-cachetime: 0
+timing-allow-origin: *
+eagleid: 9b66829c17621413387421548e
+
+pnpm audit

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Clock, User, ArrowRight, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -84,7 +85,7 @@ export default function BlogPage() {
             <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">No Articles Yet</h2>
             <p className="text-gray-600 mb-6">
-              We're working on bringing you insightful content. Check back soon!
+              We&apos;re working on bringing you insightful content. Check back soon!
             </p>
             <Button variant="primary" size="lg">
               Subscribe for Updates
@@ -97,11 +98,14 @@ export default function BlogPage() {
                 <Card hover className="h-full flex flex-col overflow-hidden">
                   {/* Featured Image */}
                   {article.featured_image ? (
-                    <div className="w-full h-48 overflow-hidden">
-                      <img
+                    <div className="relative w-full h-48 overflow-hidden">
+                      <Image
                         src={article.featured_image}
                         alt={article.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        className="object-cover hover:scale-105 transition-transform duration-300"
+                        priority={false}
                       />
                     </div>
                   ) : (

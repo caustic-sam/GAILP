@@ -37,8 +37,9 @@ export default function AdminSettingsPage() {
       if (error) throw error;
 
       setMessage('Settings saved successfully!');
-    } catch (error: any) {
-      setMessage(`Error: ${error.message}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      setMessage(`Error: ${message}`);
     } finally {
       setSaving(false);
     }
