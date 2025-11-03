@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import '../styles/globals.css'
 import { Header } from '@/components/Header'
 import { RightSidebar } from '@/components/RightSidebar'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 export const metadata: Metadata = {
   title: 'GAILP - Global AI & Digital Policy Hub',
@@ -20,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased bg-gray-50">
-        <Header />
-        <RightSidebar />
-        {children}
+        <AuthProvider>
+          <Header />
+          <RightSidebar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

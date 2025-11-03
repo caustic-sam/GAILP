@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Globe, Menu, X, Settings } from 'lucide-react';
+import { Globe, Menu, X, Settings, User, LogOut, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { id: 'home', label: 'Policy Updates', href: '/policy-updates' },
@@ -16,7 +17,9 @@ const navItems = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
 
   return (
     <header className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20 sticky top-0 z-50">
@@ -52,14 +55,57 @@ export function Header() {
 
           {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/admin/studio"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors text-blue-100 hover:text-white hover:bg-white/10"
-            >
-              <Settings className="w-4 h-4" />
-              <span>Studio</span>
-            </Link>
-            <Button variant="primary" size="sm">Subscribe</Button>
+            {user ? (
+              <>
+                <Link
+                  href="/admin/studio"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors text-blue-100 hover:text-white hover:bg-white/10"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Studio</span>
+                </Link>
+
+                {/* User Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-blue-100 hover:text-white hover:bg-white/10"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>{user.email?.split('@')[0]}</span>
+                  </button>
+
+                  {userMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900">{user.email}</p>
+                        <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          signOut();
+                          setUserMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="secondary" size="sm">
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Sign In
+                  </Button>
+                </Link>
+                <Button variant="primary" size="sm">Subscribe</Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
