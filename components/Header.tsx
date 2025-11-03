@@ -11,6 +11,7 @@ const navItems = [
   { id: 'home', label: 'Policy Updates', href: '/policy-updates' },
   { id: 'analysis', label: 'Expert Blog', href: '/blog' },
   { id: 'videos', label: 'Live Hub', href: '/videos' },
+  { id: 'policy-pulse', label: 'Policy Pulse', href: '/policy-pulse' },
   { id: 'policies', label: 'Research', href: '/policies' },
   { id: 'about', label: 'About', href: '/about' }
 ];
