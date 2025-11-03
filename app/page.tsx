@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import {
   Globe, Mail, Twitter, Linkedin, Rss, ArrowRight,
   MessageCircle, Clock, Heart, Play, Send,
@@ -17,8 +18,12 @@ import { DataBoxes } from '@/components/widgets/DataBoxes';
 import { FeedCard } from '@/components/FeedCard';
 import { GlobalFeedStream } from '@/components/GlobalFeedStream';
 import { AnimatedGlobe } from '@/components/AnimatedGlobe';
+import { ComingSoonModal } from '@/components/ui/ComingSoonModal';
+import { useComingSoon } from '@/hooks/useComingSoon';
 
 export default function HomePage() {
+  const { isOpen, feature, showComingSoon, closeModal } = useComingSoon();
+
   const handleRefreshAll = () => {
     window.location.reload();
   };
@@ -69,8 +74,12 @@ export default function HomePage() {
                 Your trusted source for comprehensive analysis, expert insights, and real-time updates on global digital governance, data protection, and identity policies.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" variant="primary">Explore Insights</Button>
-                <Button size="lg" variant="secondary">Join Community</Button>
+                <Link href="/blog">
+                  <Button size="lg" variant="primary">Explore Insights</Button>
+                </Link>
+                <Button size="lg" variant="coming-soon" onClick={() => showComingSoon('Community Features')}>
+                  Join Community
+                </Button>
                 <button
                   onClick={handleRefreshAll}
                   className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-all flex items-center gap-2 border border-white/20"
@@ -98,7 +107,9 @@ export default function HomePage() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900">Policy Intelligence Feed</h2>
-                <button className="text-blue-600 text-sm font-medium hover:text-blue-700">View All</button>
+                <Link href="/policy-updates" className="text-blue-600 text-sm font-medium hover:text-blue-700">
+                  View All
+                </Link>
               </div>
               <p className="text-sm text-gray-600 mb-4">Latest updates from global regulatory bodies</p>
               
@@ -147,9 +158,11 @@ export default function HomePage() {
               ))}
             </div>
 
-            <button className="w-full mt-6 text-center text-blue-600 font-medium text-sm py-2 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center gap-2">
-              View All Updates <ArrowRight className="w-4 h-4" />
-            </button>
+            <Link href="/policy-updates">
+              <button className="w-full mt-6 text-center text-blue-600 font-medium text-sm py-2 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center gap-2">
+                View All Updates <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
 
             {/* Quick Insights */}
             <div className="mt-8">
@@ -205,7 +218,10 @@ export default function HomePage() {
                   placeholder="Join the discussion..."
                   className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <button className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors">
+                <button
+                  onClick={() => showComingSoon('Community Chat')}
+                  className="w-10 h-10 rounded-lg bg-orange-500 border-2 border-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-colors"
+                >
                   <Send className="w-4 h-4" />
                 </button>
               </div>
@@ -217,7 +233,9 @@ export default function HomePage() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900">Expert Analysis</h2>
-                <button className="text-blue-600 text-sm font-medium hover:text-blue-700">View All Posts</button>
+                <Link href="/blog" className="text-blue-600 text-sm font-medium hover:text-blue-700">
+                  View All Posts
+                </Link>
               </div>
             </div>
 
@@ -338,11 +356,17 @@ export default function HomePage() {
                           {thought.content}
                         </p>
                         <div className="flex items-center gap-3 mt-2">
-                          <button className="text-xs text-gray-500 hover:text-blue-600 flex items-center gap-1">
+                          <button
+                            onClick={() => showComingSoon('Social Features')}
+                            className="text-xs text-orange-600 hover:text-orange-700 flex items-center gap-1 border border-orange-500 px-2 py-0.5 rounded"
+                          >
                             <ThumbsUp className="w-3 h-3" />
                             Like
                           </button>
-                          <button className="text-xs text-gray-500 hover:text-blue-600 flex items-center gap-1">
+                          <button
+                            onClick={() => showComingSoon('Social Features')}
+                            className="text-xs text-orange-600 hover:text-orange-700 flex items-center gap-1 border border-orange-500 px-2 py-0.5 rounded"
+                          >
                             <MessageCircle className="w-3 h-3" />
                             Reply
                           </button>
@@ -353,7 +377,10 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <button className="w-full mt-4 text-center text-blue-600 font-medium text-sm py-2 hover:bg-blue-50 rounded-lg transition-colors">
+              <button
+                onClick={() => showComingSoon('Policy Pulse Contributions')}
+                className="w-full mt-4 text-center text-orange-600 font-medium text-sm py-2 hover:bg-orange-50 rounded-lg transition-colors border-2 border-orange-500"
+              >
                 Share a quick policy insight...
               </button>
             </Card>
@@ -385,7 +412,9 @@ export default function HomePage() {
               placeholder="Enter your email"
               className="flex-1 px-5 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-            <Button variant="primary" size="lg">Subscribe</Button>
+            <Button variant="coming-soon" size="lg" onClick={() => showComingSoon('Newsletter Subscription')}>
+              Subscribe
+            </Button>
           </div>
         </div>
       </section>
@@ -407,7 +436,10 @@ export default function HomePage() {
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{resource.title}</h3>
                 <h4 className="text-sm font-semibold text-blue-600 mb-3">{resource.subtitle}</h4>
                 <p className="text-sm text-gray-600 mb-6">{resource.description}</p>
-                <button className="text-blue-600 font-medium text-sm hover:text-blue-700 inline-flex items-center gap-2">
+                <button
+                  onClick={() => showComingSoon(resource.title)}
+                  className="text-orange-600 font-medium text-sm hover:text-orange-700 inline-flex items-center gap-2 border-2 border-orange-500 px-4 py-2 rounded-lg"
+                >
                   {resource.link} <ArrowRight className="w-4 h-4" />
                 </button>
               </Card>
@@ -435,39 +467,39 @@ export default function HomePage() {
             <div>
               <h3 className="text-white font-semibold mb-3">Platform</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Policy Updates</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Expert Analysis</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Live Hub</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Resources Library</a></li>
+                <li><Link href="/policy-updates" className="hover:text-white transition-colors">Policy Updates</Link></li>
+                <li><Link href="/blog" className="hover:text-white transition-colors">Expert Analysis</Link></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Live Hub'); }} className="hover:text-white transition-colors cursor-pointer">Live Hub</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Resources Library'); }} className="hover:text-white transition-colors cursor-pointer">Resources Library</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h3 className="text-white font-semibold mb-3">Research</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Policy Database</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Digital Identity</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">AI Governance</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Cross-Border Data</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Policy Database'); }} className="hover:text-white transition-colors cursor-pointer">Policy Database</a></li>
+                <li><Link href="/glossary" className="hover:text-white transition-colors">Digital Identity</Link></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('AI Governance'); }} className="hover:text-white transition-colors cursor-pointer">AI Governance</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Cross-Border Data'); }} className="hover:text-white transition-colors cursor-pointer">Cross-Border Data</a></li>
               </ul>
             </div>
-            
+
             <div>
               <h3 className="text-white font-semibold mb-3">Connect</h3>
               <ul className="space-y-2 text-sm mb-4">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Newsletter</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Newsletter'); }} className="hover:text-white transition-colors cursor-pointer">Newsletter</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Privacy Policy'); }} className="hover:text-white transition-colors cursor-pointer">Privacy Policy</a></li>
               </ul>
               <div className="flex gap-3">
-                <a href="#" className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
+                <a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Social Media'); }} className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
                   <Twitter className="w-4 h-4" />
                 </a>
-                <a href="#" className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
+                <a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Social Media'); }} className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
                   <Linkedin className="w-4 h-4" />
                 </a>
-                <a href="#" className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
+                <a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('RSS Feed'); }} className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
                   <Rss className="w-4 h-4" />
                 </a>
               </div>
@@ -477,13 +509,16 @@ export default function HomePage() {
           <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
             <div>© 2024 World Papers. All rights reserved.</div>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-gray-300 transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-gray-300 transition-colors">Cookie Settings</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Terms of Service'); }} className="hover:text-gray-300 transition-colors cursor-pointer">Terms of Service</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Privacy Policy'); }} className="hover:text-gray-300 transition-colors cursor-pointer">Privacy Policy</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Cookie Settings'); }} className="hover:text-gray-300 transition-colors cursor-pointer">Cookie Settings</a>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Coming Soon Modal */}
+      <ComingSoonModal isOpen={isOpen} onClose={closeModal} feature={feature} />
     </div>
   );
 }

@@ -10,9 +10,15 @@ import { getFreshRSSClient, FreshRSSClient, FreshRSSItem } from '@/lib/freshrss'
 export default async function PolicyPulsePage() {
   const client = getFreshRSSClient();
   let items: FreshRSSItem[] = [];
+
   if (client) {
-    // Fetch more items to ensure enough headlines per category
-    items = await client.getItems({ count: 60, excludeRead: false });
+    try {
+      // Fetch more items to ensure enough headlines per category
+      items = await client.getItems({ count: 60, excludeRead: false });
+    } catch (error) {
+      console.error('Failed to fetch FreshRSS items:', error);
+      // Continue with empty items array - page will show "No headlines available"
+    }
   }
   // --- Scarecrow categorization logic ---
   const CATEGORIES = [
