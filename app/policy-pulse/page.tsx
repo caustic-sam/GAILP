@@ -60,7 +60,6 @@ export default async function PolicyPulsePage() {
     <div className="min-h-screen bg-blue-50 flex flex-row">
       {/* Flag Sidebar */}
       <aside className="flex flex-col items-center justify-start py-8 px-2 bg-white rounded-2xl shadow-lg m-4 w-32 min-w-[100px]">
-        {/* Example flags, replace with dynamic if needed */}
         <div className="flex flex-col gap-6">
           <span className="block w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow"><img src="/images/flags/us.png" alt="US" className="w-12 h-12 rounded-full" /></span>
           <span className="block w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow"><img src="/images/flags/uk.png" alt="UK" className="w-12 h-12 rounded-full" /></span>
@@ -72,23 +71,22 @@ export default async function PolicyPulsePage() {
       <div className="flex-1 flex flex-col">
         <main className="flex-1 py-10 px-6">
           <h1 className="text-3xl font-bold mb-8 text-blue-900">Policy Pulse</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
             {CATEGORIES.map((cat) => {
               const headlines = grouped[cat.key];
               return (
                 <section
                   key={cat.key}
-                  className="rounded-2xl border-2 border-blue-300 bg-white shadow-lg p-6 min-h-[260px] flex flex-col justify-between"
+                  className="flex flex-col rounded-2xl border border-blue-300 bg-white shadow-lg p-4 xl:p-6 min-h-[320px] h-full justify-start"
                 >
-                  <h2 className="text-lg font-bold mb-4 text-blue-900">{cat.title}</h2>
+                  <h2 className="text-lg font-bold mb-4 text-blue-900 text-center leading-tight">{cat.title}</h2>
                   {headlines.length === 0 ? (
-                    <div className="text-gray-400 text-sm">No headlines available.</div>
+                    <div className="text-gray-400 text-sm text-center">No headlines available.</div>
                   ) : (
                     <>
                       <ul className="space-y-3">
                         {headlines.slice(0, 3).map((item: FreshRSSItem, idx: number) => {
                           const transformed = FreshRSSClient.transformItem(item);
-                          // Infer nationality from feedName or title
                           const titleLower = transformed.title.toLowerCase();
                           const feedLower = (transformed.feedName || '').toLowerCase();
                           let flag = '';
@@ -101,14 +99,12 @@ export default async function PolicyPulsePage() {
                           else if (titleLower.includes('japan') || feedLower.includes('japan')) flag = '🇯🇵';
                           else if (titleLower.includes('germany') || feedLower.includes('germany')) flag = '🇩🇪';
                           else if (titleLower.includes('france') || feedLower.includes('france')) flag = '🇫🇷';
-                          // Default: US only if not matched
-                          // Only show flag if not US
                           if (!flag && (titleLower.includes('us') || feedLower.includes('us') || titleLower.includes('america') || feedLower.includes('america'))) flag = '';
                           return (
-                            <li key={idx}>
-                              <Link href={transformed.link || '#'} target="_blank" className="text-blue-700 hover:underline font-medium">
+                            <li key={idx} className="flex flex-col">
+                              <Link href={transformed.link || '#'} target="_blank" className="text-blue-700 hover:underline font-medium flex items-center">
                                 {flag && <span className="mr-1">{flag}</span>}
-                                {transformed.title}
+                                <span className="truncate">{transformed.title}</span>
                               </Link>
                               <span className="block text-xs text-gray-500">{transformed.feedName} • {transformed.publishedAt ? transformed.publishedAt.toLocaleDateString() : ''}</span>
                             </li>
@@ -116,7 +112,7 @@ export default async function PolicyPulsePage() {
                         })}
                       </ul>
                       {headlines.length < 3 && (
-                        <div className="text-gray-400 text-xs mt-2">More coming soon</div>
+                        <div className="text-gray-400 text-xs mt-2 text-center">More coming soon</div>
                       )}
                     </>
                   )}
