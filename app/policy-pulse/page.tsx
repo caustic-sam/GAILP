@@ -12,7 +12,8 @@ export default async function PolicyPulsePage() {
   const client = getFreshRSSClient();
   let items: FreshRSSItem[] = [];
   if (client) {
-    items = await client.getItems({ count: 20, excludeRead: false });
+    // Fetch more items to ensure enough headlines per category
+    items = await client.getItems({ count: 60, excludeRead: false });
   }
   // --- Scarecrow categorization logic ---
   const CATEGORIES = [
@@ -85,7 +86,7 @@ export default async function PolicyPulsePage() {
                   ) : (
                     <>
                       <ul className="space-y-3">
-                        {headlines.slice(0, 3).map((item: FreshRSSItem, idx: number) => {
+                        {(headlines.length >= 3 ? headlines.slice(0, 3) : headlines).map((item: FreshRSSItem, idx: number) => {
                           const transformed = FreshRSSClient.transformItem(item);
                           const titleLower = transformed.title.toLowerCase();
                           const feedLower = (transformed.feedName || '').toLowerCase();
