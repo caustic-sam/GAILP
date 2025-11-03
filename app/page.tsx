@@ -58,7 +58,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="max-w-7xl mx-auto px-6 py-16 min-h-[280px]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             {/* Left: Content */}
             <div className="relative z-10">

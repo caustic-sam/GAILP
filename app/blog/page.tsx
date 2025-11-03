@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Clock, User, ArrowRight, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { PageHero } from '@/components/PageHero';
 
 interface Article {
   id: string;
@@ -61,17 +62,10 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20">
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Expert Blog</h1>
-            <p className="text-xl text-blue-100">
-              In-depth analysis and expert commentary on digital policy, governance, and data protection.
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHero
+        title="Expert Blog"
+        subtitle="In-depth analysis and expert commentary on digital policy, governance, and data protection."
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-12">
