@@ -66,7 +66,7 @@ const nextConfig = {
   // },
   
   // Webpack config
-  webpack: (config, { isServer }) => {
+ /*  webpack: (config, { isServer }) => {
     if (!isServer) {
       // Don't resolve 'fs' module on the client
       config.resolve.fallback = {
@@ -75,7 +75,7 @@ const nextConfig = {
       }
     }
     return config
-  },
+  }, */
 }
 
 module.exports = nextConfig
