@@ -2,6 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import {
   Globe, Mail, Twitter, Linkedin, Rss, ArrowRight,
   MessageCircle, Clock, Heart, Play, Send,
@@ -17,15 +19,20 @@ import { NISTAssistant } from '@/components/widgets/NISTAssistant';
 import { DataBoxes } from '@/components/widgets/DataBoxes';
 import { FeedCard } from '@/components/FeedCard';
 import { GlobalFeedStream } from '@/components/GlobalFeedStream';
-import { AnimatedGlobe } from '@/components/AnimatedGlobe';
+const AnimatedGlobe = dynamic(() => import('@/components/AnimatedGlobe'), { ssr: false });
 import { ComingSoonModal } from '@/components/ui/ComingSoonModal';
 import { useComingSoon } from '@/hooks/useComingSoon';
 
 export default function HomePage() {
   const { isOpen, feature, showComingSoon, closeModal } = useComingSoon();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = React.useState<'All Updates' | 'Data' | 'Digital ID'>('All Updates');
+  const filteredPolicies = React.useMemo(() => {
+    return mockPolicies.filter(p => (activeTab === 'All Updates' ? true : p.category === activeTab));
+  }, [activeTab]);
 
   const handleRefreshAll = () => {
-    window.location.reload();
+    router.refresh();
   };
 
   const resourceCards = [
@@ -82,6 +89,7 @@ export default function HomePage() {
                 </Button>
                 <button
                   onClick={handleRefreshAll}
+                  aria-label="Refresh all live feeds"
                   className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-all flex items-center gap-2 border border-white/20"
                 >
                   <RefreshCw className="w-5 h-5" />
@@ -115,23 +123,28 @@ export default function HomePage() {
               
               {/* Filter Tabs */}
               <div className="flex gap-2 mb-4 border-b border-gray-200">
-                {['All Updates', 'Data', 'Digital ID'].map((tab, idx) => (
-                  <button
-                    key={tab}
-                    className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
-                      idx === 0 
-                        ? 'border-blue-600 text-blue-600' 
-                        : 'border-transparent text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
+                {(['All Updates', 'Data', 'Digital ID'] as const).map((tab) => {
+                  const isActive = activeTab === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      aria-pressed={isActive}
+                      className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                        isActive
+                          ? 'border-blue-600 text-blue-600'
+                          : 'border-transparent text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div className="space-y-4">
-              {mockPolicies.map(policy => (
+              {filteredPolicies.map(policy => (
                 <button
                   key={policy.id}
                   onClick={() => showComingSoon('Policy Details')}
@@ -226,6 +239,7 @@ export default function HomePage() {
                 />
                 <button
                   onClick={() => showComingSoon('Community Chat')}
+                  aria-label="Send chat message (coming soon)"
                   className="w-10 h-10 rounded-lg bg-orange-500 border-2 border-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-colors"
                 >
                   <Send className="w-4 h-4" />

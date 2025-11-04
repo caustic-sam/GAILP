@@ -1,4 +1,4 @@
-# Working Title Policy Analysis Platform
+# Working Title Policy Analysis Platform (FORMERLY WORLD PAPERS)
 
 > **Global Digital Policy Analysis Platform**
 
