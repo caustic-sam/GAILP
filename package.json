@@ -6,10 +6,7 @@
   "author": "Wren / CortexAI",
   "license": "MIT",
   "packageManager": "pnpm@9.12.0",
-  "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
-  },
+  "engines": { "node": ">=18.0.0", "pnpm": ">=8.0.0" },
   "scripts": {
     "preinstall": "corepack enable",
     "dev": "next dev",
@@ -113,12 +110,7 @@
     }
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{md,mdx,json}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{md,mdx,json}": ["prettier --write"]
   }
 }
