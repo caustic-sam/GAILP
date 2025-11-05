@@ -1,36 +1,41 @@
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
-import type { Metadata } from 'next'
-import '../styles/globals.css'
-import { Header } from '@/components/Header'
-import { RightSidebar } from '@/components/RightSidebar'
-import { AuthProvider } from '@/contexts/AuthContext'
+// app/layout.tsx
+import type { Metadata, Viewport } from "next";
+import "../styles/globals.css";
+import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: 'GAILP - Global AI & Digital Policy Hub',
-  description: 'Independent analysis of global digital policy',
-}
+  title: "GAILP — Global AI & Identity Policy",
+  description:
+    "Translating regulation into trustworthy, interoperable systems.",
+  openGraph: {
+    title: "GAILP — Global AI & Identity Policy",
+    description:
+      "Translating regulation into trustworthy, interoperable systems.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GAILP — Global AI & Identity Policy",
+    description:
+      "Translating regulation into trustworthy, interoperable systems.",
+  },
+};
 
-// Force dynamic rendering for all pages to fix Lucide React icon issues
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const viewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className="antialiased bg-gray-50">
-        <AuthProvider>
-          <Header />
-          <RightSidebar />
-          {children}
-          <Analytics />
-          <SpeedInsights />
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      {/* Tailwind v4 tokens: bg/text come from styles/globals.css @theme */}
+      <body className="min-h-screen bg-background text-foreground antialiased">
+        {children}
       </body>
     </html>
-  )
+  );
 }

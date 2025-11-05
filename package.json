@@ -66,9 +66,11 @@
     "tailwind-merge": "^3.3.1",
     "typescript": "^5.9.3",
     "xml2js": "^0.6.2",
+    "yarn": "link:/yarn",
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
