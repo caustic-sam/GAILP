@@ -1,11 +1,17 @@
 'use client';
 
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { StatusDot } from '@/components/ui/StatusDot';
 import { ArrowRight, Mail, Download, Heart, Share2, User } from 'lucide-react';
+
+const AnimatedGlobe = dynamic(
+  () => import('@/components/AnimatedGlobe').then((m) => m.AnimatedGlobe),
+  { ssr: false }
+);
 
 export default function ComponentGallery() {
   return (

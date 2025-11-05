@@ -19,9 +19,14 @@ import { NISTAssistant } from '@/components/widgets/NISTAssistant';
 import { DataBoxes } from '@/components/widgets/DataBoxes';
 import { FeedCard } from '@/components/FeedCard';
 import { GlobalFeedStream } from '@/components/GlobalFeedStream';
-const AnimatedGlobe = dynamic(() => import('@/components/AnimatedGlobe'), { ssr: false });
+
 import { ComingSoonModal } from '@/components/ui/ComingSoonModal';
 import { useComingSoon } from '@/hooks/useComingSoon';
+
+const AnimatedGlobe = dynamic(
+  () => import('@/components/AnimatedGlobe').then((m) => ({ default: m.AnimatedGlobe })),
+  { ssr: false }
+);
 
 export default function HomePage() {
   const { isOpen, feature, showComingSoon, closeModal } = useComingSoon();
