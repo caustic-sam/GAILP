@@ -1,142 +1,188 @@
-/* eslint-disable @next/next/no-img-element */
+# Changelog — GAILP (www-GAILP-prd)
 
+This project adheres to semantic-ish versioning at the app level. See also: `docs/reviewed/AUTH-DELIVERY-SUMMARY.md` for auth-specific history.
 
-import React from 'react';
-import Link from 'next/link';
-import { getFreshRSSClient, FreshRSSClient, FreshRSSItem } from '@/lib/freshrss';
-import { WorldClocks } from '@/components/WorldClocks';
+## [0.1.1] — 2025-11-05
+### Added
+- OAuth-first auth (GitHub/Google) with server-side gate (`app/admin/layout.tsx`).
+- SSR Supabase client `lib/supabase/server.ts` (must `await getSupabaseServer()`).
+- Global shell: compact blue top bar + right “fan” rail mounted via `app/layout.tsx` → `components/GlobalChrome.tsx`.
+- Docs: Navigation, Feeds/FreshRSS, Deployment Checklist, Troubleshooting, Docs index.
 
+### Changed
+- Roles normalized to **admin / contributor / reader** (was `editor`).
+- FreshRSS unread-count now falls back gracefully when the endpoint is not implemented (501), avoiding noisy errors.
+- Edge middleware disabled (no-op); auth enforced via server layout to prevent prerender crashes.
 
-export default async function PolicyPulsePage() {
-  const client = getFreshRSSClient();
-  let items: FreshRSSItem[] = [];
+### Fixed
+- Build failures from client hooks in server contexts (`useAuth …`).
+- Path alias / import depth issues for Supabase SSR client.
+- Turbopack parse errors from stray JSX in server utilities.
 
-  if (client) {
-    try {
-      // Fetch more items to ensure enough headlines per category
-      items = await client.getItems({ count: 60, excludeRead: false });
-    } catch (error) {
-      console.error('Failed to fetch FreshRSS items:', error);
-      // Continue with empty items array - page will show "No headlines available"
-    }
-  }
-  // --- Scarecrow categorization logic ---
-  const CATEGORIES = [
-    { key: 'identity', title: 'Digital Identity, Credentials, and Public Response' },
-    { key: 'standards', title: 'Foundational Standards and Frameworks' },
-    { key: 'cyber', title: 'Global Cyber Agencies' },
-    { key: 'legislation', title: 'Global Legislative Tracking Analysis' },
-    { key: 'legal', title: 'US Enforcement and Global Legal Analysis' },
-    { key: 'civil', title: 'Civil Society & Industry Orgs' },
-  ];
+### Removed
+- OTP-first flow as the default (still possible to re-enable later as fallback).
 
-  function categorizeItem(item: FreshRSSItem): string | null {
-    const title = item.title?.toLowerCase() || '';
-    if (title.includes('identity') || title.includes('biometric')) return 'identity';
-    if (title.includes('standard') || title.includes('governance') || title.includes('iso')) return 'standards';
-    if (title.includes('cyber') || title.includes('ncsc') || title.includes('threat')) return 'cyber';
-    if (title.includes('policy') || title.includes('regulation') || title.includes('tracker') || title.includes('freedom')) return 'legislation';
-    if (title.includes('privacy') || title.includes('legal') || title.includes('court') || title.includes('compliance') || title.includes('data')) return 'legal';
-    if (title.includes('society') || title.includes('org') || title.includes('foundation') || title.includes('edri') || title.includes('epic') || title.includes('noyb')) return 'civil';
-    return null;
-  }
+---
+## [0.1.0] — 2025-11-03
+- Initial public shell, basic feeds surface, placeholder content & styles.
 
-  // Group items by category
-  const grouped: Record<string, FreshRSSItem[]> = {
-    identity: [],
-    standards: [],
-    cyber: [],
-    legislation: [],
-    legal: [],
-    civil: [],
-  };
-    // Filter items to last 10 days and group
-    const now = new Date();
-    const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-    items.forEach((item: FreshRSSItem) => {
-      const cat = categorizeItem(item);
-      // Use published date for filtering
-      const published = item.published ? new Date(item.published) : null;
-      if (cat && grouped[cat] && published && published >= tenDaysAgo) {
-        grouped[cat].push(item);
-      }
-    });
+# Operations Runbook — GAILP (Vercel + Supabase)
 
-  return (
-    <div className="min-h-screen bg-blue-50 flex flex-row">
-      {/* Flag Sidebar with Clocks */}
-      <aside className="flex flex-col items-center justify-start py-8 px-2 bg-white rounded-2xl shadow-lg m-4 w-32 min-w-[100px] gap-8">
-        {/* World Clocks */}
-        <div className="border-b border-gray-200 pb-6">
-          <WorldClocks />
-        </div>
+Use this as a pager-friendly guide for deploys, hotfixes, rollbacks, and routine ops.
 
-        {/* Flags */}
-        <div className="flex flex-col gap-6">
-          <span className="block w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow"><img src="/images/flags/us.png" alt="US" className="w-12 h-12 rounded-full" /></span>
-          <span className="block w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow"><img src="/images/flags/uk.png" alt="UK" className="w-12 h-12 rounded-full" /></span>
-          <span className="block w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow"><img src="/images/flags/eu.png" alt="EU" className="w-12 h-12 rounded-full" /></span>
-          <span className="block w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow"><img src="/images/flags/au.png" alt="AU" className="w-12 h-12 rounded-full" /></span>
-        </div>
-      </aside>
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <main className="flex-1 py-10 px-6">
-          <h1 className="text-3xl font-bold mb-8 text-blue-900">Policy Pulse</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
-            {CATEGORIES.map((cat) => {
-              const headlines = grouped[cat.key];
-              return (
-                <section
-                  key={cat.key}
-                  className="flex flex-col rounded-2xl border border-blue-300 bg-white shadow-lg p-4 xl:p-6 min-h-[320px] h-full justify-start"
-                >
-                  <h2 className="text-lg font-bold mb-4 text-blue-900 text-center leading-tight">{cat.title}</h2>
-                  {headlines.length === 0 ? (
-                    <div className="text-gray-400 text-sm text-center">No headlines available.</div>
-                  ) : (
-                    <>
-                      <ul className="space-y-3">
-                        {(headlines.length >= 3 ? headlines.slice(0, 3) : headlines).map((item: FreshRSSItem, idx: number) => {
-                          const transformed = FreshRSSClient.transformItem(item);
-                          const titleLower = transformed.title.toLowerCase();
-                          const feedLower = (transformed.feedName || '').toLowerCase();
-                          let flag = '';
-                          if (titleLower.includes('uk') || feedLower.includes('uk') || titleLower.includes('britain') || feedLower.includes('britain')) flag = '🇬🇧';
-                          else if (titleLower.includes('eu') || feedLower.includes('eu') || titleLower.includes('europe') || feedLower.includes('europe')) flag = '🇪🇺';
-                          else if (titleLower.includes('australia') || feedLower.includes('australia') || titleLower.includes('au ') || feedLower.includes('au ')) flag = '🇦🇺';
-                          else if (titleLower.includes('canada') || feedLower.includes('canada')) flag = '🇨🇦';
-                          else if (titleLower.includes('india') || feedLower.includes('india')) flag = '🇮🇳';
-                          else if (titleLower.includes('china') || feedLower.includes('china')) flag = '🇨🇳';
-                          else if (titleLower.includes('japan') || feedLower.includes('japan')) flag = '🇯🇵';
-                          else if (titleLower.includes('germany') || feedLower.includes('germany')) flag = '🇩🇪';
-                          else if (titleLower.includes('france') || feedLower.includes('france')) flag = '🇫🇷';
-                          if (!flag && (titleLower.includes('us') || feedLower.includes('us') || titleLower.includes('america') || feedLower.includes('america'))) flag = '';
-                          return (
-                            <li key={idx} className="flex flex-col">
-                              <Link href={transformed.link || '#'} target="_blank" className="text-blue-700 hover:underline font-medium flex items-center">
-                                {flag && <span className="mr-1">{flag}</span>}
-                                <span className="truncate">{transformed.title}</span>
-                              </Link>
-                              <span className="block text-xs text-gray-500">{transformed.feedName} • {transformed.publishedAt ? transformed.publishedAt.toLocaleDateString() : ''}</span>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                      {headlines.length < 3 && (
-                        <div className="text-gray-400 text-xs mt-2 text-center">More coming soon</div>
-                      )}
-                    </>
-                  )}
-                </section>
-              );
-            })}
-          </div>
-        </main>
-        <footer className="w-full mt-8 py-6 border-t-2 border-blue-200 text-center text-xs text-blue-900 bg-blue-50 rounded-b-2xl">
-          &copy; {new Date().getFullYear()} GAILP. All rights reserved.
-        </footer>
-      </div>
-    </div>
-  );
-}
+## Quick Links
+- Deployment checklist: `docs/DEPLOYMENT-CHECKLIST.md`
+- Troubleshooting: `docs/TROUBLESHOOTING.md`
+- Feeds / FreshRSS: `docs/FEEDS-FRESHRSS.md`
+- Auth setup: `docs/AUTH-SETUP.md`
+
+---
+## 1) Deploy (Production)
+1. Ensure you are on latest `main` locally:
+   ```bash
+   git checkout main && git pull
+   pnpm install
+   pnpm build
+   ```
+2. Push changes:
+   ```bash
+   git push
+   ```
+3. Vercel auto-builds Production. Verify logs show `pnpm >= 8` and no SWC warnings. If SWC warning appears, run a local `pnpm build` once to patch the cache.
+4. Smoke test (see section 5).
+
+---
+## 2) Hotfix
+1. Create a hotfix branch:
+   ```bash
+   git checkout -b hotfix/<slug>
+   ```
+2. Commit minimal fix; verify locally:
+   ```bash
+   pnpm build && pnpm dev
+   ```
+3. Push branch, open PR, merge with approval, ensure Vercel Production deploy completes.
+
+---
+## 3) Rollback
+- Preferred: **Redeploy previous successful build** in Vercel UI (Deployments → pick previous → Redeploy).
+- If code rollback is needed:
+  ```bash
+  git revert <bad-commit-sha>
+  git push
+  ```
+
+---
+## 4) Environment & Secrets
+- Vercel Project → Settings → Environment Variables:
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - `NEXT_PUBLIC_SITE_URL`
+  - FreshRSS vars if used: `FRESHRSS_API_URL`, `FRESHRSS_API_USERNAME`, `FRESHRSS_API_PASSWORD`
+- Supabase Dashboard → Auth → Providers: GitHub/Google enabled; callback URLs set for dev + prod.
+- **Rotation cadence**: review API keys quarterly or on incident.
+
+---
+## 5) Smoke Tests (Prod)
+- `/` renders with top bar + right rail; links are clickable.
+- `/login` shows GitHub/Google buttons; redirect flow completes to `/admin`.
+- `/admin`:
+  - Signed-out → redirected to `/login?redirectTo=/admin`.
+  - Signed-in `admin|contributor` → access granted; `reader` → redirected home.
+- Feeds surface returns items (unread count optional).
+- Sign-out works (POST `/api/auth/signout` → home).
+
+---
+## 6) Supabase Migrations
+- Apply SQL files in `supabase/migrations/` through Supabase SQL editor or CLI.
+- Confirm `profiles` table exists and `handle_new_user()` trigger assigns default `reader` role.
+- Promote users to `contributor`/`admin` using SQL or GUI.
+
+---
+## 7) Monitoring & Incidents
+- Watch Vercel build & runtime logs for repeated warnings.
+- For auth/login issues: verify callbacks in Supabase, check domain in `NEXT_PUBLIC_SITE_URL`.
+- For feed errors: verify `FRESHRSS_API_URL` points to `.../api/greader.php` and credentials are valid.
+- Incident playbook:
+  1. Identify blast radius (only admin? entire site?).
+  2. Roll back or hotfix (sections 2–3).
+  3. Announce status & ETA internally.
+  4. Create postmortem entry (summary, impact, root cause, actions).
+
+# Engineer Onboarding — GAILP
+
+Welcome! This guide gets you productive in ~15 minutes.
+
+## Prereqs
+- Node.js ≥ 18
+- pnpm ≥ 8 (`corepack enable` then `corepack prepare pnpm@latest --activate`)
+- Git + GitHub access
+
+## Setup
+```bash
+git clone <repo-url> www-GAILP-prd
+cd www-GAILP-prd
+pnpm install
+cp .env.example .env.local  # create local env file
+# Fill in:
+# NEXT_PUBLIC_SUPABASE_URL=...
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+# NEXT_PUBLIC_SITE_URL=http://localhost:3000
+# Optional FreshRSS:
+# FRESHRSS_API_URL=https://host/api/greader.php
+# FRESHRSS_API_USERNAME=...
+# FRESHRSS_API_PASSWORD=...
+pnpm dev
+```
+
+Visit `http://localhost:3000`.
+
+## Common Scripts
+- `pnpm dev` — run locally
+- `pnpm build` — typecheck & build
+- `pnpm lint` — lint
+- `pnpm test` — jest tests (if/when added)
+
+## Branch & PR Flow
+- Branches: `feature/<slug>`, `fix/<slug>`, `hotfix/<slug>`
+- Commit: concise subject + context
+- PR checklist:
+  - Build passes (`pnpm build`)
+  - No stray `<html>/<body>` in pages (App Router)
+  - Relative imports OK if alias not configured
+  - No client hooks in server files
+
+## Auth Roles
+- Default `reader` on first login; promote to `contributor`/`admin` in Supabase.
+- `/admin/**` requires `admin|contributor` (gated in `app/admin/layout.tsx`).
+
+## Where to edit UI
+- Top bar links: `components/Navigation.tsx`
+- Right rail links: `components/RightSidebar.tsx`
+- Global layout: `app/layout.tsx` → `components/GlobalChrome.tsx`
+
+# Next Working Session — Agenda & Prep
+
+## Goals
+- Finalize nav IA (top bar labels/URLs, right-rail quick links)
+- Tighten `/admin` surface (role-based menu; content editor access)
+- Feeds polish (categorization, pagination, loading states)
+- Auth UX details (post-login redirect, sign-out placement, 403 copy)
+- Basic analytics & SEO (sitemap, robots, meta)
+
+## Prep (do before session, ~10–15 min)
+- Confirm `NEXT_PUBLIC_SITE_URL` points to your Vercel domain in Prod
+- Enable your chosen OAuth providers in Supabase; verify callbacks
+- Create one `contributor` test user; one `reader` user
+- List the exact pages you want in the top bar and right rail
+
+## Decisions to Make
+- Final route names: `/updates`, `/blog`, `/live-policy`, `/law-policy`, `/research`, `/about`
+- Access policy for `/admin` subsections (who can publish? delete?)
+- Whether FreshRSS unread counts are required in MVP
+
+## Candidate Tasks
+- Implement per-section layouts where needed (only some routes show the rail)
+- Add active-link styles and breadcrumb where relevant
+- Write minimal e2e smoke tests (Playwright) for nav + auth flows
+- Add `vercel.json` to pin install/build commands if necessary
