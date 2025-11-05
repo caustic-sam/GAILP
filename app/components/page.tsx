@@ -489,4 +489,3 @@ export default function ComponentGallery() {
     </div>
   );
 }
-sw
