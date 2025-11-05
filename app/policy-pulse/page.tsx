@@ -137,7 +137,6 @@ export default async function PolicyPulsePage() {
           &copy; {new Date().getFullYear()} GAILP. All rights reserved.
         </footer>
       </div>
-      <RightSidebar />
     </div>
   );
 }
