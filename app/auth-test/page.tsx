@@ -1,9 +1,43 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function AuthTestPage() {
-  const { user, loading } = useAuth();
+  let user: any = null;
+  let loading = false;
+  let hasProvider = true;
+
+  // Safely attempt to read auth context; if provider is missing, avoid crashing
+  try {
+    const ctx = useAuth();
+    user = ctx.user;
+    loading = ctx.loading;
+  } catch (_err) {
+    hasProvider = false;
+  }
+
+  if (!hasProvider) {
+    return (
+      <div className="p-8 max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">Auth Status Test</h1>
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <h2 className="text-lg font-bold text-yellow-900 mb-2">Auth Provider Not Detected</h2>
+          <p className="text-sm text-yellow-800 mb-4">
+            This page is running without an <code>AuthProvider</code> wrapping it. You can still proceed to the login page for a full test once the provider is added to <code>app/layout.tsx</code> or <code>app/admin/layout.tsx</code>.
+          </p>
+          <a
+            href="/login?redirectTo=/auth-test"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Go to Login →
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return <div className="p-8">Loading...</div>;
