@@ -84,8 +84,8 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@types/xml2js": "^0.4.14",
-    "@typescript-eslint/eslint-plugin": "^8.46.3",
-    "@typescript-eslint/parser": "^8.46.3",
+    "@typescript-eslint/eslint-plugin": "8.46.2",
+    "@typescript-eslint/parser": "8.46.2",
     "autoprefixer": "^10.4.21",
     "axios": "^1.13.2",
     "eslint": "^9.39.1",
@@ -101,6 +101,16 @@
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.20.6"
+  },
+  "overrides": {
+    "@typescript-eslint/eslint-plugin": "8.46.2",
+    "@typescript-eslint/parser": "8.46.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@typescript-eslint/eslint-plugin": "8.46.2",
+      "@typescript-eslint/parser": "8.46.2"
+    }
   },
   "lint-staged": {
     "*.{ts,tsx}": [
