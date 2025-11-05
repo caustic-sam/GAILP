@@ -24,7 +24,7 @@ A modern, production-ready Next.js application for analyzing and tracking digita
 ### **Future Goal**
 *  ✅ **MCP Model (LLM)** -  Trained on NIST guidance from the SP series of documetation.
 *  ✅ **International Agent** - Top technical site from arounf thw prld will be translated ad display in iFrames or the technique of the day.
-*  ✅ 
+*  ✅ ** x **
 *  ✅ 
 *  ✅ 
 *  ✅ 
