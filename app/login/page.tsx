@@ -1,9 +1,11 @@
+// app/login/page.tsx
 import { redirect } from 'next/navigation';
 import { getSupabaseServer } from '../../lib/supabase/server';
+
 export const dynamic = 'force-dynamic';
 
 export default async function LoginPage() {
-  const supabase = getSupabaseServer();
+  const supabase = await getSupabaseServer();
   const { data: { session } } = await supabase.auth.getSession();
   if (session) redirect('/admin');
 

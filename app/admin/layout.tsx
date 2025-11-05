@@ -4,7 +4,7 @@ import { getSupabaseServer } from '../../lib/supabase/server';
 export const dynamic = 'force-dynamic';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
-  const supabase = getSupabaseServer();
+  const supabase = await getSupabaseServer();
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) redirect('/login?redirectTo=/admin');
 
