@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { getSupabaseServer } from '../../lib/supabase/server';
+
 export const dynamic = 'force-dynamic';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {

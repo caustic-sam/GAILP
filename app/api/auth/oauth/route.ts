@@ -12,7 +12,6 @@ export async function GET(req: Request) {
     provider,
     options: { redirectTo }
   });
-
   if (error || !data?.url) return NextResponse.redirect(new URL('/login?err=oauth', url));
   return NextResponse.redirect(data.url);
 }

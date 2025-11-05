@@ -1,4 +1,3 @@
-// app/login/page.tsx
 import { redirect } from 'next/navigation';
 import { getSupabaseServer } from '../../lib/supabase/server';
 
