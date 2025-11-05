@@ -368,3 +368,206 @@ All ✅ means ready for production:
 **Standards Compliance:** ✅ Full
 
 🎯 **Ready to test and deploy!**
+
+---
+
+## 🔄 OAuth Pivot — v0.1.1 (Planned & In Progress)
+
+**Why:** Email OTP felt clunky (session not persisting cleanly). We’re moving to OAuth (GitHub/Google) with server-side code exchange to set proper cookies and avoid double sign-in.
+
+### What Changes
+- Replace OTP-first UX with **OAuth-first** (keep OTP as fallback)
+- Remove middleware-based gating and use **server-side layout gating** for `/admin/**`
+- Server handles the OAuth **code exchange** so cookies are set reliably
+- Add a simple **Sign out** route
+- Roles aligned to: **admin, contributor, reader**
+
+### Scope of Done (v0.1.1)
+- [ ] `/login` renders server-side and shows OAuth buttons (no client auth hook)
+- [ ] `/admin/**` protected by `app/admin/layout.tsx` server gate (session + role)
+- [ ] `auth/callback` route exchanges code → session cookies
+- [ ] `api/auth/oauth` starts provider flow (redirects to provider)
+- [ ] `api/auth/signout` ends session and redirects home
+- [ ] `profiles(role)`: `admin | contributor | reader` with RLS
+- [ ] Vercel build stays green (no `useAuth` at prerender)
+
+### Files to Add/Update
+- `lib/supabase/server.ts`
+- `app/admin/layout.tsx`
+- `app/login/page.tsx` (server component, OAuth buttons)
+- `app/api/auth/oauth/route.ts`
+- `app/auth/callback/route.ts`
+- `app/api/auth/signout/route.ts`
+- `supabase/migrations/002_oauth_roles.sql`
+
+### Code Snippets
+**Server client (SSR)** — `lib/supabase/server.ts`
+```ts
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
+
+export function getSupabaseServer() {
+  const cookieStore = cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: (name) => cookieStore.get(name)?.value,
+        set: (name, value, options) => cookieStore.set({ name, value, ...options }),
+        remove: (name, options) => cookieStore.set({ name, value: '', ...options }),
+      },
+    },
+  );
+}
+```
+
+**Protect /admin** — `app/admin/layout.tsx`
+```tsx
+import { ReactNode } from 'react';
+import { redirect } from 'next/navigation';
+import { getSupabaseServer } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
+
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  const supabase = getSupabaseServer();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) redirect('/login?redirectTo=/admin');
+
+  // Optional role gate
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', session.user.id)
+    .single();
+  if (!profile || (profile.role !== 'admin' && profile.role !== 'contributor')) {
+    redirect('/');
+  }
+  return <>{children}</>;
+}
+```
+
+**Login (server, no hook)** — `app/login/page.tsx`
+```tsx
+import { redirect } from 'next/navigation';
+import { getSupabaseServer } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
+
+export default async function LoginPage() {
+  const supabase = getSupabaseServer();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) redirect('/admin');
+
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const redirectTo = `${origin}/auth/callback`;
+
+  return (
+    <div className="p-8 max-w-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Login</h1>
+      <div className="space-x-2">
+        <a className="px-4 py-2 border rounded" href={`/api/auth/oauth?provider=github&redirectTo=${encodeURIComponent(redirectTo)}`}>Sign in with GitHub</a>
+        <a className="px-4 py-2 border rounded" href={`/api/auth/oauth?provider=google&redirectTo=${encodeURIComponent(redirectTo)}`}>Sign in with Google</a>
+      </div>
+    </div>
+  );
+}
+```
+
+**Start OAuth** — `app/api/auth/oauth/route.ts`
+```ts
+import { NextResponse } from 'next/server';
+import { getSupabaseServer } from '@/lib/supabase/server';
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const provider = searchParams.get('provider') as 'github' | 'google' | null;
+  const redirectTo = searchParams.get('redirectTo') ?? '/auth/callback';
+  if (!provider) return NextResponse.redirect(new URL('/login', req.url));
+
+  const supabase = getSupabaseServer();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo }
+  });
+  if (error || !data.url) return NextResponse.redirect(new URL('/login?err=oauth', req.url));
+  return NextResponse.redirect(data.url);
+}
+```
+
+**Handle callback & set cookies** — `app/auth/callback/route.ts`
+```ts
+import { NextResponse } from 'next/server';
+import { getSupabaseServer } from '@/lib/supabase/server';
+
+export async function GET(req: Request) {
+  const supabase = getSupabaseServer();
+  await supabase.auth.exchangeCodeForSession(req.url);
+  const url = new URL(req.url);
+  const rt = url.searchParams.get('redirectedFrom') || '/admin';
+  return NextResponse.redirect(rt, { headers: { 'Cache-Control': 'no-store' } });
+}
+```
+
+**Sign out** — `app/api/auth/signout/route.ts`
+```ts
+import { NextResponse } from 'next/server';
+import { getSupabaseServer } from '@/lib/supabase/server';
+
+export async function POST(req: Request) {
+  const supabase = getSupabaseServer();
+  await supabase.auth.signOut();
+  return NextResponse.redirect(new URL('/', req.url));
+}
+```
+
+**Roles & RLS** — `supabase/migrations/002_oauth_roles.sql`
+```sql
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  email text unique,
+  role text not null default 'reader' check (role in ('admin','contributor','reader')),
+  created_at timestamptz default now()
+);
+alter table public.profiles enable row level security;
+
+-- users can read their own profile
+create policy "profiles_self_select" on public.profiles
+  for select using (auth.uid() = id);
+
+-- allow admins to select all
+create policy "profiles_admin_select_all" on public.profiles
+  for select using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+
+-- only admins can update roles
+create policy "profiles_admin_update" on public.profiles
+  for update using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));
+
+-- auto-create profile on signup (edge function or trigger can be used; example trigger):
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, email, role)
+  values (new.id, new.email, case when new.email = 'malsicario@malsicario.com' then 'admin' else 'reader' end)
+  on conflict (id) do nothing;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+```
+
+### Supabase Dashboard To-Do
+- Enable **GitHub** and/or **Google** providers.  
+  Redirect URLs to add:\
+  `http://localhost:3000/auth/callback` (dev)\
+  `https://www-gailp-prd…/auth/callback` (prod)
+- Confirm email templates and site URL.
+
+### Risk Notes
+- Ensure no client component calls `useAuth` in server paths.
+- Keep Service Role **server-only** (never `NEXT_PUBLIC_*`).  
