@@ -5,7 +5,13 @@
   "description": "Independent analysis of global digital policy, data governance, and identity frameworks",
   "author": "Wren / CortexAI",
   "license": "MIT",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "scripts": {
+    "preinstall": "corepack enable",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -66,7 +72,6 @@
     "tailwind-merge": "^3.3.1",
     "typescript": "^5.9.3",
     "xml2js": "^0.6.2",
-    "yarn": "link:/yarn",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -97,11 +102,6 @@
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.20.6"
   },
-  "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
-  },
-  "packageManager": "pnpm@8.15.0",
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
