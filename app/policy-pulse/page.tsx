@@ -3,7 +3,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { RightSidebar } from '@/components/RightSidebar';
 import { getFreshRSSClient, FreshRSSClient, FreshRSSItem } from '@/lib/freshrss';
 import { WorldClocks } from '@/components/WorldClocks';
 
