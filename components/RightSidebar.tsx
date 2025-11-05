@@ -20,8 +20,8 @@ const navItems: NavItem[] = [
 
 export function RightSidebar() {
   return (
-    <aside className="hidden xl:block fixed right-0 top-0 w-12 hover:w-48 h-screen overflow-y-auto bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-l border-blue-900/20 z-40 transition-all duration-300 group">
-      <nav className="p-2 pt-20">
+    <aside className="hidden xl:block fixed right-0 top-16 h-[calc(100vh-4rem)] w-12 hover:w-56 overflow-y-auto bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-l border-blue-900/20 z-40 transition-all duration-300 group">
+      <nav className="p-2 pt-4">
         <h3 className="text-xs font-semibold text-blue-200 uppercase tracking-wider mb-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap overflow-hidden">
           Quick Nav
         </h3>
@@ -36,7 +36,9 @@ export function RightSidebar() {
                   title={item.label}
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">{item.label}</span>
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    {item.label}
+                  </span>
                 </a>
               </li>
             );
