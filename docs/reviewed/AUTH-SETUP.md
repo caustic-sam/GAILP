@@ -1,82 +1,72 @@
-# OAuth Authentication Setup Guide
+# OAuth Authentication Setup Guide (Production-Only)
 
-**Version:** 0.2.0 - OAuth Migration
+**Version:** 0.3.0 - Production Deployment
 **Status:** ✅ Ready to Configure
-**Providers:** GitHub, Apple Sign In
-**Standards:** OAuth 2.0, OpenID Connect
+**Provider:** GitHub OAuth
+**Production URL:** https://www-gailp-prd.vercel.app
 
 ---
 
 ## 🎯 Overview
 
-This guide walks you through setting up OAuth authentication for GAILP using GitHub and Apple Sign In providers via Supabase.
+Simplified production-only OAuth setup for GAILP. No localhost configuration needed - everything runs on Vercel.
 
 ### What You'll Configure
 
-- **GitHub OAuth** (15 minutes)
-- **Apple Sign In** (15 minutes)
-- **Supabase Provider Settings** (5 minutes)
-- **WordPress-Style Roles** (5 minutes)
+- **GitHub OAuth Application** (5 minutes)
+- **Supabase Provider Settings** (3 minutes)
+- **WordPress-Style Roles Migration** (2 minutes)
 
-**Total Time:** ~40 minutes
+**Total Time:** ~10 minutes
 
 ---
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have:
-
 - ✅ Supabase project created
-- ✅ GitHub account (for GitHub OAuth)
-- ✅ Apple Developer account ($99/year - for Apple Sign In)
-- ✅ Access to project environment variables
-- ✅ Code deployed to branch: `feature/oauth-migration`
+- ✅ GitHub account
+- ✅ Vercel deployment at: `www-gailp-prd.vercel.app`
+- ✅ Code on branch: `feature/oauth-migration`
 
 ---
 
-## Part 1: GitHub OAuth Setup (15 min)
+## Part 1: GitHub OAuth Setup (5 min)
 
-### Step 1: Create GitHub OAuth Application
+### Step 1: Update Your Existing GitHub OAuth App
 
-1. **Navigate to GitHub Developer Settings:**
-   - Go to: https://github.com/settings/developers
-   - Click: **"OAuth Apps"** → **"New OAuth App"**
+You already created a GitHub OAuth app. Now update it for production-only:
 
-2. **Configure Development App:**
+1. **Go to GitHub Developer Settings:**
+   - https://github.com/settings/developers
+   - Find your existing OAuth app (or create new one if needed)
+
+2. **Update Application Settings:**
    ```
-   Application name:       GAILP (Development)
-   Homepage URL:           http://localhost:3000
-   Authorization callback: http://localhost:3000/auth/callback
+   Application name:       GAILP
+   Homepage URL:           https://www-gailp-prd.vercel.app
+   Authorization callback: https://ksidbebbiljckrxlunxi.supabase.co/auth/v1/callback
    Application description: GAILP policy intelligence platform
    ```
 
-3. **Click "Register application"**
+   ⚠️ **CRITICAL:** The callback URL must be your **Supabase callback URL**, not your app's callback URL!
 
-4. **Copy Credentials:**
-   - **Client ID:** (Ov23li4jkaFi1CB9hs0C)
+3. **Note Your Credentials:**
+   - **Client ID:** `Ov23li4jkaFi1CB9hs0C` (you already have this)
+   - **Client Secret:** (use existing or regenerate if needed)
 
-   - **Client Secret:** 8b4171e6ce559022752580e35b575ca585eb0ec7
-- 
+4. **Click "Update application"**
 
-   ⚠️ **CRITICAL:** Save both values securely - the secret won't be shown again!
+✅ **Done!** Your GitHub OAuth app is now production-ready.
 
-### Step 2: Create Production OAuth Application
+---
 
-Repeat Step 1 for production:
+## Part 2: Supabase Configuration (3 min)
 
-```
-Application name:       GAILP (Production)
-Homepage URL:           https://your-domain.vercel.app. Ov23liyY50M9V43lygpM
-
-Authorization callback: https://your-domain.vercel.app/auth/callback
-
-**Note:** You can update this later when you have your production domain.
-
-### Step 3: Configure in Supabase
+### Step 1: Enable GitHub Provider
 
 1. **Open Supabase Dashboard:**
    - Go to: https://supabase.com/dashboard
-   - Select your GAILP project
+   - Select your GAILP project: `ksidbebbiljckrxlunxi`
 
 2. **Navigate to Authentication:**
    - Sidebar → **Authentication** → **Providers**
@@ -87,476 +77,235 @@ Authorization callback: https://your-domain.vercel.app/auth/callback
 
 4. **Enter Credentials:**
    ```
-   Client ID (OAuth):     www-gailp-prd
-   Client Secret (OAuth): koxwe6-keqmeS-jirdam
+   Client ID (OAuth):     Ov23li4jkaFi1CB9hs0C
+   Client Secret (OAuth): [your-github-client-secret]
    ```
+
+   (Use the secret from your GitHub OAuth app)
 
 5. **Click "Save"**
 
-### Step 4: Verify GitHub Configuration
-
-✅ Checklist:
-- [ x] GitHub OAuth app created
-- [ x] Client ID and Secret copied
-- [ x] Both values added to Supabase
-- [ x] Callback URL matches exactly: `http://localhost:3000/auth/callback`
-
----
-
-## Part 2: Apple Sign In Setup (15 min)
-
-### Prerequisites
-
-- Apple Developer Program membership ($99/year)
-- Access to https://developer.apple.com/account
-
-### Step 1: Create App ID
-
-1. **Navigate to Apple Developer Console:**
-   - Go to: https://developer.apple.com/account/resources/identifiers/list
-   - Click: **"+"** → **"App IDs"** → **"Continue"**
-
-2. **Register App ID:**
-   ```
-   Description:    GAILP Policy Platform
-   Bundle ID:      com.gailp.webapp (or your domain: com.yourdomain.gailp)
-   Capabilities:   ✅ Sign In with Apple (check this box)
-   ```
-
-3. **Click "Continue"** → **"Register"**
-
-### Step 2: Create Services ID
-
-1. **Create New Services ID:**
-   - Click **"+"** → **"Services IDs"** → **"Continue"**
-
-2. **Configure Services ID:**
-   ```
-   Description:    GAILP Web Authentication
-   Identifier:     com.gailp.webapp.auth (must be different from App ID)
-   ✅ Sign In with Apple (check this box)
-   ```
-
-3. **Click "Continue"** → **"Register"**
-
-4. **Configure Sign In with Apple:**
-   - Click on your newly created Services ID
-   - Click **"Configure"** next to "Sign In with Apple"
-
-   **Primary App ID:** Select the App ID from Step 1
-
-   **Domains and Subdomains:**
-   ```
-   localhost
-   your-domain.vercel.app
-   ```
-
-   **Return URLs:**
-   ```
-   http://localhost:3000/auth/callback
-   https://your-domain.vercel.app/auth/callback
-   ```
-
-   ⚠️ **Note:** For local testing with Apple, you'll need to use **ngrok** or similar HTTPS tunnel since Apple requires HTTPS.
-
-5. **Click "Save"** → **"Continue"** → **"Register"**
-
-### Step 3: Generate Private Key
-
-1. **Navigate to Keys:**
-   - Go to: https://developer.apple.com/account/resources/authkeys/list
-   - Click **"+"**
-
-2. **Create Key:**
-   ```
-   Key Name:  GAILP Sign In Key
-   ✅ Sign In with Apple (check this box)
-   ```
-
-3. **Click "Configure":**
-   - **Primary App ID:** Select your App ID
-   - Click **"Save"**
-
-4. **Click "Continue"** → **"Register"**
-
-5. **Download Key:**
-   - Click **"Download"**
-   - File will be named: `AuthKey_XXXXXXXXXX.p8`
-   - **⚠️ CRITICAL:** You can only download this ONCE! Save it securely.
-   - **Note the Key ID** shown on screen (e.g., `AB12CD34EF`)
-
-### Step 4: Find Your Team ID
-
-1. **Get Team ID:**
-   - Go to: https://developer.apple.com/account
-   - Look in the sidebar for **"Team ID"**
-   - Example format: `A1B2C3D4E5`
-   - Copy this value
-
-### Step 5: Configure in Supabase
-
-1. **Navigate to Supabase:**
-   - Dashboard → **Authentication** → **Providers**
-   - Find **Apple** → Click to expand
-
-2. **Toggle "Enable Sign in with Apple"** → **ON**
-
-3. **Enter Configuration:**
-   ```
-   Services ID:  com.gailp.webapp.auth (from Step 2)
-   Team ID:      A1B2C3D4E5 (from Step 4)
-   Key ID:       AB12CD34EF (from Step 3)
-   ```
-
-4. **Add Private Key:**
-   - Open the `AuthKey_XXXXXXXXXX.p8` file in a text editor
-   - Copy the **entire contents** including BEGIN/END lines:
-   ```
-   -----BEGIN PRIVATE KEY-----
-   MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg...
-   ...full key content...
-   -----END PRIVATE KEY-----
-   ```
-   - Paste into the **"Private Key"** field in Supabase
-
-5. **Click "Save"**
-
-### Step 6: Verify Apple Configuration
-
-✅ Checklist:
-- [ ] App ID created
-- [ ] Services ID created and configured
-- [ ] Private key downloaded and saved
-- [ ] Team ID and Key ID copied
-- [ ] All values added to Supabase
-- [ ] Return URLs include localhost AND production
-
-⚠️ **Local Testing Note:** Apple requires HTTPS. For local testing, you'll need to use:
-- **ngrok:** `ngrok http 3000` to get HTTPS tunnel
-- Update Apple Services ID with ngrok URL temporarily
-- Or test Apple Sign In on production deployment only
-
----
-
-## Part 3: Supabase Configuration (5 min)
-
-### Update Redirect URLs
+### Step 2: Configure Redirect URLs
 
 1. **Navigate to URL Configuration:**
-   - Dashboard → **Authentication** → **URL Configuration**
+   - Authentication → **URL Configuration**
 
 2. **Set Site URL:**
    ```
-   Development:  http://localhost:3000
-   Production:   https://your-domain.vercel.app
+   https://www-gailp-prd.vercel.app
    ```
 
 3. **Add Redirect URLs:**
    Click **"Add URL"** for each:
    ```
-   http://localhost:3000/*
-   http://localhost:3000/auth/callback
-   https://your-domain.vercel.app/*
-   https://your-domain.vercel.app/auth/callback
+   https://www-gailp-prd.vercel.app/*
+   https://www-gailp-prd.vercel.app/auth/callback
    ```
 
 4. **Click "Save"**
 
-### Disable Email Templates (Optional)
-
-Since we're OAuth-only now:
-
-1. **Navigate to:** Authentication → **Email Templates**
-2. **Templates to disable:**
-   - Magic Link (no longer used)
-   - Confirm signup (optional - keep if you want email verification)
+✅ **Done!** Supabase is configured.
 
 ---
 
-## Part 4: Database Setup (5 min)
+## Part 3: Database Migration (2 min)
 
 ### Run WordPress Roles Migration
 
-1. **Open Supabase Dashboard:**
-   - Go to: **SQL Editor**
+1. **Open SQL Editor:**
+   - Supabase Dashboard → **SQL Editor** → **New Query**
 
-2. **Create New Query:**
-   - Click **"+ New Query"**
-
-3. **Copy Migration:**
-   - Open: `supabase/migrations/003_wordpress_roles.sql` in your project
+2. **Copy Migration SQL:**
+   - Open your project file: `supabase/migrations/003_wordpress_roles.sql`
    - Copy the entire contents
 
-4. **Paste and Execute:**
+3. **Run Migration:**
    - Paste into SQL Editor
-   - Click **"Run"** (or press Cmd/Ctrl + Enter)
+   - Click **"Run"** (or Cmd/Ctrl + Enter)
 
-5. **Verify Success:**
+4. **Verify Success:**
    ```sql
-   -- Check that roles updated
-   SELECT email, role FROM public.user_profiles;
-
-   -- Should show your email as 'admin'
-   SELECT * FROM public.user_profiles
+   -- Check your role
+   SELECT email, role FROM public.user_profiles
    WHERE email = 'malsicario@malsicario.com';
+
+   -- Should show: malsicario@malsicario.com | admin
    ```
 
-### WordPress-Style Roles
-
-Your system now has 4 roles:
-
-```
-┌─ ADMIN ─────────────────────────────────┐
-│ Full system access                       │
-│ User management, security, settings      │
-│ All publishing capabilities              │
-│ YOU (malsicario@malsicario.com)         │
-└──────────────────────────────────────────┘
-
-┌─ PUBLISHER ─────────────────────────────┐
-│ Publish & manage all content             │
-│ Access media library & analytics         │
-│ Cannot manage users or system settings   │
-└──────────────────────────────────────────┘
-
-┌─ CONTRIBUTOR ───────────────────────────┐
-│ Create & edit own content                │
-│ Submit articles for review               │
-│ Cannot publish                           │
-└──────────────────────────────────────────┘
-
-┌─ READER ────────────────────────────────┐
-│ View published content only              │
-│ No admin access                          │
-│ Default role for new users               │
-└──────────────────────────────────────────┘
-```
+✅ **Done!** Database is ready.
 
 ---
 
-## Part 5: Environment Variables
+## Part 4: Vercel Environment Variables (Optional)
 
-### No Changes Needed!
+Your `.env.local` has been updated. To ensure Vercel has the correct variables:
 
-Your existing `.env.local` has everything needed:
+1. **Go to Vercel Dashboard:**
+   - https://vercel.com/caustic-sams-projects-2d85e2bb/www-gailp-prd/settings/environment-variables
 
-```bash
-# Supabase (already configured)
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+2. **Verify/Add Variable:**
+   ```
+   NEXT_PUBLIC_SITE_URL = https://www-gailp-prd.vercel.app
+   ```
 
-# Site URL (for OAuth redirects)
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-```
-
-For production (Vercel Environment Variables):
-```bash
-NEXT_PUBLIC_SITE_URL=https://your-domain.vercel.app
-```
-
-**That's it!** OAuth credentials are stored securely in Supabase, not in environment variables.
+3. **Redeploy if you made changes**
 
 ---
 
-## Part 6: Testing
+## 🧪 Testing OAuth Flow
 
-### Test GitHub OAuth (Local)
+### After Configuration:
 
-1. **Start Development Server:**
+1. **Push Code to GitHub:**
    ```bash
-   pnpm dev
+   git add .
+   git commit -m "[GAILP-16] Configure production-only OAuth"
+   git push origin feature/oauth-migration
    ```
 
-2. **Navigate to Login:**
-   - Open: http://localhost:3000/login
+2. **Merge to Main** (or deploy branch directly)
 
-3. **Click "Sign in with GitHub"**
+3. **Visit Login Page:**
+   - https://www-gailp-prd.vercel.app/login
 
-4. **Expected Flow:**
+4. **Click "Sign in with GitHub"**
+
+5. **Expected Flow:**
    ```
-   1. Redirects to GitHub
-   2. Shows authorization screen
-   3. Click "Authorize"
-   4. Redirects back to http://localhost:3000/admin
-   5. You're logged in! ✅
+   1. Redirects to GitHub authorization
+   2. Click "Authorize"
+   3. Redirects back to homepage
+   4. ✅ You're logged in!
    ```
 
-5. **Verify in Supabase:**
+6. **Verify in Supabase:**
    - Dashboard → **Authentication** → **Users**
    - Your GitHub account should appear
-   - Check `user_profiles` table for role assignment
-
-### Test Apple Sign In (Production Recommended)
-
-⚠️ **Apple requires HTTPS** - easiest to test on deployed site.
-
-**Option A: Test on Production**
-1. Deploy to Vercel
-2. Visit: https://your-domain.vercel.app/login
-3. Click "Sign in with Apple"
-4. Should work immediately
-
-**Option B: Local Testing with ngrok**
-1. Install ngrok: `brew install ngrok`
-2. Start tunnel: `ngrok http 3000`
-3. Copy HTTPS URL: `https://abc123.ngrok.io`
-4. Update Apple Services ID:
-   - Add ngrok domain to "Domains and Subdomains"
-   - Add `https://abc123.ngrok.io/auth/callback` to "Return URLs"
-5. Visit: https://abc123.ngrok.io/login
-6. Test Apple Sign In
+   - Check `user_profiles` table - role should be `admin`
 
 ---
 
-## Part 7: Troubleshooting
+## 🔧 Troubleshooting
 
-### GitHub: "Redirect URI mismatch"
+### Error: "Redirect URI mismatch"
 
-**Problem:** Callback URL doesn't match OAuth app configuration
-
-**Fix:**
-- Verify GitHub OAuth app callback: `http://localhost:3000/auth/callback`
-- Must be exact (no trailing slash, correct protocol)
-- Check for typos
-
-### Apple: "invalid_client"
-
-**Problem:** Credentials mismatch
+**Problem:** GitHub OAuth callback doesn't match
 
 **Fix:**
-- Verify Services ID in Supabase matches Apple exactly
-- Check Team ID is correct (10 characters, alphanumeric)
-- Ensure Private Key includes BEGIN/END lines
-- Key ID must match downloaded key
+- Verify GitHub OAuth app callback is: `https://ksidbebbiljckrxlunxi.supabase.co/auth/v1/callback`
+- Check for typos, trailing slashes
+- Must be **Supabase callback**, not your app's `/auth/callback`
 
-### Apple: "unauthorized_client"
+### Error: "Provider not enabled"
 
-**Problem:** Return URL not authorized
-
-**Fix:**
-- Add return URL in Apple Developer Console
-- Format: `https://domain.com/auth/callback` (HTTPS required)
-- Wait 5 minutes for Apple's CDN to update
-- Try again
-
-### Session Not Persisting
-
-**Problem:** Login works but session doesn't stay
+**Problem:** GitHub provider not enabled in Supabase
 
 **Fix:**
-- Check `NEXT_PUBLIC_SITE_URL` matches current domain
-- Clear browser cookies
-- Try incognito/private mode
-- Verify Supabase redirect URLs are correct
+- Go to Supabase → Authentication → Providers
+- Toggle GitHub **ON**
+- Enter Client ID and Secret
+- Click **Save**
+
+### Error: "Session not persisting"
+
+**Problem:** Redirect URLs don't match
+
+**Fix:**
+- Check Supabase URL Configuration
+- Site URL: `https://www-gailp-prd.vercel.app`
+- Redirect URLs include your production domain
+- Redeploy after making changes
 
 ### Check Supabase Logs
 
 1. **View Auth Logs:**
    - Dashboard → **Logs** → **Auth Logs**
    - Look for errors during OAuth flow
-   - Check for "provider not enabled" errors
 
-2. **Common Log Messages:**
+2. **Success message:**
    ```
-   ✅ "User signed in via github" - Success!
-   ❌ "Provider not enabled" - Check provider toggle in Supabase
-   ❌ "Invalid redirect URL" - Check URL configuration
+   ✅ "User signed in via github"
+   ```
+
+3. **Error messages:**
+   ```
+   ❌ "Provider not enabled" → Enable GitHub in providers
+   ❌ "Invalid redirect URL" → Check URL configuration
    ```
 
 ---
 
-## Part 8: Verification Checklist
+## ✅ Verification Checklist
 
-Before moving to code implementation, verify:
+Before testing, verify:
 
 ### GitHub OAuth
-- [ ] OAuth app created (dev + prod)
+- [ ] OAuth app updated with production callback URL
+- [ ] Callback URL is Supabase URL (not app URL)
 - [ ] Client ID and Secret in Supabase
 - [ ] Provider enabled in Supabase
-- [ ] Test login works locally
-- [ ] User profile created with correct role
 
-### Apple Sign In
-- [ ] App ID created
-- [ ] Services ID created
-- [ ] Private key generated and saved
-- [ ] Team ID and Key ID in Supabase
-- [ ] Provider enabled in Supabase
-- [ ] Return URLs configured
-- [ ] Tested (production or ngrok)
+### Supabase
+- [ ] GitHub provider enabled
+- [ ] Site URL set to production domain
+- [ ] Redirect URLs include production domain
+- [ ] Database migration completed
+- [ ] Your email has 'admin' role
 
-### Database
-- [ ] Migration ran successfully
-- [ ] Your email shows as 'admin' role
-- [ ] `user_capabilities` view works
-- [ ] RLS policies enabled
-
-### Ready for Code?
-- [ ] Both providers work
-- [ ] Roles assigned correctly
-- [ ] No errors in Supabase logs
-- [ ] Tell Claude "OAuth configured" to proceed!
+### Vercel
+- [ ] Latest code deployed
+- [ ] Environment variables set
+- [ ] Production URL matches configuration
 
 ---
 
 ## 🎯 What's Next
 
-Once you've completed all steps above and verified everything works:
+Once OAuth login works:
 
-**Tell Claude: "OAuth configured"**
-
-Then Claude will:
-1. Create role-specific sidebar components
-2. Update login page UI
-3. Wire up OAuth buttons
-4. Test complete authentication flow
-5. Deploy to production
-
----
-
-## 📞 Need Help?
-
-### Resources
-
-- **Supabase OAuth Docs:** https://supabase.com/docs/guides/auth/social-login
-- **GitHub OAuth Docs:** https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app
-- **Apple Sign In Docs:** https://developer.apple.com/sign-in-with-apple/get-started/
-
-### Support
-
-- **Supabase Discord:** https://discord.supabase.com
-- **Stack Overflow:** Tag with `supabase` and `oauth`
-- **Claude (me!):** Just ask if you hit any issues
+1. **Create admin dashboard** (`/admin` page)
+2. **Build role-specific sidebars**
+   - AdminSidebar (full access)
+   - PublisherSidebar (publishing focus)
+   - ContributorSidebar (content creation)
+3. **Add user profile display** in Header
+4. **Implement sign out** UI
 
 ---
 
 ## 📝 Quick Reference
 
-### Callback URL
+### Production URLs
 ```
-Development:  http://localhost:3000/auth/callback
-Production:   https://your-domain.vercel.app/auth/callback
+App:              https://www-gailp-prd.vercel.app
+Login:            https://www-gailp-prd.vercel.app/login
+Supabase Project: https://ksidbebbiljckrxlunxi.supabase.co
+GitHub OAuth:     https://github.com/settings/developers
 ```
 
-### Where to Configure
+### Callback URL (for GitHub OAuth app)
+```
+https://ksidbebbiljckrxlunxi.supabase.co/auth/v1/callback
+```
 
-| Provider | Create App | Add to Supabase |
-|----------|-----------|-----------------|
-| GitHub   | https://github.com/settings/developers | Dashboard → Auth → Providers → GitHub |
-| Apple    | https://developer.apple.com/account | Dashboard → Auth → Providers → Apple |
+### Your Credentials
+```
+GitHub Client ID: Ov23li4jkaFi1CB9hs0C
+Supabase URL:     https://ksidbebbiljckrxlunxi.supabase.co
+```
 
-### Required Files
-
-✅ Already in your project:
-- `supabase/migrations/003_wordpress_roles.sql`
-- `lib/auth/types.ts` (with new roles)
-- `contexts/AuthContext.tsx` (OTP removed)
-- `app/login/page.tsx` (OAuth-ready)
+### WordPress Roles
+```
+admin       → You (full access)
+publisher   → Publish content, no user management
+contributor → Create drafts, no publishing
+reader      → View only (default for new users)
+```
 
 ---
 
-**Version:** 0.2.0
+**Version:** 0.3.0
 **Last Updated:** 2025-11-06
-**Status:** Ready to Configure
+**Status:** Production-Only Configuration
 
-**Start here! Follow steps 1-8 above, then come back to continue development.** 🚀
+**Simple, clean, production-ready!** 🚀
