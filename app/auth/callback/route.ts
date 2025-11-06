@@ -5,6 +5,7 @@ export async function GET(req: Request) {
   const supabase = await getSupabaseServer();
   await supabase.auth.exchangeCodeForSession(req.url);
   const url = new URL(req.url);
-  const rt = url.searchParams.get('redirectedFrom') || '/admin';
+  // Redirect to homepage temporarily until admin dashboard is built
+  const rt = url.searchParams.get('redirectedFrom') || '/';
   return NextResponse.redirect(rt, { headers: { 'Cache-Control': 'no-store' } });
 }
