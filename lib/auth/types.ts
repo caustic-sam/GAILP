@@ -1,4 +1,5 @@
-export type UserRole = 'admin' | 'editor' | 'reader';
+// WordPress-style role hierarchy
+export type UserRole = 'admin' | 'publisher' | 'contributor' | 'reader';
 
 export interface UserProfile {
   id: string;
@@ -15,7 +16,50 @@ export interface UserProfile {
 export interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
-  signIn: (email: string, redirectTo?: string) => Promise<void>;
   signOut: () => Promise<void>;
   hasRole: (role: UserRole | UserRole[]) => boolean;
+}
+
+// Role capability helpers (WordPress-inspired)
+export const RoleCapabilities = {
+  admin: {
+    canManageUsers: true,
+    canManageSettings: true,
+    canPublish: true,
+    canEditAllContent: true,
+    canAccessMedia: true,
+    canAccessAnalytics: true,
+    canAccessSecurity: true,
+  },
+  publisher: {
+    canManageUsers: false,
+    canManageSettings: false,
+    canPublish: true,
+    canEditAllContent: true,
+    canAccessMedia: true,
+    canAccessAnalytics: true,
+    canAccessSecurity: false,
+  },
+  contributor: {
+    canManageUsers: false,
+    canManageSettings: false,
+    canPublish: false,
+    canEditAllContent: false, // only own content
+    canAccessMedia: true, // limited
+    canAccessAnalytics: false,
+    canAccessSecurity: false,
+  },
+  reader: {
+    canManageUsers: false,
+    canManageSettings: false,
+    canPublish: false,
+    canEditAllContent: false,
+    canAccessMedia: false,
+    canAccessAnalytics: false,
+    canAccessSecurity: false,
+  },
+} as const;
+
+export function hasCapability(role: UserRole, capability: keyof typeof RoleCapabilities.admin): boolean {
+  return RoleCapabilities[role][capability];
 }
