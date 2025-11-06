@@ -8,11 +8,12 @@ type NavItem = { label: string; href: string; icon: React.ElementType };
 
 const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: Home },
-  { label: 'Updates', href: '/updates', icon: FileText },
+  { label: 'Policy Updates', href: '/policy-updates', icon: FileText },
   { label: 'Blog', href: '/blog', icon: FileText },
-  { label: 'Live Policy', href: '/live-policy', icon: BookOpen },
-  { label: 'Law & Policy', href: '/law-policy', icon: BookOpen },
-  { label: 'Research', href: '/research', icon: BookOpen },
+  { label: 'Policy Pulse', href: '/policy-pulse', icon: BookOpen },
+  { label: 'Articles', href: '/articles', icon: FileText },
+  { label: 'Policies', href: '/policies', icon: BookOpen },
+  { label: 'Videos', href: '/videos', icon: BookOpen },
   { label: 'About', href: '/about', icon: Users },
   { label: 'Contact', href: '/contact', icon: Mail },
 ];
