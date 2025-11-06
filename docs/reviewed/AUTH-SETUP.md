@@ -53,8 +53,10 @@ Before you begin, ensure you have:
 3. **Click "Register application"**
 
 4. **Copy Credentials:**
-   - **Client ID:** Copy immediately (you'll need this)
-   - **Client Secret:** Click "Generate a new client secret" → Copy immediately
+   - **Client ID:** (Ov23li4jkaFi1CB9hs0C)
+
+   - **Client Secret:** 8b4171e6ce559022752580e35b575ca585eb0ec7
+- 
 
    ⚠️ **CRITICAL:** Save both values securely - the secret won't be shown again!
 
@@ -64,9 +66,9 @@ Repeat Step 1 for production:
 
 ```
 Application name:       GAILP (Production)
-Homepage URL:           https://your-domain.vercel.app
+Homepage URL:           https://your-domain.vercel.app. Ov23liyY50M9V43lygpM
+
 Authorization callback: https://your-domain.vercel.app/auth/callback
-```
 
 **Note:** You can update this later when you have your production domain.
 
