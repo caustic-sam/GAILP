@@ -67,24 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [supabase, router]);
 
-  const signIn = async (email: string, redirectTo?: string) => {
-    const targetRedirect =
-      redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')
-        ? redirectTo
-        : '/admin';
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback${
-          targetRedirect ? `?redirectTo=${encodeURIComponent(targetRedirect)}` : ''
-        }`,
-      },
-    });
-
-    if (error) throw error;
-  };
-
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -98,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut, hasRole }}>
+    <AuthContext.Provider value={{ user, loading, signOut, hasRole }}>
       {children}
     </AuthContext.Provider>
   );
