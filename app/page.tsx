@@ -6,19 +6,18 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import {
   Globe, Mail, Twitter, Linkedin, Rss, ArrowRight,
-  MessageCircle, Clock, Heart, Play, Send,
+  MessageCircle, Send,
   ThumbsUp, FileStack, BarChart3, Network, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { StatusDot } from '@/components/ui/StatusDot';
-import { mockPolicies, mockArticles, mockThoughts, mockVideos, quickStats } from '@/lib/mockData';
+import { mockPolicies, mockThoughts, quickStats } from '@/lib/mockData';
 import { TermOfDay } from '@/components/widgets/TermOfDay';
 import { NISTAssistant } from '@/components/widgets/NISTAssistant';
 import { DataBoxes } from '@/components/widgets/DataBoxes';
 import { FeedCard } from '@/components/FeedCard';
-import { GlobalFeedStream } from '@/components/GlobalFeedStream';
 
 import { ComingSoonModal } from '@/components/ui/ComingSoonModal';
 import { useComingSoon } from '@/hooks/useComingSoon';
@@ -253,105 +252,54 @@ export default function HomePage() {
             </Card>
           </div>
 
-          {/* Center Column - Expert Analysis */}
+          {/* Center Column - Policy Headlines by Category */}
           <div className="lg:col-span-6">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Expert Analysis</h2>
-                <Link href="/blog" className="text-blue-600 text-sm font-medium hover:text-blue-700">
-                  View All Posts
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Policy Headlines</h2>
+                  <p className="text-sm text-gray-600 mt-1">Live updates from global regulatory bodies</p>
+                </div>
+                <Link href="/policy-pulse" className="text-blue-600 text-sm font-medium hover:text-blue-700">
+                  View All
                 </Link>
               </div>
             </div>
 
+            {/* Category-Based Feed Cards */}
             <div className="space-y-6">
-              {mockArticles.slice(0, 1).map((article, idx) => (
-                <Card key={article.id} hover className="overflow-hidden">
-                  <div className="w-full h-48 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] flex items-center justify-center text-blue-100 text-sm">
-                    Article Image Placeholder
-                  </div>
-                  <div className="p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Avatar size="md">{article.author.avatar}</Avatar>
-                      <div>
-                        <div className="font-semibold text-sm text-gray-900">{article.author.name}</div>
-                        <div className="text-xs text-gray-500">{article.author.title}</div>
-                      </div>
-                    </div>
+              {/* Policy Updates */}
+              <FeedCard
+                title="Policy Updates"
+                category="policy"
+                itemCount={5}
+                icon={<FileStack className="w-5 h-5 text-blue-600" />}
+              />
 
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer">
-                      {article.title}
-                    </h3>
+              {/* Research & Studies */}
+              <FeedCard
+                title="Research & Studies"
+                category="research"
+                itemCount={5}
+                icon={<BarChart3 className="w-5 h-5 text-purple-600" />}
+              />
 
-                    {idx === 0 && (
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-                        {article.summary}
-                      </p>
-                    )}
+              {/* Expert Analysis */}
+              <FeedCard
+                title="Expert Analysis"
+                category="analysis"
+                itemCount={5}
+                icon={<Network className="w-5 h-5 text-green-600" />}
+              />
 
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {article.readTime}
-                        </span>
-                        <span>{article.date}</span>
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
-                          {article.category}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-3 h-3" />
-                          {article.likes}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle className="w-3 h-3" />
-                          {article.comments}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+              {/* Latest News */}
+              <FeedCard
+                title="Latest News"
+                category="news"
+                itemCount={5}
+                icon={<Rss className="w-5 h-5 text-orange-600" />}
+              />
             </div>
-
-            {/* Global Feed Stream */}
-            <div className="mt-6">
-              <GlobalFeedStream />
-            </div>
-
-            {/* Video Insights */}
-            <Card className="p-5 mt-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-1">Video Insights</h3>
-              <p className="text-sm text-gray-600 mb-4">Expert video commentary</p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockVideos.map(video => (
-                  <div key={video.id} className="group cursor-pointer">
-                    <div className="relative rounded-lg overflow-hidden mb-2 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] h-36 flex items-center justify-center">
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                        <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                          <Play className="w-6 h-6 text-blue-600 ml-1" />
-                        </div>
-                      </div>
-                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 rounded text-white text-xs font-medium">
-                        {video.duration}
-                      </div>
-                    </div>
-                    <h4 className="font-semibold text-sm text-gray-900 mb-1 group-hover:text-blue-600">
-                      {video.title}
-                    </h4>
-                    <p className="text-xs text-gray-600 mb-1">{video.description}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span>{video.views}</span>
-                      <span>•</span>
-                      <span>{video.date}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
 
             {/* NIST Assistant */}
             <div className="mt-6">
