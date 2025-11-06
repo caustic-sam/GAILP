@@ -87,8 +87,8 @@ Authorization callback: https://your-domain.vercel.app/auth/callback
 
 4. **Enter Credentials:**
    ```
-   Client ID (OAuth):     [paste from GitHub Step 1]
-   Client Secret (OAuth): [paste from GitHub Step 1]
+   Client ID (OAuth):     www-gailp-prd
+   Client Secret (OAuth): koxwe6-keqmeS-jirdam
    ```
 
 5. **Click "Save"**
@@ -96,10 +96,10 @@ Authorization callback: https://your-domain.vercel.app/auth/callback
 ### Step 4: Verify GitHub Configuration
 
 ✅ Checklist:
-- [ ] GitHub OAuth app created
-- [ ] Client ID and Secret copied
-- [ ] Both values added to Supabase
-- [ ] Callback URL matches exactly: `http://localhost:3000/auth/callback`
+- [ x] GitHub OAuth app created
+- [ x] Client ID and Secret copied
+- [ x] Both values added to Supabase
+- [ x] Callback URL matches exactly: `http://localhost:3000/auth/callback`
 
 ---
 
