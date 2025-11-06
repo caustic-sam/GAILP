@@ -393,6 +393,9 @@ SELECT email, role FROM public.user_profiles ORDER BY created_at DESC;
 
 ---
 
+
+***********************************************
+
 ## Part 8: Security Checklist
 
 ### Before Going Live
