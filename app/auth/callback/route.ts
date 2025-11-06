@@ -1,19 +1,10 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { getSupabaseServer } from '../../../lib/supabase/server';
 
-export async function GET(request: Request) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
-
-  if (code) {
-    const supabase = createRouteHandlerClient({ cookies });
-    await supabase.auth.exchangeCodeForSession(code);
-  }
-
-  const redirectTo = requestUrl.searchParams.get('redirectTo');
-  const safeRedirect =
-    redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/admin';
-
-  return NextResponse.redirect(new URL(safeRedirect, requestUrl.origin));
+export async function GET(req: Request) {
+  const supabase = await getSupabaseServer();
+  await supabase.auth.exchangeCodeForSession(req.url);
+  const url = new URL(req.url);
+  const rt = url.searchParams.get('redirectedFrom') || '/admin';
+  return NextResponse.redirect(rt, { headers: { 'Cache-Control': 'no-store' } });
 }

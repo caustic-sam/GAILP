@@ -1,19 +1,23 @@
-// app/login/page.tsx — server component to unblock build
+import { redirect } from 'next/navigation';
+import { getSupabaseServer } from '../../lib/supabase/server';
+
 export const dynamic = 'force-dynamic';
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const supabase = await getSupabaseServer();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) redirect('/admin');
+
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const redirectTo = `${origin}/auth/callback`;
+
   return (
     <div className="p-8 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <p className="text-sm text-gray-700 mb-4">
-        This page is ready to be wired to your authentication provider. For now, use the sign-in link below.
-      </p>
-      <a
-        href="/api/auth/start"
-        className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Continue to Sign In →
-      </a>
+      <div className="space-x-2">
+        <a className="px-4 py-2 border rounded" href={`/api/auth/oauth?provider=github&redirectTo=${encodeURIComponent(redirectTo)}`}>Sign in with GitHub</a>
+        <a className="px-4 py-2 border rounded" href={`/api/auth/oauth?provider=google&redirectTo=${encodeURIComponent(redirectTo)}`}>Sign in with Google</a>
+      </div>
     </div>
   );
 }

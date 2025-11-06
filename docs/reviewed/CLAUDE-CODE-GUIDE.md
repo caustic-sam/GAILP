@@ -113,19 +113,37 @@ Following PRODUCTION-PLAN.md - currently in Phase [X], Day [Y]
 - Mock data: lib/mockData.ts
 
 ## Development Guidelines
-1. Use TypeScript strictly
-2. Follow Tailwind CSS conventions
-3. Use Next.js 14 App Router patterns
-4. Server components by default, 'use client' when needed
-5. Always update PRODUCTION-PLAN.md progress
+1.  **TypeScript First**: Use strict TypeScript. All functions and components must have explicit types. Avoid `any`.
+2.  **Component Structure**: Create new components in `components/`. UI-specific, reusable components go in `components/ui/`.
+3.  **State Management**: For simple state, use React Hooks (`useState`, `useReducer`). For complex global state, discuss before implementing.
+4.  **Styling**: Use Tailwind CSS utility classes exclusively. Do not write inline styles or separate CSS files.
+5.  **Data Fetching**: Use Server Components and `async/await` in `app/` for data fetching. Client-side data fetching should use SWR or React Query if needed.
+6.  **Error Handling**: API routes must have robust error handling with meaningful status codes and messages. UI components should handle loading and error states gracefully.
+7.  **Environment Variables**: Access environment variables via a validated configuration file, not directly via `process.env`.
+8.  **Commits**: Follow conventional commit standards (e.g., `feat:`, `fix:`, `docs:`).
 
 ## Current Tasks
 See PRODUCTION-PLAN.md Day [X] for current objectives
 
 ## Testing
-- Run `pnpm dev` to test changes
-- Check browser at localhost:3000
-- Verify three-column layout at ≥1024px width
+Our testing strategy is based on the "Testing Trophy" model. Every new feature or bug fix must be accompanied by tests to validate its correctness and prevent regressions.
+
+### Test Locations
+- **Unit Tests:** For individual components or functions. Place them in a `__tests__` directory next to the file (e.g., `components/ui/__tests__/Button.test.tsx`).
+- **Integration Tests:** For API routes and pages.
+    - API Routes: `app/api/path/__tests__/route.test.ts`
+    - Pages: `app/(main)/__tests__/page.test.tsx`
+- **Accessibility (a11y) Tests:** Include `jest-axe` checks in component and page tests to ensure no accessibility violations.
+
+### Commands
+- `pnpm test`: Run all tests once. This is also run on pre-commit.
+- `pnpm test:watch`: Run tests in interactive watch mode during development.
+- `pnpm test:coverage`: Run all tests and generate a coverage report.
+
+### Your Task
+- When creating a new feature, you **must** create corresponding tests.
+- When fixing a bug, you **must** add a test that reproduces the bug and verifies the fix.
+- Aim to maintain or increase test coverage with your changes.
 
 ## Database
 Using Supabase:

@@ -12,13 +12,23 @@ A modern, production-ready Next.js application for analyzing and tracking digita
 
 ## 🌟 Features
 
-### **Live & Deployed**
+### **Ontrack for MVP**
 * ✅ **Real-time Policy Feed** - Live updates from global regulatory bodies (via FreshRSS)
 * ✅ **Expert Analysis** - In-depth articles from policy professionals (placeholder page live)
 * ✅ **Video Insights** - Expert commentary and deep dives (placeholder page live)
 * 🚧 **Community Hub** - Live policy discussions and quick thoughts (in development)
 * 🗓️ **Newsletter** - Weekly insights delivered to your inbox (planned)
 * 🗓️ **Resource Library** - Templates, reports, and tools (planned)
+
+
+### **Future Goal**
+*  ✅ **MCP Model (LLM)** -  Trained on NIST guidance from the SP series of documetation.
+*  ✅ **International Agent** - Top technical site from arounf thw prld will be translated ad display in iFrames or the technique of the day.
+*  ✅ ** x **
+*  ✅ 
+*  ✅ 
+*  ✅ 
+*  ✅ 
 
 ### **Technical Excellence**
 - ✅ **Next.js 14 App Router** - Modern React framework with SSR/SSG
@@ -47,7 +57,6 @@ Visit [http://localhost:3000/components](http://localhost:3000/components) to ex
 
 ### **Prerequisites**
 
-- Node.js 18+ (LTS recommended)
 - pnpm 8+ (or npm/yarn)
 - Git
 
