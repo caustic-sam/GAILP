@@ -12,10 +12,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=no_code', url.origin));
   }
 
-  // Create response to set cookies
-  const response = NextResponse.redirect(new URL('/admin', url.origin));
-
   try {
+    // Store cookies to set on response
+    const cookiesToSet: Array<{ name: string; value: string; options: CookieOptions }> = [];
+
     // Create Supabase client with cookie handling
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,21 +26,10 @@ export async function GET(request: NextRequest) {
             return request.cookies.get(name)?.value;
           },
           set(name: string, value: string, options: CookieOptions) {
-            response.cookies.set({
-              name,
-              value,
-              ...options,
-              sameSite: 'lax',
-              secure: true,
-            });
+            cookiesToSet.push({ name, value, options });
           },
           remove(name: string, options: CookieOptions) {
-            response.cookies.set({
-              name,
-              value: '',
-              ...options,
-              maxAge: 0,
-            });
+            cookiesToSet.push({ name, value: '', options: { ...options, maxAge: 0 } });
           },
         },
       }
@@ -82,9 +71,22 @@ export async function GET(request: NextRequest) {
 
     const finalUrl = url.searchParams.get('redirectedFrom') || redirectTo;
     console.log('✅ Redirecting to:', finalUrl);
+    console.log('🍪 Setting cookies:', cookiesToSet.length);
 
-    // Update the redirect URL
-    response.headers.set('Location', finalUrl);
+    // Create response with redirect
+    const response = NextResponse.redirect(new URL(finalUrl, url.origin));
+
+    // Set all cookies that Supabase needs
+    cookiesToSet.forEach(({ name, value, options }) => {
+      response.cookies.set({
+        name,
+        value,
+        ...options,
+        sameSite: 'lax',
+        secure: true,
+        path: '/',
+      });
+    });
 
     return response;
   } catch (error) {
