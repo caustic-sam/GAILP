@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     // Get user profile to determine redirect
     const { data: profile } = await supabase
       .from('user_profiles')
-      .select('role')
+      .select('email, role')
       .eq('id', data.session.user.id)
       .single();
 
