@@ -10,12 +10,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (!session) redirect('/login?redirectTo=/admin');
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('user_profiles')
     .select('role')
     .eq('id', session.user.id)
     .single();
 
-  if (!profile || (profile.role !== 'admin' && profile.role !== 'contributor')) {
+  if (!profile || !['admin', 'publisher', 'contributor'].includes(profile.role)) {
     redirect('/');
   }
 
