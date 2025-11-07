@@ -1,44 +1,51 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
-  const url = new URL(request.url);
-  const code = url.searchParams.get('code');
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get('code');
+  const origin = requestUrl.origin;
 
   console.log('🔄 OAuth callback received', { code: !!code });
 
   if (!code) {
     console.error('❌ No code in callback');
-    return NextResponse.redirect(new URL('/login?error=no_code', url.origin));
+    return NextResponse.redirect(`${origin}/login?error=no_code`);
   }
 
   try {
-    const cookieStore = await cookies();
+    let redirectUrl = `${origin}/admin`;
 
-    // Create Supabase client with cookie handling
+    // Create response that we'll set cookies on
+    const response = new NextResponse(null, {
+      status: 302,
+      headers: {
+        Location: redirectUrl,
+      },
+    });
+
+    // Create Supabase client with cookie handling that sets on response
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           get(name: string) {
-            return cookieStore.get(name)?.value;
+            return request.cookies.get(name)?.value;
           },
           set(name: string, value: string, options: CookieOptions) {
-            try {
-              cookieStore.set({ name, value, ...options });
-            } catch (error) {
-              // In route handlers, cookies can't always be set synchronously
-              console.error('Cookie set error:', error);
-            }
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            });
           },
           remove(name: string, options: CookieOptions) {
-            try {
-              cookieStore.set({ name, value: '', ...options, maxAge: 0 });
-            } catch (error) {
-              console.error('Cookie remove error:', error);
-            }
+            response.cookies.set({
+              name,
+              value: '',
+              ...options,
+            });
           },
         },
       }
@@ -55,12 +62,12 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('❌ Code exchange failed:', error);
-      return NextResponse.redirect(new URL('/login?error=auth_failed', url.origin));
+      return NextResponse.redirect(`${origin}/login?error=auth_failed`);
     }
 
     if (!data.session) {
       console.error('❌ No session after code exchange');
-      return NextResponse.redirect(new URL('/login?error=no_session', url.origin));
+      return NextResponse.redirect(`${origin}/login?error=no_session`);
     }
 
     // Get user profile to determine redirect
@@ -78,12 +85,15 @@ export async function GET(request: NextRequest) {
       redirectTo = '/admin';
     }
 
-    const finalUrl = url.searchParams.get('redirectedFrom') || redirectTo;
+    const finalUrl = requestUrl.searchParams.get('redirectedFrom') || redirectTo;
     console.log('✅ Redirecting to:', finalUrl);
 
-    return NextResponse.redirect(new URL(finalUrl, url.origin));
+    // Update the redirect URL in the response
+    response.headers.set('Location', `${origin}${finalUrl}`);
+
+    return response;
   } catch (error) {
     console.error('❌ Callback error:', error);
-    return NextResponse.redirect(new URL('/login?error=callback_failed', url.origin));
+    return NextResponse.redirect(`${origin}/login?error=callback_failed`);
   }
 }
