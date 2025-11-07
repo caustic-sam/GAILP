@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
-import { getSupabaseServer } from '../../../lib/supabase/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
+export async function GET(request: NextRequest) {
+  const url = new URL(request.url);
   const code = url.searchParams.get('code');
 
   console.log('🔄 OAuth callback received', { code: !!code });
@@ -12,15 +12,47 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL('/login?error=no_code', url.origin));
   }
 
+  // Create response to set cookies
+  const response = NextResponse.redirect(new URL('/admin', url.origin));
+
   try {
-    const supabase = await getSupabaseServer();
+    // Create Supabase client with cookie handling
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+              sameSite: 'lax',
+              secure: true,
+            });
+          },
+          remove(name: string, options: CookieOptions) {
+            response.cookies.set({
+              name,
+              value: '',
+              ...options,
+              maxAge: 0,
+            });
+          },
+        },
+      }
+    );
 
     // Exchange code for session
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     console.log('🔐 Code exchange result:', {
       success: !!data.session,
-      error: error?.message
+      error: error?.message,
+      userId: data.session?.user?.id
     });
 
     if (error) {
@@ -42,7 +74,7 @@ export async function GET(req: Request) {
 
     console.log('👤 User profile:', profile?.email, 'Role:', profile?.role);
 
-    // Redirect based on role
+    // Determine redirect based on role
     let redirectTo = '/';
     if (profile && ['admin', 'publisher', 'contributor'].includes(profile.role)) {
       redirectTo = '/admin';
@@ -51,7 +83,10 @@ export async function GET(req: Request) {
     const finalUrl = url.searchParams.get('redirectedFrom') || redirectTo;
     console.log('✅ Redirecting to:', finalUrl);
 
-    return NextResponse.redirect(new URL(finalUrl, url.origin));
+    // Update the redirect URL
+    response.headers.set('Location', finalUrl);
+
+    return response;
   } catch (error) {
     console.error('❌ Callback error:', error);
     return NextResponse.redirect(new URL('/login?error=callback_failed', url.origin));
