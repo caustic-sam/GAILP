@@ -1,7 +1,7 @@
-import { NextResponse, NextRequest } from 'next/server';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse } from 'next/server';
+import { getSupabaseServer } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   const origin = requestUrl.origin;
@@ -14,42 +14,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let redirectUrl = `${origin}/admin`;
-
-    // Create response that we'll set cookies on
-    const response = new NextResponse(null, {
-      status: 302,
-      headers: {
-        Location: redirectUrl,
-      },
-    });
-
-    // Create Supabase client with cookie handling that sets on response
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return request.cookies.get(name)?.value;
-          },
-          set(name: string, value: string, options: CookieOptions) {
-            response.cookies.set({
-              name,
-              value,
-              ...options,
-            });
-          },
-          remove(name: string, options: CookieOptions) {
-            response.cookies.set({
-              name,
-              value: '',
-              ...options,
-            });
-          },
-        },
-      }
-    );
+    // Use existing Supabase server client (handles cookies automatically)
+    const supabase = await getSupabaseServer();
 
     // Exchange code for session
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
@@ -88,10 +54,7 @@ export async function GET(request: NextRequest) {
     const finalUrl = requestUrl.searchParams.get('redirectedFrom') || redirectTo;
     console.log('✅ Redirecting to:', finalUrl);
 
-    // Update the redirect URL in the response
-    response.headers.set('Location', `${origin}${finalUrl}`);
-
-    return response;
+    return NextResponse.redirect(`${origin}${finalUrl}`);
   } catch (error) {
     console.error('❌ Callback error:', error);
     return NextResponse.redirect(`${origin}/login?error=callback_failed`);
