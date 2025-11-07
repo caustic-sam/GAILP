@@ -15,9 +15,11 @@ export async function GET(request: Request) {
 
   try {
     // Use existing Supabase server client (handles cookies automatically)
+    console.log('🔧 Creating Supabase client...');
     const supabase = await getSupabaseServer();
 
     // Exchange code for session
+    console.log('🔄 Exchanging code for session...');
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     console.log('🔐 Code exchange result:', {
