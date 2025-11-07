@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -13,8 +14,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Store cookies to set on response
-    const cookiesToSet: Array<{ name: string; value: string; options: CookieOptions }> = [];
+    const cookieStore = await cookies();
 
     // Create Supabase client with cookie handling
     const supabase = createServerClient(
@@ -23,13 +23,22 @@ export async function GET(request: NextRequest) {
       {
         cookies: {
           get(name: string) {
-            return request.cookies.get(name)?.value;
+            return cookieStore.get(name)?.value;
           },
           set(name: string, value: string, options: CookieOptions) {
-            cookiesToSet.push({ name, value, options });
+            try {
+              cookieStore.set({ name, value, ...options });
+            } catch (error) {
+              // In route handlers, cookies can't always be set synchronously
+              console.error('Cookie set error:', error);
+            }
           },
           remove(name: string, options: CookieOptions) {
-            cookiesToSet.push({ name, value: '', options: { ...options, maxAge: 0 } });
+            try {
+              cookieStore.set({ name, value: '', ...options, maxAge: 0 });
+            } catch (error) {
+              console.error('Cookie remove error:', error);
+            }
           },
         },
       }
@@ -71,24 +80,8 @@ export async function GET(request: NextRequest) {
 
     const finalUrl = url.searchParams.get('redirectedFrom') || redirectTo;
     console.log('✅ Redirecting to:', finalUrl);
-    console.log('🍪 Setting cookies:', cookiesToSet.length);
 
-    // Create response with redirect
-    const response = NextResponse.redirect(new URL(finalUrl, url.origin));
-
-    // Set all cookies that Supabase needs
-    cookiesToSet.forEach(({ name, value, options }) => {
-      response.cookies.set({
-        name,
-        value,
-        ...options,
-        sameSite: 'lax',
-        secure: true,
-        path: '/',
-      });
-    });
-
-    return response;
+    return NextResponse.redirect(new URL(finalUrl, url.origin));
   } catch (error) {
     console.error('❌ Callback error:', error);
     return NextResponse.redirect(new URL('/login?error=callback_failed', url.origin));
