@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { getSupabaseServer } from '@/lib/supabase/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   const origin = requestUrl.origin;
@@ -14,9 +14,36 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Use existing Supabase server client (handles cookies automatically)
-    console.log('🔧 Creating Supabase client...');
-    const supabase = await getSupabaseServer();
+    // We'll collect cookies here and set them on the final response
+    let response = NextResponse.redirect(`${origin}/admin`);
+
+    // Create Supabase client with cookie handling for route handler
+    console.log('🔧 Creating Supabase client with cookie handling...');
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            });
+          },
+          remove(name: string, options: CookieOptions) {
+            response.cookies.set({
+              name,
+              value: '',
+              ...options,
+            });
+          },
+        },
+      }
+    );
 
     // Exchange code for session
     console.log('🔄 Exchanging code for session...');
@@ -56,7 +83,18 @@ export async function GET(request: Request) {
     const finalUrl = requestUrl.searchParams.get('redirectedFrom') || redirectTo;
     console.log('✅ Redirecting to:', finalUrl);
 
-    return NextResponse.redirect(`${origin}${finalUrl}`);
+    // If the final URL is different from /admin, create a new response with the right redirect
+    // but copy over all the cookies that were set
+    if (finalUrl !== '/admin') {
+      const newResponse = NextResponse.redirect(`${origin}${finalUrl}`);
+      // Copy all cookies from the original response
+      response.cookies.getAll().forEach((cookie) => {
+        newResponse.cookies.set(cookie);
+      });
+      return newResponse;
+    }
+
+    return response;
   } catch (error) {
     console.error('❌ Callback error:', error);
     return NextResponse.redirect(`${origin}/login?error=callback_failed`);
