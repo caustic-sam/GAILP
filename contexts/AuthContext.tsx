@@ -18,18 +18,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔐 Auth check - session exists:', !!session);
 
         if (session?.user) {
+          console.log('👤 User ID:', session.user.id);
+          console.log('📧 Email:', session.user.email);
+
           // Fetch user profile with role
-          const { data: profile } = await supabase
+          const { data: profile, error } = await supabase
             .from('user_profiles')
             .select('*')
             .eq('id', session.user.id)
             .single();
 
+          console.log('👤 Profile fetch result:', { profile, error });
+
           if (profile) {
+            console.log('✅ User profile loaded:', profile.email, 'Role:', profile.role);
             setUser(profile);
+          } else {
+            console.error('❌ No profile found for user');
           }
+        } else {
+          console.log('❌ No active session');
         }
       } catch (error) {
         console.error('Error checking session:', error);
