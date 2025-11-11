@@ -22,8 +22,11 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const { isOpen, feature, showComingSoon, closeModal } = useComingSoon();
+
+  // Debug logging
+  console.log('🔍 Header render - user:', user, 'loading:', loading);
 
   return (
     <header className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20 sticky top-0 z-50">
@@ -59,7 +62,9 @@ export function Header() {
 
           {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {user ? (
+            {loading ? (
+              <div className="px-4 py-2 text-blue-100 text-sm">Loading...</div>
+            ) : user ? (
               <>
                 <Link
                   href="/admin/studio"
@@ -99,7 +104,7 @@ export function Header() {
                   )}
                 </div>
               </>
-            ) : (
+            ) : !loading ? (
               <>
                 <Link href="/login">
                   <Button variant="secondary" size="sm">
@@ -111,7 +116,7 @@ export function Header() {
                   Subscribe
                 </Button>
               </>
-            )}
+            ) : null}
           </div>
 
           {/* Mobile Menu Button */}
