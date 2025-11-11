@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Home, FileText, Users, BookOpen, Mail, LayoutDashboard, Image, Settings, Edit3 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { WorldClocks } from '@/components/WorldClocks';
 
 type NavItem = { label: string; href: string; icon: React.ElementType };
 
@@ -86,6 +87,16 @@ export function RightSidebar() {
             );
           })}
         </ul>
+
+        {/* World Clocks */}
+        <div className="mt-8 pt-6 border-t border-blue-800/30">
+          <h3 className="text-xs font-semibold text-blue-200 uppercase tracking-wider mb-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap overflow-hidden">
+            World Time
+          </h3>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <WorldClocks />
+          </div>
+        </div>
       </nav>
     </aside>
   );
