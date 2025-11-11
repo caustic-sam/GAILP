@@ -4,7 +4,13 @@ import { getSupabaseServer } from '../../../../lib/supabase/server';
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const provider = url.searchParams.get('provider') as 'github' | 'google' | null;
-  const redirectTo = url.searchParams.get('redirectTo') ?? '/auth/callback';
+
+  // IMPORTANT: redirectTo must be the FULL URL for Supabase OAuth
+  const origin = url.origin;
+  const redirectTo = url.searchParams.get('redirectTo')
+    ? `${origin}${url.searchParams.get('redirectTo')}`
+    : `${origin}/auth/callback`;
+
   if (!provider) return NextResponse.redirect(new URL('/login', url));
 
   const supabase = await getSupabaseServer();
