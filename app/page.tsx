@@ -69,8 +69,8 @@ export default function HomePage() {
       {/* Hero Banner */}
       <section className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] text-white relative overflow-hidden">
         {/* Globe as backdrop - absolute positioning behind content */}
-        <div className="absolute inset-0 flex items-center justify-start pointer-events-none">
-          <div className="transform scale-[2.5] opacity-40 ml-[393px]">
+        <div className="absolute inset-0 flex items-center justify-center lg:justify-start pointer-events-none">
+          <div className="transform scale-[2.5] opacity-40 lg:ml-[393px]">
             <AnimatedGlobe />
           </div>
         </div>
@@ -103,8 +103,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Data Boxes */}
-            <div className="hidden lg:block relative z-10">
+            {/* Right: Data Boxes - Now visible on all screens */}
+            <div className="relative z-10 mt-8 lg:mt-0">
               <DataBoxes />
             </div>
           </div>
@@ -113,10 +113,10 @@ export default function HomePage() {
 
       {/* Main Content - Three Column Layout */}
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
 
           {/* Left Column - Policy Intelligence Feed */}
-          <div className="lg:col-span-3">
+          <div className="md:col-span-1 lg:col-span-3">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900">Policy Intelligence Feed</h2>
@@ -254,7 +254,7 @@ export default function HomePage() {
           </div>
 
           {/* Center Column - Expert Analysis */}
-          <div className="lg:col-span-6">
+          <div className="md:col-span-1 lg:col-span-6">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-900">Expert Analysis</h2>
@@ -360,7 +360,7 @@ export default function HomePage() {
           </div>
 
           {/* Right Column - Policy Pulse, Videos, Community */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="md:col-span-2 lg:col-span-3 space-y-6">
             
             {/* Policy Pulse */}
             <Card className="p-5">

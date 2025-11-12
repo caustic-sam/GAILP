@@ -34,7 +34,7 @@ export function RightSidebar() {
   const isAdmin = user && ['admin', 'publisher', 'contributor'].includes(user.role);
 
   return (
-    <aside className="hidden xl:block fixed right-0 top-12 h-[calc(100vh-3rem)] w-12 hover:w-56 overflow-y-auto bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-l border-blue-900/20 z-40 transition-all duration-300 group">
+    <aside className="hidden lg:block fixed right-0 top-12 h-[calc(100vh-3rem)] w-12 hover:w-56 overflow-y-auto bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-l border-blue-900/20 z-40 transition-all duration-300 group">
       <nav className="p-2 pt-4">
         {/* Admin Section */}
         {isAdmin && (
