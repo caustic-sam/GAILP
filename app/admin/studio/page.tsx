@@ -102,21 +102,21 @@ export default function StudioPage() {
     switch (color) {
       case 'blue':
         return {
-          bg: 'bg-blue-100',
-          icon: 'text-blue-600',
-          button: 'bg-blue-600 hover:bg-blue-700'
+          bg: 'bg-[#e8eef5]', // Muted blue background
+          icon: 'text-[#4a6fa5]', // Dusty blue
+          button: 'bg-[#4a6fa5] hover:bg-[#3d5c8a]' // Muted blue
         };
       case 'orange':
         return {
-          bg: 'bg-orange-100',
-          icon: 'text-orange-600',
-          button: 'bg-orange-600 hover:bg-orange-700'
+          bg: 'bg-[#f5ede8]', // Muted orange background
+          icon: 'text-[#c17a58]', // Burnt sienna
+          button: 'bg-[#c17a58] hover:bg-[#a66547]' // Muted orange
         };
       case 'purple':
         return {
-          bg: 'bg-purple-100',
-          icon: 'text-purple-600',
-          button: 'bg-purple-600 hover:bg-purple-700'
+          bg: 'bg-[#f0eef3]', // Muted purple background
+          icon: 'text-[#8b7fa8]', // Dusty lavender
+          button: 'bg-[#8b7fa8] hover:bg-[#756a8f]' // Muted purple
         };
       default:
         return {

@@ -333,7 +333,7 @@ export default function NewArticlePage() {
                 />
                 <button
                   onClick={addTag}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-[#4a6fa5] text-white rounded-lg hover:bg-[#3d5c8a] transition-colors"
                 >
                   <Tag className="w-4 h-4" />
                 </button>
@@ -383,20 +383,20 @@ export default function NewArticlePage() {
             </Card>
 
             {/* Web3 Publishing (Coming Soon) */}
-            <Card className="p-6 bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200">
+            <Card className="p-6 bg-gradient-to-br from-[#f0eef3] to-[#e8eef5] border-[#d1c9dd]">
               <div className="flex items-center gap-2 mb-3">
-                <Globe className="w-5 h-5 text-purple-600" />
-                <label className="text-sm font-medium text-purple-900">
+                <Globe className="w-5 h-5 text-[#8b7fa8]" />
+                <label className="text-sm font-medium text-[#6b5f7e]">
                   Web3 Publishing
                 </label>
-                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-[#e5dff0] text-[#756a8f] px-2 py-0.5 rounded-full">
                   Coming Soon
                 </span>
               </div>
-              <p className="text-xs text-purple-700 mb-3">
+              <p className="text-xs text-[#756a8f] mb-3">
                 Publish to IPFS and link to your ENS identity
               </p>
-              <div className="space-y-2 text-xs text-purple-600">
+              <div className="space-y-2 text-xs text-[#8b7fa8]">
                 <div className="flex items-center gap-2">
                   <input type="checkbox" disabled className="rounded" />
                   <span>Publish to IPFS</span>
@@ -450,7 +450,7 @@ export default function NewArticlePage() {
                     setShowScheduler(false);
                   }}
                   disabled={!formData.scheduled_for}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-[#4a6fa5] text-white rounded-lg hover:bg-[#3d5c8a] disabled:opacity-50"
                 >
                   Schedule
                 </button>
