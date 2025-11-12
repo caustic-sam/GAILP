@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { StatusDot } from '@/components/ui/StatusDot';
+import { WorldClocks } from '@/components/WorldClocks';
 import { ArrowRight, Mail, Download, Heart, Share2, User } from 'lucide-react';
 
 const AnimatedGlobe = dynamic(
@@ -474,6 +475,63 @@ export default function ComponentGallery() {
               </div>
             </div>
           </Card>
+        </section>
+
+        {/* World Clocks Section */}
+        <section>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">World Clocks</h2>
+            <p className="text-gray-600">Real-time analogue clocks for global jurisdictions</p>
+          </div>
+
+          <div className="space-y-8">
+            {/* Single Clock Display */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Clock Display</h3>
+              <Card className="p-8">
+                <div className="flex items-center justify-center">
+                  <WorldClocks />
+                </div>
+              </Card>
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-700 mb-2"><strong>Features:</strong></p>
+                <ul className="text-sm text-gray-600 space-y-1 ml-4">
+                  <li>• Real-time analogue clocks with hour, minute, and second hands</li>
+                  <li>• Covers major policy jurisdictions: NYC, LA, London, Brussels, Tokyo, Sydney</li>
+                  <li>• Smooth transitions and accurate timezone calculations</li>
+                  <li>• Responsive design with clear city labels</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Usage Example */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">In Context</h3>
+              <Card className="p-6">
+                <h4 className="font-semibold text-gray-900 mb-4">Global Policy Tracking</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Track policy updates across major global jurisdictions in real-time. Perfect for international policy monitoring and coordination.
+                    </p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">New Updates Today</span>
+                        <span className="font-bold text-blue-600">47</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Active Policies</span>
+                        <span className="font-bold text-green-600">156</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <WorldClocks />
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
         </section>
 
       </div>
