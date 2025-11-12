@@ -20,33 +20,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check active session
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error('❌ Session error:', sessionError);
+          setLoading(false);
+          return;
+        }
+
         console.log('🔐 Auth check - session exists:', !!session);
 
         if (session?.user) {
           console.log('👤 User ID:', session.user.id);
           console.log('📧 Email:', session.user.email);
 
-          // Fetch user profile with role
-          const { data: profile, error } = await supabase
+          // Fetch user profile with role - with timeout
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+          );
+
+          const profilePromise = supabase
             .from('user_profiles')
             .select('*')
             .eq('id', session.user.id)
             .single();
 
+          const { data: profile, error } = await Promise.race([
+            profilePromise,
+            timeoutPromise
+          ]) as { data: any; error: any };
+
           console.log('👤 Profile fetch result:', { profile, error });
+
+          if (error) {
+            console.error('❌ Profile fetch error:', error);
+            // Still set loading to false even on error
+            setLoading(false);
+            return;
+          }
 
           if (profile) {
             console.log('✅ User profile loaded:', profile.email, 'Role:', profile.role);
             setUser(profile);
           } else {
-            console.error('❌ No profile found for user');
+            console.warn('⚠️ No profile found for user, but no error returned');
           }
         } else {
           console.log('❌ No active session');
         }
       } catch (error) {
-        console.error('Error checking session:', error);
+        console.error('❌ Error checking session:', error);
       } finally {
         setLoading(false);
       }
