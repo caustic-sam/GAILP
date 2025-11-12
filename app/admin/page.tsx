@@ -13,6 +13,9 @@ import {
   Trash2,
   Eye,
   Calendar,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 
 interface Article {
@@ -32,10 +35,15 @@ interface Article {
 type FilterOption = 'all' | 'draft' | 'scheduled' | 'published';
 const FILTER_OPTIONS: FilterOption[] = ['all', 'draft', 'scheduled', 'published'];
 
+type SortField = 'status' | 'published_at' | 'view_count' | 'revision_count';
+type SortDirection = 'asc' | 'desc';
+
 export default function AdminDashboard() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [filter, setFilter] = useState<FilterOption>('all');
   const [loading, setLoading] = useState(true);
+  const [sortField, setSortField] = useState<SortField>('published_at');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const fetchArticles = useCallback(async () => {
     setLoading(true);
@@ -95,6 +103,46 @@ export default function AdminDashboard() {
       year: 'numeric',
     });
   };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-4 h-4 text-gray-400" />;
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="w-4 h-4 text-blue-600" />
+    ) : (
+      <ArrowDown className="w-4 h-4 text-blue-600" />
+    );
+  };
+
+  const sortedArticles = [...articles].sort((a, b) => {
+    const direction = sortDirection === 'asc' ? 1 : -1;
+
+    switch (sortField) {
+      case 'status':
+        return a.status.localeCompare(b.status) * direction;
+      case 'published_at': {
+        const dateA = a.published_at ? new Date(a.published_at).getTime() : 0;
+        const dateB = b.published_at ? new Date(b.published_at).getTime() : 0;
+        return (dateA - dateB) * direction;
+      }
+      case 'view_count':
+        return (a.view_count - b.view_count) * direction;
+      case 'revision_count':
+        return (a.revision_count - b.revision_count) * direction;
+      default:
+        return 0;
+    }
+  });
 
   const stats = {
     total: articles.length,
@@ -199,20 +247,44 @@ export default function AdminDashboard() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                  <th
+                    onClick={() => handleSort('status')}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Status</span>
+                      <SortIcon field="status" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Scheduled For
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Published
+                  <th
+                    onClick={() => handleSort('published_at')}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Published</span>
+                      <SortIcon field="published_at" />
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Views
+                  <th
+                    onClick={() => handleSort('view_count')}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Views</span>
+                      <SortIcon field="view_count" />
+                    </div>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Revisions
+                  <th
+                    onClick={() => handleSort('revision_count')}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Revisions</span>
+                      <SortIcon field="revision_count" />
+                    </div>
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -235,7 +307,7 @@ export default function AdminDashboard() {
                     </td>
                   </tr>
                 ) : (
-                  articles.map((article) => (
+                  sortedArticles.map((article) => (
                     <tr key={article.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
