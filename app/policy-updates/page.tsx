@@ -324,7 +324,7 @@ export default function PolicyUpdatesPage() {
             </div>
 
             {/* Policy Sources Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
               {filteredSources.map((source) => {
                 const Icon = source.icon;
                 return (
@@ -335,54 +335,57 @@ export default function PolicyUpdatesPage() {
                     rel="noopener noreferrer"
                     className="group"
                   >
-                    <Card hover className="p-6 h-full flex flex-col hover:shadow-xl transition-all duration-300 hover:border-blue-300">
+                    <Card hover className="p-4 h-full flex flex-col hover:shadow-xl transition-all duration-300 hover:border-blue-300">
                       {/* Header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-3xl shadow-sm border border-gray-200 group-hover:scale-110 group-hover:shadow-md transition-all">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-2xl shadow-sm border border-gray-200 group-hover:scale-110 transition-all">
                             {source.flag}
                           </div>
-                          <div>
-                            <div className="text-xs font-medium text-gray-500 mb-1">{source.jurisdiction}</div>
-                            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                              <Icon className="w-5 h-5 text-blue-600" />
-                            </div>
+                          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                            <Icon className="w-4 h-4 text-blue-600" />
                           </div>
                         </div>
-                        <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                        <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                      <div className="flex-1 min-h-0">
+                        <div className="text-[10px] font-medium text-gray-500 mb-1 uppercase tracking-wide">{source.jurisdiction}</div>
+                        <h3 className="text-sm font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2">
                           {source.name}
                         </h3>
-                        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                        <p className="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">
                           {source.description}
                         </p>
 
                         {/* Category Tags */}
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {source.category.map((cat) => (
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {source.category.slice(0, 2).map((cat) => (
                             <span
                               key={cat}
-                              className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded"
+                              className="px-1.5 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-medium rounded"
                             >
                               {categories.find(c => c.id === cat)?.label}
                             </span>
                           ))}
+                          {source.category.length > 2 && (
+                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-medium rounded">
+                              +{source.category.length - 2}
+                            </span>
+                          )}
                         </div>
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div className="flex items-center gap-1 text-[10px] text-gray-500">
                           <Clock className="w-3 h-3" />
                           <span>{source.recentActivity}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-blue-600 font-medium text-sm group-hover:gap-2 transition-all">
-                          <span>Visit Source</span>
-                          <ChevronRight className="w-4 h-4" />
+                        <div className="flex items-center gap-0.5 text-blue-600 font-medium text-xs group-hover:gap-1 transition-all">
+                          <span>Visit</span>
+                          <ChevronRight className="w-3 h-3" />
                         </div>
                       </div>
                     </Card>
@@ -405,12 +408,12 @@ export default function PolicyUpdatesPage() {
             )}
 
             {/* Bottom CTA */}
-            <div className="mt-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 text-white text-center">
+            <div className="mt-12 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] rounded-xl p-8 text-white text-center">
               <h3 className="text-2xl font-bold mb-2">Need a Custom Source?</h3>
               <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
                 We continuously monitor regulatory developments worldwide. Contact us to add specific sources or jurisdictions to your tracking dashboard.
               </p>
-              <button className="px-6 py-3 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+              <button className="px-6 py-3 bg-white text-[#1e3a5f] rounded-lg font-medium hover:bg-gray-50 transition-colors">
                 Request Custom Source
               </button>
             </div>
