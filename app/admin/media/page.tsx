@@ -1,10 +1,305 @@
-export default function MediaPage() {
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Card } from '@/components/ui/Card';
+import {
+  Upload,
+  Image as ImageIcon,
+  FileText,
+  Video,
+  File,
+  Trash2,
+  Download,
+  Search,
+  Filter
+} from 'lucide-react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+interface MediaFile {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  url: string;
+  created_at: string;
+}
+
+type FileTypeFilter = 'all' | 'images' | 'videos' | 'documents';
+
+export default function MediaVaultPage() {
+  const [files, setFiles] = useState<MediaFile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<FileTypeFilter>('all');
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+
+  const fetchFiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .storage
+        .from('media')
+        .list('', {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'created_at', order: 'desc' }
+        });
+
+      if (error) {
+        console.error('Error fetching files:', error);
+        setFiles([]);
+        return;
+      }
+
+      const filesWithUrls = data.map(file => {
+        const { data: urlData } = supabase.storage
+          .from('media')
+          .getPublicUrl(file.name);
+
+        return {
+          id: file.id,
+          name: file.name,
+          type: file.metadata?.mimetype || 'unknown',
+          size: file.metadata?.size || 0,
+          url: urlData.publicUrl,
+          created_at: file.created_at || new Date().toISOString()
+        };
+      });
+
+      setFiles(filesWithUrls);
+    } catch (error) {
+      console.error('Error:', error);
+      setFiles([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files;
+    if (!fileList || fileList.length === 0) return;
+
+    setUploading(true);
+
+    try {
+      for (const file of Array.from(fileList)) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+
+        const { error } = await supabase.storage
+          .from('media')
+          .upload(fileName, file);
+
+        if (error) {
+          console.error('Upload error:', error);
+        }
+      }
+
+      await fetchFiles();
+    } catch (error) {
+      console.error('Upload error:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (fileName: string) => {
+    if (!confirm(`Delete ${fileName}?`)) return;
+
+    try {
+      const { error } = await supabase.storage
+        .from('media')
+        .remove([fileName]);
+
+      if (error) {
+        console.error('Delete error:', error);
+        return;
+      }
+
+      await fetchFiles();
+    } catch (error) {
+      console.error('Delete error:', error);
+    }
+  };
+
+  const getFileIcon = (type: string) => {
+    if (type.startsWith('image/')) return <ImageIcon className="w-6 h-6" />;
+    if (type.startsWith('video/')) return <Video className="w-6 h-6" />;
+    if (type === 'application/pdf') return <FileText className="w-6 h-6" />;
+    return <File className="w-6 h-6" />;
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const getFileType = (type: string): FileTypeFilter => {
+    if (type.startsWith('image/')) return 'images';
+    if (type.startsWith('video/')) return 'videos';
+    if (type === 'application/pdf' || type.startsWith('application/')) return 'documents';
+    return 'all';
+  };
+
+  const filteredFiles = files.filter(file => {
+    const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === 'all' || getFileType(file.type) === filterType;
+    return matchesSearch && matchesType;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header */}
       <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20">
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          <h1 className="text-4xl font-bold text-white mb-4">Media Vault</h1>
-          <p className="text-xl text-blue-100">Coming soon - Upload and manage media files</p>
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <h1 className="text-4xl font-bold text-white mb-2">Media Vault</h1>
+          <p className="text-xl text-blue-100">Upload and manage your media files</p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Upload Section */}
+        <Card className="p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Upload Files</h2>
+              <p className="text-sm text-gray-600">
+                Supports images (JPG, PNG, WebP), videos (MP4, WebM), and documents (PDF)
+              </p>
+            </div>
+            <label className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+              <Upload className="w-5 h-5" />
+              <span>{uploading ? 'Uploading...' : 'Choose Files'}</span>
+              <input
+                type="file"
+                multiple
+                accept="image/*,video/*,.pdf"
+                onChange={handleFileUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </Card>
+
+        {/* Search and Filter */}
+        <div className="flex gap-4 mb-6">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search files..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div className="flex gap-2">
+            {(['all', 'images', 'videos', 'documents'] as FileTypeFilter[]).map((type) => (
+              <button
+                key={type}
+                onClick={() => setFilterType(type)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  filterType === type
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                }`}
+              >
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Files Grid */}
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">Loading files...</p>
+          </div>
+        ) : filteredFiles.length === 0 ? (
+          <Card className="p-12 text-center">
+            <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No files yet</h3>
+            <p className="text-gray-600">Upload your first file to get started</p>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {filteredFiles.map((file) => (
+              <Card key={file.id} className="p-4 hover:shadow-lg transition-shadow">
+                {/* Preview */}
+                <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                  {file.type.startsWith('image/') ? (
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-gray-400">
+                      {getFileIcon(file.type)}
+                    </div>
+                  )}
+                </div>
+
+                {/* File Info */}
+                <div className="mb-3">
+                  <h3 className="text-sm font-medium text-gray-900 truncate mb-1">
+                    {file.name}
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    {formatFileSize(file.size)}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <a
+                    href={file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-50 text-blue-600 rounded text-xs font-medium hover:bg-blue-100 transition-colors"
+                  >
+                    <Download className="w-3 h-3" />
+                    Download
+                  </a>
+                  <button
+                    onClick={() => handleDelete(file.name)}
+                    className="flex items-center justify-center px-3 py-2 bg-red-50 text-red-600 rounded text-xs font-medium hover:bg-red-100 transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Stats */}
+        <div className="mt-8 grid grid-cols-3 gap-4">
+          <Card className="p-4 text-center">
+            <div className="text-2xl font-bold text-gray-900">{files.length}</div>
+            <div className="text-sm text-gray-600">Total Files</div>
+          </Card>
+          <Card className="p-4 text-center">
+            <div className="text-2xl font-bold text-gray-900">
+              {files.filter(f => f.type.startsWith('image/')).length}
+            </div>
+            <div className="text-sm text-gray-600">Images</div>
+          </Card>
+          <Card className="p-4 text-center">
+            <div className="text-2xl font-bold text-gray-900">
+              {files.filter(f => f.type.startsWith('video/')).length}
+            </div>
+            <div className="text-sm text-gray-600">Videos</div>
+          </Card>
         </div>
       </div>
     </div>

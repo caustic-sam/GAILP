@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import {
@@ -11,7 +12,59 @@ import {
   Palette
 } from 'lucide-react';
 
+interface StudioStats {
+  publishedArticles: number;
+  mediaFiles: number;
+  components: number;
+  drafts: number;
+}
+
 export default function StudioPage() {
+  const [stats, setStats] = useState<StudioStats>({
+    publishedArticles: 0,
+    mediaFiles: 0,
+    components: 0,
+    drafts: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Fetch real article counts
+        const articlesResponse = await fetch('/api/admin/articles');
+        const articlesData = await articlesResponse.json();
+        const articles = articlesData.articles || [];
+
+        const publishedCount = articles.filter((a: any) => a.status === 'published').length;
+        const draftCount = articles.filter((a: any) => a.status === 'draft').length;
+
+        // Fetch media files count from Supabase Storage
+        let mediaCount = 0;
+        try {
+          const { createClientComponentClient } = await import('@supabase/auth-helpers-nextjs');
+          const supabase = createClientComponentClient();
+          const { data: mediaFiles } = await supabase.storage.from('media').list('', { limit: 1000 });
+          mediaCount = mediaFiles?.length || 0;
+        } catch (err) {
+          console.error('Error fetching media count:', err);
+        }
+
+        setStats({
+          publishedArticles: publishedCount,
+          mediaFiles: mediaCount,
+          components: 0, // TODO: Count from component registry
+          drafts: draftCount
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
   const sections = [
     {
       title: 'Publishing Desk',
@@ -136,19 +189,27 @@ export default function StudioPage() {
         {/* Quick Stats */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card className="p-6 text-center">
-            <div className="text-3xl font-bold text-gray-900 mb-1">12</div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {loading ? '...' : stats.publishedArticles}
+            </div>
             <div className="text-sm text-gray-600">Published Articles</div>
           </Card>
           <Card className="p-6 text-center">
-            <div className="text-3xl font-bold text-gray-900 mb-1">45</div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {loading ? '...' : stats.mediaFiles}
+            </div>
             <div className="text-sm text-gray-600">Media Files</div>
           </Card>
           <Card className="p-6 text-center">
-            <div className="text-3xl font-bold text-gray-900 mb-1">8</div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {loading ? '...' : stats.components}
+            </div>
             <div className="text-sm text-gray-600">Components</div>
           </Card>
           <Card className="p-6 text-center">
-            <div className="text-3xl font-bold text-gray-900 mb-1">3</div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {loading ? '...' : stats.drafts}
+            </div>
             <div className="text-sm text-gray-600">Drafts</div>
           </Card>
         </div>
