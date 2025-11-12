@@ -23,8 +23,9 @@ const publicNavItems: NavItem[] = [
 const adminNavItems: NavItem[] = [
   { label: 'Content Manager', href: '/admin', icon: LayoutDashboard },
   { label: 'New Article', href: '/admin/articles/new', icon: Edit3 },
-  { label: 'Media Studio', href: '/admin/media', icon: Image },
-  { label: 'Publishing Studio', href: '/admin/studio', icon: FileText },
+  { label: 'Media Vault', href: '/admin/media', icon: Image },
+  { label: 'Publishing Desk', href: '/admin/studio', icon: FileText },
+  { label: 'Component Gallery', href: '/components', icon: LayoutDashboard },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
