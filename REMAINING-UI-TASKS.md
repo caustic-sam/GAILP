@@ -1,6 +1,6 @@
 # Remaining UI Tasks
 
-**Status:** Partially Complete - 4 of 9 tasks done
+**Status:** Partially Complete - 5 of 9 tasks done
 **Created:** 2025-11-11
 **Session:** Evening UI improvements batch
 
@@ -30,45 +30,18 @@
    - Added "Component Gallery" link
    - File: `components/RightSidebar.tsx`
 
+5. **Sortable Columns in Content Manager** ✅
+   - Click-to-sort on Status, Published Date, Views, Revisions
+   - Visual sort indicators with arrows (↑↓)
+   - Toggle ascending/descending order
+   - Hover states on sortable headers
+   - File: `app/admin/page.tsx`
+
 ---
 
 ## 🔴 Remaining High-Priority Tasks
 
-### 1. Add Sortable Columns to Content Manager
-**Status:** Not Started
-**Location:** `/admin` page (Content Manager)
-**File:** `app/admin/page.tsx`
-
-**Requirements:**
-- Make table columns clickable for sorting
-- Sort by: Status, Published Date, Views, Revisions
-- Add sort indicators (↑↓) to column headers
-- Maintain sort state in URL or local state
-
-**Implementation Approach:**
-```typescript
-const [sortBy, setSortBy] = useState<'status' | 'published_at' | 'views' | 'revisions'>('published_at');
-const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-
-// Sort function
-const sortedArticles = [...articles].sort((a, b) => {
-  const order = sortOrder === 'asc' ? 1 : -1;
-  if (sortBy === 'status') return a.status.localeCompare(b.status) * order;
-  if (sortBy === 'published_at') return (new Date(a.published_at) - new Date(b.published_at)) * order;
-  if (sortBy === 'views') return (a.view_count - b.view_count) * order;
-  if (sortBy === 'revisions') return (a.revision_count - b.revision_count) * order;
-  return 0;
-});
-```
-
-**UI Changes:**
-- Add `cursor-pointer` and `hover:bg-gray-100` to `<th>` elements
-- Add sort icons: `<ArrowUpDown />` from lucide-react
-- Highlight active sort column
-
----
-
-### 2. Fix Media Vault - Show 45 Media Files
+### 1. Fix Media Vault - Show 45 Media Files
 **Status:** Investigation Required
 **Location:** `/admin/media` (Media Vault page)
 **Issue:** "Shipping 45 media files but no media when I visit the media vault"
@@ -93,7 +66,7 @@ const sortedArticles = [...articles].sort((a, b) => {
 
 ---
 
-### 3. Fix File Calculations at Bottom of Studio Page
+### 2. Fix File Calculations at Bottom of Studio Page
 **Status:** Investigation Required
 **Location:** `/admin/studio` (Publishing Desk)
 **Issue:** "File calculations are wrong"
@@ -111,7 +84,7 @@ const sortedArticles = [...articles].sort((a, b) => {
 
 ---
 
-### 4. Mute Blue, Orange, Purple to Fall Tones
+### 3. Mute Blue, Orange, Purple to Fall Tones
 **Status:** Design Task
 **Requirement:** "Mute them the same way our navy blue is muted. Almost like fall tones that mathematically go together."
 
@@ -157,7 +130,7 @@ const sortedArticles = [...articles].sort((a, b) => {
 
 ---
 
-### 5. Enhance Media Vault for Photos, Videos, PDFs
+### 4. Enhance Media Vault for Photos, Videos, PDFs
 **Status:** Feature Enhancement
 **Location:** `/admin/media`
 
@@ -189,35 +162,29 @@ const sortedArticles = [...articles].sort((a, b) => {
 
 ## 📊 Progress Summary
 
-**Completed:** 4/9 tasks (44%)
-**Remaining:** 5 tasks
-**High Priority:** Sortable columns, Media Vault fixes
-**Medium Priority:** File calculations, color scheme
+**Completed:** 5/9 tasks (56%)
+**Remaining:** 4 tasks
+**High Priority:** Media Vault fixes, File calculations
+**Medium Priority:** Color scheme
 **Enhancement:** Media Vault features
 
 ---
 
 ## 🎯 Recommended Next Steps
 
-1. **Run Database Migration**
-   ```sql
-   -- In Supabase SQL Editor
-   -- Run: ADD-META-DESCRIPTION-COLUMN.sql
-   ```
-
-2. **Fix Media Vault Display** (blocking issue)
+1. **Fix Media Vault Display** (blocking issue)
    - Investigate why 45 files aren't showing
    - Check API, RLS, and frontend rendering
 
-3. **Add Sortable Columns**
-   - Quick win, improves UX significantly
-   - ~30 minutes implementation
+2. **Fix File Calculations**
+   - Debug incorrect calculations on Publishing Desk page
+   - Verify data sources and calculation logic
 
-4. **Color Scheme Update**
+3. **Color Scheme Update**
    - Replace bright colors with muted fall palette
    - Global search/replace with new color values
 
-5. **Media Vault Enhancement**
+4. **Media Vault Enhancement**
    - Larger feature, can be phased:
      - Phase 1: Fix current display
      - Phase 2: Add file type support
