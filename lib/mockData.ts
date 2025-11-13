@@ -7,7 +7,8 @@ export const mockPolicies = [
     status: "in_force" as const,
     date: "3 hours ago",
     category: "Regulation",
-    comments: 45
+    comments: 45,
+    url: "https://artificialintelligenceact.eu/"
   },
   {
     id: 2,
@@ -17,7 +18,8 @@ export const mockPolicies = [
     status: "draft" as const,
     date: "5 hours ago",
     category: "Digital ID",
-    comments: 28
+    comments: 28,
+    url: "https://www.tech.gov.sg/products-and-services/singapore-government-tech-stack/digital-identity/"
   },
   {
     id: 3,
@@ -27,7 +29,8 @@ export const mockPolicies = [
     status: "adopted" as const,
     date: "8 hours ago",
     category: "Privacy",
-    comments: 52
+    comments: 52,
+    url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/"
   },
   {
     id: 4,
@@ -37,7 +40,8 @@ export const mockPolicies = [
     status: "draft" as const,
     date: "1 day ago",
     category: "Strategy",
-    comments: 19
+    comments: 19,
+    url: "https://au.int/en/documents/digital-transformation-strategy-africa-2020-2030"
   }
 ];
 

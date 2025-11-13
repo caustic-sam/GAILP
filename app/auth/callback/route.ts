@@ -74,6 +74,16 @@ export async function GET(request: NextRequest) {
 
     console.log('👤 User profile:', profile?.email, 'Role:', profile?.role);
 
+    // Update avatar from GitHub OAuth metadata if available
+    const githubAvatar = data.session.user.user_metadata?.avatar_url;
+    if (githubAvatar && profile) {
+      console.log('🖼️ Updating avatar from GitHub:', githubAvatar);
+      await supabase
+        .from('user_profiles')
+        .update({ avatar_url: githubAvatar })
+        .eq('id', data.session.user.id);
+    }
+
     // Determine redirect based on role
     let redirectTo = '/';
     if (profile && ['admin', 'publisher', 'contributor'].includes(profile.role)) {

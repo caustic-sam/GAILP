@@ -80,7 +80,15 @@ export function Header() {
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-blue-100 hover:text-white hover:bg-white/10"
                   >
-                    <User className="w-4 h-4" />
+                    {user.avatar_url ? (
+                      <img
+                        src={user.avatar_url}
+                        alt={user.email?.split('@')[0] || 'User'}
+                        className="w-6 h-6 rounded-full"
+                      />
+                    ) : (
+                      <User className="w-4 h-4" />
+                    )}
                     <span>{user.email?.split('@')[0]}</span>
                   </button>
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 interface ButtonProps {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'coming-soon';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'coming-soon' | 'accent';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   onClick?: () => void;
@@ -25,7 +25,8 @@ export function Button({
     primary: 'bg-blue-600 hover:bg-blue-700 text-white border-transparent',
     secondary: 'bg-white hover:bg-gray-50 text-blue-600 border-blue-600',
     ghost: 'bg-transparent hover:bg-gray-100 text-gray-700 border-transparent',
-    'coming-soon': 'bg-white hover:bg-orange-50 text-orange-600 border-orange-500 border-2'
+    'coming-soon': 'bg-white hover:bg-orange-50 text-orange-600 border-orange-500 border-2',
+    accent: 'bg-orange-500 hover:bg-orange-600 text-white border-transparent shadow-lg hover:shadow-xl'
   };
 
   const sizes = {

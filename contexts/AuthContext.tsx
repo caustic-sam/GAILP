@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           // Fetch user profile with role - with timeout
           const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+            setTimeout(() => reject(new Error('Profile fetch timeout')), 2000)
           );
 
           const profilePromise = supabase

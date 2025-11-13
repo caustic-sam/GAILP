@@ -82,7 +82,7 @@ export default function StudioPage() {
       icon: ImageIcon,
       color: 'orange',
       actions: [
-        { label: 'Upload Media', href: '/admin/media/upload', icon: Plus },
+        { label: 'Upload Media', href: '/admin/media', icon: Plus },
         { label: 'Browse Library', href: '/admin/media', icon: FolderOpen }
       ]
     },

@@ -80,14 +80,14 @@ export default function HomePage() {
             {/* Left: Content */}
             <div className="relative z-10">
               <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight bg-gradient-to-r from-gray-100 via-gray-50 to-gray-200 bg-clip-text text-transparent drop-shadow-sm">
-                Navigate the Future of<br />Digital Policy
+                Navigating the Future of<br />Digital Policy
               </h1>
               <p className="text-lg text-blue-100 mb-8 max-w-2xl">
                 Your trusted source for comprehensive analysis, expert insights, and real-time updates on global digital governance, data protection, and identity policies.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/blog">
-                  <Button size="lg" variant="primary">Explore Insights</Button>
+                  <Button size="lg" variant="accent">Explore Insights</Button>
                 </Link>
                 <Button size="lg" variant="coming-soon" onClick={() => showComingSoon('Community Features')}>
                   Join Community
@@ -150,10 +150,12 @@ export default function HomePage() {
 
             <div className="space-y-4">
               {filteredPolicies.map(policy => (
-                <button
+                <a
                   key={policy.id}
-                  onClick={() => showComingSoon('Policy Details')}
-                  className="w-full text-left"
+                  href={policy.url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-left"
                 >
                   <Card hover className="p-4 border-2 border-orange-500 hover:border-orange-600 hover:bg-orange-50 transition-all">
                     <div className="flex items-start gap-3">
@@ -178,7 +180,7 @@ export default function HomePage() {
                       </div>
                     </div>
                   </Card>
-                </button>
+                </a>
               ))}
             </div>
 
