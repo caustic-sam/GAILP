@@ -7,9 +7,9 @@
 
 ---
 
-## 🎉 Fixes Completed (2025-11-12)
+## 🎉 Fixes Completed (2025-11-13)
 
-### ✅ **Phase 1 & 2 Completed - 7 Issues Fixed**
+### ✅ **Phase 1, 2 & 3 Completed - 11 Issues Fixed**
 
 1. **✅ Media Vault 404 Fixed**
    - **Issue:** Clicking "Upload Media" in Studio led to 404
@@ -46,6 +46,50 @@
    - **Fix:** Comprehensive 300+ line document with technical specs, cost estimates, timelines
    - **File:** `FUTURE-FEATURES.md`
 
+8. **✅ Policy URL Validation and Updates**
+   - **Issue:** Some policy links returning 404
+   - **Fix:** Validated all 4 policy URLs, updated Singapore and AU links to working sources
+   - **File:** `lib/mockData.ts:22,44`
+   - **Commit:** `b6f7952`
+
+9. **✅ Orange Outline Removed from Policy Cards**
+   - **Issue:** Orange outline was meant for non-functional elements
+   - **Fix:** Removed border since cards are now clickable
+   - **File:** `app/page.tsx:211`
+   - **Commit:** `96a648d`
+
+10. **✅ Cursor Hover Fixed on Policy Categories**
+    - **Issue:** Cursor didn't change to pointer on category tabs
+    - **Fix:** Added `cursor-pointer` class
+    - **File:** `app/page.tsx:189`
+    - **Commit:** `96a648d`
+
+11. **✅ Media Vault Thumbnail Grid - 8 Columns**
+    - **Issue:** Thumbnails too large, requested 8 across
+    - **Fix:** Responsive grid: 2→4→6→8 columns, compact design
+    - **File:** `app/admin/media/page.tsx:233-279`
+    - **Commit:** `7cf4d47`
+
+### ✅ **Phase 3 Completed - Dynamic Stats (2025-11-13)**
+
+12. **✅ Homepage Banner Stats Now Dynamic**
+    - **Issue:** Banner numbers were static mock data
+    - **Fix:** Created `/api/stats` endpoint pulling real-time counts from Supabase
+    - **Metrics:**
+      - Policy Updates: Total published articles
+      - Countries Monitored: 89 (static for now)
+      - Expert Contributors: Total authors count
+      - This Week's Updates: Articles from last 7 days
+    - **Features:**
+      - Automatic trend calculation (+/- vs 7 days ago)
+      - 5-minute server cache
+      - Loading skeleton states
+      - Graceful fallback to mock data
+    - **Files:**
+      - `app/api/stats/route.ts` (NEW)
+      - `app/page.tsx:39-40,92-113,273-294`
+    - **Commit:** `a08d807`
+
 ---
 
 ## Summary
@@ -53,6 +97,8 @@
 Initial QA review identified no major issues with www-gailp-prd.vercel.app. The site is functional, accessible, and performant. Recommendations focus on comprehensive auditing and testing of interactive features.
 
 **Update 2025-11-12:** Addressed 7 critical issues from user QA session. Focus on UX improvements, clickable elements, and performance optimizations.
+
+**Update 2025-11-13:** Completed 5 additional fixes including policy URL validation, Media Vault grid optimization (8 columns), and dynamic homepage stats with real-time Supabase integration. Total: **12 issues resolved**.
 
 ---
 
