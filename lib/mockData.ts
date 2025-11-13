@@ -19,7 +19,7 @@ export const mockPolicies = [
     date: "5 hours ago",
     category: "Digital ID",
     comments: 28,
-    url: "https://www.tech.gov.sg/products-and-services/singapore-government-tech-stack/digital-identity/"
+    url: "https://www.tech.gov.sg/about-us/what-we-do/our-digital-government-efforts/digital-identity/"
   },
   {
     id: 3,
@@ -41,7 +41,7 @@ export const mockPolicies = [
     date: "1 day ago",
     category: "Strategy",
     comments: 19,
-    url: "https://au.int/en/documents/digital-transformation-strategy-africa-2020-2030"
+    url: "https://au.int/en/documents/20200518/digital-transformation-strategy-africa-2020-2030"
   }
 ];
 
