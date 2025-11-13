@@ -36,6 +36,8 @@ export default function HomePage() {
   const [loadingArticle, setLoadingArticle] = React.useState(true);
   const [videos, setVideos] = React.useState<any[]>([]);
   const [loadingVideos, setLoadingVideos] = React.useState(true);
+  const [stats, setStats] = React.useState<any[]>(quickStats);
+  const [loadingStats, setLoadingStats] = React.useState(true);
 
   const filteredPolicies = React.useMemo(() => {
     return mockPolicies.filter(p => (activeTab === 'All Updates' ? true : p.category === activeTab));
@@ -85,6 +87,29 @@ export default function HomePage() {
       }
     }
     fetchVideos();
+  }, []);
+
+  // Fetch stats
+  React.useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        if (data.stats && data.stats.length > 0) {
+          setStats(data.stats);
+        } else {
+          // Fallback to mock stats
+          setStats(quickStats);
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        // Fallback to mock data on error
+        setStats(quickStats);
+      } finally {
+        setLoadingStats(false);
+      }
+    }
+    fetchStats();
   }, []);
 
   const handleRefreshAll = () => {
@@ -245,17 +270,27 @@ export default function HomePage() {
             <div className="mt-8">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Insights</h3>
               <div className="space-y-3">
-                {quickStats.map((stat, idx) => (
-                  <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100">
-                    <span className="text-sm text-gray-600">{stat.label}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-gray-900">{stat.value}</span>
-                      {stat.trend !== 'active' && (
-                        <span className="text-xs text-green-600 font-medium">{stat.trend}</span>
-                      )}
+                {loadingStats ? (
+                  // Loading skeleton
+                  Array.from({ length: 4 }).map((_, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100 animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded w-32"></div>
+                      <div className="h-6 bg-gray-200 rounded w-16"></div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  stats.map((stat, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">{stat.label}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-gray-900">{stat.value}</span>
+                        {stat.trend !== 'active' && (
+                          <span className="text-xs text-green-600 font-medium">{stat.trend}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
