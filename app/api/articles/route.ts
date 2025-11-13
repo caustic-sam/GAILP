@@ -9,6 +9,7 @@ export const runtime = 'nodejs';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const limit = parseInt(searchParams.get('limit') || '10');
+  const featured = searchParams.get('featured') === 'true';
 
   try {
     // Check if Supabase is configured
@@ -22,12 +23,20 @@ export async function GET(request: Request) {
       });
     }
 
-    // Fetch only published articles
-    const { data, error } = await supabase
+    // Build query for published articles
+    let query = supabase
       .from('articles')
-      .select('id, title, slug, summary, content, published_at, created_at, read_time_minutes, word_count, featured_image_url')
+      .select('id, title, slug, summary, content, published_at, created_at, read_time_minutes, word_count, featured_image_url, featured_image_alt, is_featured, category, author:authors(name, title, avatar_url)')
       .eq('status', 'published')
-      .not('published_at', 'is', null)
+      .not('published_at', 'is', null);
+
+    // Filter by featured if requested
+    if (featured) {
+      query = query.eq('is_featured', true);
+    }
+
+    // Execute query
+    const { data, error } = await query
       .order('published_at', { ascending: false })
       .limit(limit);
 

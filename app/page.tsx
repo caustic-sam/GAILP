@@ -32,9 +32,60 @@ export default function HomePage() {
   const { isOpen, feature, showComingSoon, closeModal } = useComingSoon();
   const router = useRouter();
   const [activeTab, setActiveTab] = React.useState<'All Updates' | 'Data' | 'Digital ID'>('All Updates');
+  const [featuredArticle, setFeaturedArticle] = React.useState<any>(null);
+  const [loadingArticle, setLoadingArticle] = React.useState(true);
+  const [videos, setVideos] = React.useState<any[]>([]);
+  const [loadingVideos, setLoadingVideos] = React.useState(true);
+
   const filteredPolicies = React.useMemo(() => {
     return mockPolicies.filter(p => (activeTab === 'All Updates' ? true : p.category === activeTab));
   }, [activeTab]);
+
+  // Fetch featured article from database
+  React.useEffect(() => {
+    async function fetchFeaturedArticle() {
+      try {
+        const res = await fetch('/api/articles?featured=true&limit=1');
+        const data = await res.json();
+        if (data.articles && data.articles.length > 0) {
+          setFeaturedArticle(data.articles[0]);
+        } else {
+          // Fallback to mock data if no featured articles
+          setFeaturedArticle(mockArticles[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching featured article:', error);
+        // Fallback to mock data on error
+        setFeaturedArticle(mockArticles[0]);
+      } finally {
+        setLoadingArticle(false);
+      }
+    }
+    fetchFeaturedArticle();
+  }, []);
+
+  // Fetch video insights
+  React.useEffect(() => {
+    async function fetchVideos() {
+      try {
+        const res = await fetch('/api/videos?limit=4');
+        const data = await res.json();
+        if (data.videos && data.videos.length > 0) {
+          setVideos(data.videos);
+        } else {
+          // Fallback to mock videos
+          setVideos(mockVideos);
+        }
+      } catch (error) {
+        console.error('Error fetching videos:', error);
+        // Fallback to mock data on error
+        setVideos(mockVideos);
+      } finally {
+        setLoadingVideos(false);
+      }
+    }
+    fetchVideos();
+  }, []);
 
   const handleRefreshAll = () => {
     router.refresh();
@@ -267,55 +318,80 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-6">
-              {mockArticles.slice(0, 1).map((article, idx) => (
-                <Card key={article.id} hover className="overflow-hidden">
-                  <div className="w-full h-48 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] flex items-center justify-center text-blue-100 text-sm">
-                    Article Image Placeholder
-                  </div>
-                  <div className="p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Avatar size="md">{article.author.avatar}</Avatar>
-                      <div>
-                        <div className="font-semibold text-sm text-gray-900">{article.author.name}</div>
-                        <div className="text-xs text-gray-500">{article.author.title}</div>
-                      </div>
-                    </div>
-
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer">
-                      {article.title}
-                    </h3>
-
-                    {idx === 0 && (
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-                        {article.summary}
-                      </p>
-                    )}
-
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {article.readTime}
-                        </span>
-                        <span>{article.date}</span>
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
-                          {article.category}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-3 h-3" />
-                          {article.likes}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle className="w-3 h-3" />
-                          {article.comments}
-                        </span>
-                      </div>
-                    </div>
+              {loadingArticle ? (
+                <Card className="overflow-hidden animate-pulse">
+                  <div className="w-full h-48 bg-gray-200"></div>
+                  <div className="p-5 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                   </div>
                 </Card>
-              ))}
+              ) : featuredArticle ? (
+                <Link href={`/blog/${featuredArticle.slug}`} key={featuredArticle.id}>
+                  <Card hover className="overflow-hidden">
+                    {featuredArticle.featured_image_url ? (
+                      <div className="w-full h-48 overflow-hidden">
+                        <img
+                          src={featuredArticle.featured_image_url}
+                          alt={featuredArticle.featured_image_alt || featuredArticle.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-full h-48 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] flex items-center justify-center text-blue-100 text-sm">
+                        Article Image Placeholder
+                      </div>
+                    )}
+                    <div className="p-5">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Avatar size="md">
+                          {featuredArticle.author?.name?.split(' ').map((n: string) => n[0]).join('') ||
+                           featuredArticle.author?.avatar || 'A'}
+                        </Avatar>
+                        <div>
+                          <div className="font-semibold text-sm text-gray-900">
+                            {featuredArticle.author?.name || 'Author'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {featuredArticle.author?.title || 'Contributor'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-blue-600">
+                        {featuredArticle.title}
+                      </h3>
+
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-3">
+                        {featuredArticle.summary || featuredArticle.excerpt}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          {featuredArticle.read_time_minutes && (
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {featuredArticle.read_time_minutes} min
+                            </span>
+                          )}
+                          <span>
+                            {new Date(featuredArticle.published_at || featuredArticle.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </span>
+                          {featuredArticle.category && (
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">
+                              {featuredArticle.category}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ) : null}
             </div>
 
             {/* Global Feed Stream */}
@@ -328,31 +404,58 @@ export default function HomePage() {
               <h3 className="text-lg font-bold text-gray-900 mb-1">Video Insights</h3>
               <p className="text-sm text-gray-600 mb-4">Expert video commentary</p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockVideos.map(video => (
-                  <div key={video.id} className="group cursor-pointer">
-                    <div className="relative rounded-lg overflow-hidden mb-2 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] h-36 flex items-center justify-center">
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                        <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                          <Play className="w-6 h-6 text-blue-600 ml-1" />
+              {loadingVideos ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[1, 2].map(i => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-36 bg-gray-200 rounded-lg mb-2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {videos.map(video => (
+                    <a
+                      key={video.id}
+                      href={video.url || video.link || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group cursor-pointer"
+                    >
+                      <div className="relative rounded-lg overflow-hidden mb-2 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8f] h-36 flex items-center justify-center">
+                        {video.thumbnail ? (
+                          <img
+                            src={video.thumbnail}
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : null}
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                          <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                            <Play className="w-6 h-6 text-blue-600 ml-1" />
+                          </div>
                         </div>
+                        {video.duration && (
+                          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 rounded text-white text-xs font-medium">
+                            {video.duration}
+                          </div>
+                        )}
                       </div>
-                      <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 rounded text-white text-xs font-medium">
-                        {video.duration}
+                      <h4 className="font-semibold text-sm text-gray-900 mb-1 group-hover:text-blue-600">
+                        {video.title}
+                      </h4>
+                      <p className="text-xs text-gray-600 mb-1 line-clamp-2">{video.description}</p>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        {video.views && <span>{video.views}</span>}
+                        {video.views && video.date && <span>•</span>}
+                        {video.date && <span>{video.date}</span>}
                       </div>
-                    </div>
-                    <h4 className="font-semibold text-sm text-gray-900 mb-1 group-hover:text-blue-600">
-                      {video.title}
-                    </h4>
-                    <p className="text-xs text-gray-600 mb-1">{video.description}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span>{video.views}</span>
-                      <span>•</span>
-                      <span>{video.date}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    </a>
+                  ))}
+                </div>
+              )}
             </Card>
 
             {/* NIST Assistant */}
