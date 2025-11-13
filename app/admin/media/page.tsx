@@ -230,11 +230,11 @@ export default function MediaVaultPage() {
             <p className="text-gray-600">Upload your first file to get started</p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
             {filteredFiles.map((file) => (
-              <Card key={file.id} className="p-4 hover:shadow-lg transition-shadow">
+              <Card key={file.id} className="p-2 hover:shadow-lg transition-shadow">
                 {/* Preview */}
-                <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                <div className="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
                   {file.type.startsWith('image/') ? (
                     <img
                       src={file.url}
@@ -249,29 +249,29 @@ export default function MediaVaultPage() {
                 </div>
 
                 {/* File Info */}
-                <div className="mb-3">
-                  <h3 className="text-sm font-medium text-gray-900 truncate mb-1">
+                <div className="mb-2">
+                  <h3 className="text-xs font-medium text-gray-900 truncate mb-0.5" title={file.name}>
                     {file.name}
                   </h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-[10px] text-gray-500">
                     {formatFileSize(file.size)}
                   </p>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <a
                     href={file.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-50 text-blue-600 rounded text-xs font-medium hover:bg-blue-100 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 bg-blue-50 text-blue-600 rounded text-[10px] font-medium hover:bg-blue-100 transition-colors"
+                    title="Download"
                   >
                     <Download className="w-3 h-3" />
-                    Download
                   </a>
                   <button
                     onClick={() => handleDelete(file.name)}
-                    className="flex items-center justify-center px-3 py-2 bg-red-50 text-red-600 rounded text-xs font-medium hover:bg-red-100 transition-colors"
+                    className="flex items-center justify-center px-2 py-1.5 bg-red-50 text-red-600 rounded text-[10px] font-medium hover:bg-red-100 transition-colors"
                     title="Delete"
                   >
                     <Trash2 className="w-3 h-3" />
