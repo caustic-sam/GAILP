@@ -186,7 +186,7 @@ export default function HomePage() {
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       aria-pressed={isActive}
-                      className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                      className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors cursor-pointer ${
                         isActive
                           ? 'border-blue-600 text-blue-600'
                           : 'border-transparent text-gray-600 hover:text-gray-900'
@@ -208,7 +208,7 @@ export default function HomePage() {
                   rel="noopener noreferrer"
                   className="block w-full text-left"
                 >
-                  <Card hover className="p-4 border-2 border-orange-500 hover:border-orange-600 hover:bg-orange-50 transition-all">
+                  <Card hover className="p-4 hover:bg-orange-50 transition-all">
                     <div className="flex items-start gap-3">
                       <StatusDot status={policy.status} />
                       <div className="flex-1 min-w-0">

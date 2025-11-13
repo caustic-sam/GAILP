@@ -54,3 +54,55 @@ SET
 
 -- STEP 5: Test the query that AuthContext uses
 SELECT * FROM public.user_profiles WHERE id = '3be8b5c2-87a2-4a91-acbd-ad0249c150a4';
+
+-- ================================================================
+-- STORAGE BUCKET POLICIES (For Media Vault)
+-- ================================================================
+
+-- STEP 6: Check if 'media' bucket exists
+-- Go to Supabase Dashboard > Storage
+-- If 'media' bucket doesn't exist, create it as PUBLIC bucket
+
+-- STEP 7: Add storage policies for media bucket
+-- Allow authenticated users to upload
+CREATE POLICY "Authenticated users can upload media"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'media');
+
+-- Allow authenticated users to update their uploads
+CREATE POLICY "Authenticated users can update media"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'media');
+
+-- Allow authenticated users to delete media
+CREATE POLICY "Authenticated users can delete media"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'media');
+
+-- Allow public read access
+CREATE POLICY "Public can view media"
+ON storage.objects FOR SELECT
+TO public
+USING (bucket_id = 'media');
+
+-- ================================================================
+-- SCHEMA CACHE FIX (Articles table)
+-- ================================================================
+
+-- STEP 8: Verify columns exist in articles table
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = 'articles'
+AND column_name IN ('summary', 'read_time_minutes', 'is_featured');
+
+-- If any columns are missing, uncomment and run:
+-- ALTER TABLE articles ADD COLUMN IF NOT EXISTS summary TEXT;
+-- ALTER TABLE articles ADD COLUMN IF NOT EXISTS read_time_minutes INTEGER;
+-- ALTER TABLE articles ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
+
+-- STEP 9: Reload PostgREST schema cache
+-- Go to: Supabase Dashboard > Settings > API
+-- Click: "Reload schema cache" button

@@ -85,6 +85,10 @@ export function Header() {
                         src={user.avatar_url}
                         alt={user.email?.split('@')[0] || 'User'}
                         className="w-6 h-6 rounded-full"
+                        onError={(e) => {
+                          console.error('Avatar failed to load:', user.avatar_url);
+                          e.currentTarget.style.display = 'none';
+                        }}
                       />
                     ) : (
                       <User className="w-4 h-4" />
