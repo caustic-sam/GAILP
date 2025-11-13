@@ -1,21 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Home, FileText, Users, BookOpen, Mail, LayoutDashboard, Image, Settings, Edit3 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { WorldClocks } from '@/components/WorldClocks';
+import { getFeatureFlags, FeatureFlags } from '@/lib/feature-flags';
 
-type NavItem = { label: string; href: string; icon: React.ElementType };
+type NavItem = { label: string; href: string; icon: React.ElementType; flagKey?: keyof FeatureFlags };
 
-const publicNavItems: NavItem[] = [
+const allPublicNavItems: NavItem[] = [
   { label: 'Home', href: '/', icon: Home },
   { label: 'Policy Updates', href: '/policy-updates', icon: FileText },
-  { label: 'Blog', href: '/blog', icon: FileText },
-  { label: 'Policy Pulse', href: '/policy-pulse', icon: BookOpen },
-  { label: 'Articles', href: '/articles', icon: FileText },
-  { label: 'Policies', href: '/policies', icon: BookOpen },
-  { label: 'Videos', href: '/videos', icon: BookOpen },
+  { label: 'Blog', href: '/blog', icon: FileText, flagKey: 'showBlog' },
+  { label: 'Policy Pulse', href: '/policy-pulse', icon: BookOpen, flagKey: 'showPolicyPulse' },
+  { label: 'Articles', href: '/articles', icon: FileText, flagKey: 'showArticles' },
+  { label: 'Policies', href: '/policies', icon: BookOpen, flagKey: 'showPolicies' },
+  { label: 'Videos', href: '/videos', icon: BookOpen, flagKey: 'showVideos' },
   { label: 'About', href: '/about', icon: Users },
   { label: 'Contact', href: '/contact', icon: Mail },
 ];
@@ -33,6 +34,18 @@ const adminNavItems: NavItem[] = [
 export function RightSidebar() {
   const { user } = useAuth();
   const isAdmin = user && ['admin', 'publisher', 'contributor'].includes(user.role);
+  const [publicNavItems, setPublicNavItems] = useState(allPublicNavItems);
+
+  useEffect(() => {
+    const flags = getFeatureFlags();
+    const filtered = allPublicNavItems.filter(item => {
+      // Always show items without flags or if user is admin
+      if (!item.flagKey || isAdmin) return true;
+      // For non-admin users, check the flag
+      return flags[item.flagKey];
+    });
+    setPublicNavItems(filtered);
+  }, [isAdmin]);
 
   return (
     <aside className="hidden lg:block fixed right-0 top-12 h-[calc(100vh-3rem)] w-12 hover:w-56 overflow-y-auto bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-l border-blue-900/20 z-40 transition-all duration-300 group">
