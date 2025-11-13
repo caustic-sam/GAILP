@@ -33,7 +33,15 @@ export default function BlogPage() {
       try {
         const response = await fetch('/api/admin/articles?status=published');
         const data = await response.json();
-        setArticles(data.articles || []);
+        // Show only the 3 most recent published articles
+        const recentArticles = (data.articles || [])
+          .sort((a: Article, b: Article) => {
+            const dateA = new Date(a.published_at || a.created_at).getTime();
+            const dateB = new Date(b.published_at || b.created_at).getTime();
+            return dateB - dateA; // Most recent first
+          })
+          .slice(0, 3);
+        setArticles(recentArticles);
       } catch (error) {
         console.error('Error fetching articles:', error);
       } finally {

@@ -324,7 +324,7 @@ export default function PolicyUpdatesPage() {
             </div>
 
             {/* Policy Sources Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
               {filteredSources.map((source) => {
                 const Icon = source.icon;
                 return (
@@ -335,32 +335,32 @@ export default function PolicyUpdatesPage() {
                     rel="noopener noreferrer"
                     className="group"
                   >
-                    <Card hover className="p-4 h-full flex flex-col hover:shadow-xl transition-all duration-300 hover:border-blue-300">
+                    <Card hover className="p-3 h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:border-blue-300">
                       {/* Header */}
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-2xl shadow-sm border border-gray-200 group-hover:scale-110 transition-all">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-lg shadow-sm border border-gray-200 group-hover:scale-105 transition-all">
                             {source.flag}
                           </div>
-                          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                            <Icon className="w-4 h-4 text-blue-600" />
+                          <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                            <Icon className="w-3 h-3 text-blue-600" />
                           </div>
                         </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
                       </div>
 
                       {/* Content */}
                       <div className="flex-1 min-h-0">
-                        <div className="text-[10px] font-medium text-gray-500 mb-1 uppercase tracking-wide">{source.jurisdiction}</div>
-                        <h3 className="text-sm font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2">
+                        <div className="text-[9px] font-medium text-gray-500 mb-0.5 uppercase tracking-wide">{source.jurisdiction}</div>
+                        <h3 className="text-xs font-bold text-gray-900 mb-1.5 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2">
                           {source.name}
                         </h3>
-                        <p className="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                        <p className="text-[10px] text-gray-600 mb-2 line-clamp-2 leading-snug">
                           {source.description}
                         </p>
 
                         {/* Category Tags */}
-                        <div className="flex flex-wrap gap-1 mb-3">
+                        <div className="flex flex-wrap gap-0.5 mb-2">
                           {source.category.slice(0, 2).map((cat) => (
                             <span
                               key={cat}
@@ -378,14 +378,14 @@ export default function PolicyUpdatesPage() {
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                        <div className="flex items-center gap-1 text-[10px] text-gray-500">
-                          <Clock className="w-3 h-3" />
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                        <div className="flex items-center gap-0.5 text-[9px] text-gray-500">
+                          <Clock className="w-2.5 h-2.5" />
                           <span>{source.recentActivity}</span>
                         </div>
-                        <div className="flex items-center gap-0.5 text-blue-600 font-medium text-xs group-hover:gap-1 transition-all">
+                        <div className="flex items-center gap-0.5 text-blue-600 font-medium text-[10px] group-hover:gap-1 transition-all">
                           <span>Visit</span>
-                          <ChevronRight className="w-3 h-3" />
+                          <ChevronRight className="w-2.5 h-2.5" />
                         </div>
                       </div>
                     </Card>
