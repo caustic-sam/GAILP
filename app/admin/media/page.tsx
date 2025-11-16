@@ -12,7 +12,8 @@ import {
   Trash2,
   Download,
   Search,
-  Filter
+  Filter,
+  X
 } from 'lucide-react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'sonner';
