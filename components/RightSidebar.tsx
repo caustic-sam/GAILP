@@ -22,10 +22,10 @@ const allPublicNavItems: NavItem[] = [
 ];
 
 const adminNavItems: NavItem[] = [
-  { label: 'Content Manager', href: '/admin', icon: LayoutDashboard },
+  { label: 'Publishing Desk', href: '/admin', icon: LayoutDashboard },
   { label: 'New Article', href: '/admin/articles/new', icon: Edit3 },
   { label: 'Media Vault', href: '/admin/media', icon: Image },
-  { label: 'Publishing Desk', href: '/admin/studio', icon: FileText },
+  { label: 'Studio', href: '/admin/studio', icon: FileText },
   { label: 'Component Gallery', href: '/components', icon: LayoutDashboard },
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ];

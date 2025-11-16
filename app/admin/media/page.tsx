@@ -75,17 +75,21 @@ export default function MediaVaultPage() {
           .from('media')
           .getPublicUrl(file.name);
 
+        // Add cache-busting timestamp to ensure fresh images
+        const urlWithCacheBust = `${urlData.publicUrl}?t=${Date.now()}`;
+
         return {
           id: file.id,
           name: file.name,
           type: file.metadata?.mimetype || 'unknown',
           size: file.metadata?.size || 0,
-          url: urlData.publicUrl,
+          url: urlWithCacheBust,
           created_at: file.created_at || new Date().toISOString()
         };
       });
 
       setFiles(filesWithUrls);
+      console.log('✅ Files state updated with', filesWithUrls.length, 'items');
     } catch (error) {
       console.error('❌ Exception:', error);
       setFiles([]);
@@ -122,6 +126,8 @@ export default function MediaVaultPage() {
         }
       }
 
+      console.log('🔄 Refreshing file list after upload...');
+      setLoading(true);
       await fetchFiles();
       toast.success('Upload complete', { description: `${fileList.length} file(s) uploaded successfully` });
     } catch (error) {
@@ -129,6 +135,7 @@ export default function MediaVaultPage() {
       toast.error('Upload failed', { description: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setUploading(false);
+      setLoading(false);
     }
   };
 

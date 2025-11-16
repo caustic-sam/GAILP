@@ -192,3 +192,54 @@ export async function PUT(
     );
   }
 }
+
+// DELETE: Delete article by ID
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    console.log('📥 DELETE /api/admin/articles/[id] - Deleting article:', id);
+
+    if (!isSupabaseConfigured()) {
+      console.log('📝 Mock delete mode (Supabase not configured)');
+      return NextResponse.json({
+        success: true,
+        message: 'Article deleted successfully (mock mode)',
+        source: 'mock',
+      });
+    }
+
+    const { error } = await supabaseAdmin
+      .from('articles')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
+    console.log('✅ Article deleted successfully');
+
+    return NextResponse.json({
+      success: true,
+      message: 'Article deleted successfully',
+      source: 'supabase',
+    });
+  } catch (error) {
+    console.error('❌ Error deleting article:', error);
+
+    const supabaseError = extractSupabaseError(error);
+    const fallbackMessage = error instanceof Error ? error.message : 'Failed to delete article';
+
+    return NextResponse.json(
+      {
+        error: supabaseError?.message ?? fallbackMessage,
+        details: supabaseError ?? undefined,
+      },
+      { status: 500 }
+    );
+  }
+}

@@ -135,6 +135,41 @@ export default function NewArticlePage() {
     }));
   };
 
+  const handleFeaturedImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const { createClientComponentClient } = await import('@supabase/auth-helpers-nextjs');
+      const supabase = createClientComponentClient();
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+
+      toast.info('Uploading image...', { duration: 2000 });
+
+      const { data, error } = await supabase.storage
+        .from('media')
+        .upload(fileName, file);
+
+      if (error) {
+        console.error('Upload error:', error);
+        toast.error('Upload failed', { description: error.message });
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('media')
+        .getPublicUrl(fileName);
+
+      setFormData(prev => ({ ...prev, featured_image_url: urlData.publicUrl }));
+      toast.success('Image uploaded successfully!');
+    } catch (error) {
+      console.error('Upload exception:', error);
+      toast.error('Upload failed', { description: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  };
+
   const calculateReadTime = () => {
     const wordsPerMinute = 200;
     const wordCount = formData.content.split(/\s+/).length;
@@ -288,11 +323,25 @@ export default function NewArticlePage() {
                   <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-600 mb-2">Upload image or paste URL</p>
                   <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFeaturedImageUpload}
+                    className="hidden"
+                    id="featured-image-upload"
+                  />
+                  <label
+                    htmlFor="featured-image-upload"
+                    className="block w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer mb-2"
+                  >
+                    Choose File
+                  </label>
+                  <div className="text-xs text-gray-500 mb-2">or</div>
+                  <input
                     type="text"
                     value={formData.featured_image_url}
                     onChange={(e) => setFormData(prev => ({ ...prev, featured_image_url: e.target.value }))}
                     placeholder="https://..."
-                    className="w-full text-sm border border-gray-300 rounded px-3 py-2"
+                    className="w-full text-sm border border-gray-300 rounded px-3 py-2 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               )}
@@ -330,7 +379,7 @@ export default function NewArticlePage() {
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && addTag()}
                   placeholder="Add tag..."
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button
                   onClick={addTag}
@@ -367,7 +416,7 @@ export default function NewArticlePage() {
                     value={formData.seo_title}
                     onChange={(e) => setFormData(prev => ({ ...prev, seo_title: e.target.value }))}
                     placeholder={formData.title || 'Auto-generated from title'}
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
                 <div>
@@ -376,7 +425,7 @@ export default function NewArticlePage() {
                     value={formData.seo_description}
                     onChange={(e) => setFormData(prev => ({ ...prev, seo_description: e.target.value }))}
                     placeholder={formData.excerpt || 'Auto-generated from excerpt'}
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400"
                     rows={3}
                   />
                 </div>

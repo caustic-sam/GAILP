@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { toast } from 'sonner';
 import {
   FileText,
   Clock,
@@ -96,6 +97,35 @@ export default function AdminDashboard() {
     );
   };
 
+  const handleDelete = async (articleId: string, articleTitle: string) => {
+    if (!confirm(`Delete "${articleTitle}"?`)) return;
+
+    try {
+      toast.info('Deleting article...', { duration: 1000 });
+
+      const response = await fetch(`/api/admin/articles/${articleId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete article');
+      }
+
+      // Refresh the articles list
+      await fetchArticles();
+
+      toast.success('Article deleted successfully!', {
+        description: articleTitle,
+      });
+      console.log('✅ Article deleted successfully');
+    } catch (error) {
+      console.error('❌ Error deleting article:', error);
+      toast.error('Failed to delete article', {
+        description: error instanceof Error ? error.message : 'Please try again',
+      });
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Not set';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -159,7 +189,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Content Manager</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Publishing Desk</h1>
               <p className="text-sm text-gray-600 mt-1">Manage articles, drafts, and scheduled posts</p>
             </div>
             <Link
@@ -391,12 +421,7 @@ export default function AdminDashboard() {
                             <Edit className="w-4 h-4" />
                           </Link>
                           <button
-                            onClick={() => {
-                              if (confirm(`Delete "${article.title}"?`)) {
-                                // TODO: Implement delete
-                                console.log('Delete', article.id);
-                              }
-                            }}
+                            onClick={() => handleDelete(article.id, article.title)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
                             title="Delete"
                           >
