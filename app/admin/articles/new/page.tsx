@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
+import { RichTextEditor } from '@/components/RichTextEditor';
+import { toast } from 'sonner';
 import {
   Save,
   Send,
@@ -13,6 +15,7 @@ import {
   Globe,
   X,
   Upload,
+  Eye,
 } from 'lucide-react';
 
 interface ArticleFormData {
@@ -33,6 +36,7 @@ export default function NewArticlePage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [showScheduler, setShowScheduler] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [tagInput, setTagInput] = useState('');
 
   const [formData, setFormData] = useState<ArticleFormData>({
@@ -93,17 +97,22 @@ export default function NewArticlePage() {
       console.log('📥 Response data:', data);
 
       if (response.ok) {
-        // Show success message
         const actionText = action === 'draft' ? 'saved as draft' : action === 'publish' ? 'published' : 'scheduled';
-        alert(`✅ Article ${actionText}!\n\nID: ${data.article?.id}\nSource: ${data.source}`);
+        toast.success(`Article ${actionText}!`, {
+          description: `ID: ${data.article?.id}`,
+        });
         router.push('/admin');
       } else {
         console.error('❌ Save failed:', data);
-        alert(`❌ Error: ${data.error || 'Failed to save article'}\n\nDetails: ${JSON.stringify(data.details || {}, null, 2)}`);
+        toast.error('Failed to save article', {
+          description: data.error || 'Unknown error',
+        });
       }
     } catch (error) {
       console.error('❌ Error saving article:', error);
-      alert(`❌ Failed to save article.\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}\n\nCheck browser console for details.`);
+      toast.error('Failed to save article', {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      });
     } finally {
       setSaving(false);
     }
@@ -153,6 +162,15 @@ export default function NewArticlePage() {
                 disabled={saving}
               >
                 Cancel
+              </button>
+
+              <button
+                onClick={() => setShowPreview(true)}
+                disabled={!formData.title || !formData.content}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                <Eye className="w-4 h-4" />
+                Preview
               </button>
 
               <button
@@ -214,30 +232,13 @@ export default function NewArticlePage() {
 
             {/* Content Editor */}
             <Card className="p-6">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Content
-                </label>
-                <div className="flex gap-2 mb-3 text-sm text-gray-600">
-                  <button className="px-3 py-1 hover:bg-gray-100 rounded">B</button>
-                  <button className="px-3 py-1 hover:bg-gray-100 rounded italic">I</button>
-                  <button className="px-3 py-1 hover:bg-gray-100 rounded underline">U</button>
-                  <div className="w-px bg-gray-300 mx-1"></div>
-                  <button className="px-3 py-1 hover:bg-gray-100 rounded">H1</button>
-                  <button className="px-3 py-1 hover:bg-gray-100 rounded">H2</button>
-                  <button className="px-3 py-1 hover:bg-gray-100 rounded">Quote</button>
-                  <div className="w-px bg-gray-300 mx-1"></div>
-                  <button className="px-3 py-1 hover:bg-gray-100 rounded flex items-center gap-1">
-                    <ImageIcon className="w-4 h-4" />
-                    Image
-                  </button>
-                </div>
-              </div>
-              <textarea
-                value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                placeholder="Write your article here... (Markdown supported)"
-                className="w-full min-h-[500px] text-gray-900 placeholder-gray-400 border-none focus:outline-none focus:ring-0 resize-y font-mono text-sm"
+              <label className="block text-sm font-medium text-gray-700 mb-4">
+                Content
+              </label>
+              <RichTextEditor
+                content={formData.content}
+                onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                placeholder="Write your article here..."
               />
             </Card>
 
@@ -457,6 +458,101 @@ export default function NewArticlePage() {
               </div>
             </div>
           </Card>
+        </div>
+      )}
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-4xl w-full my-8">
+            {/* Preview Header */}
+            <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] p-6 rounded-t-lg flex items-center justify-between">
+              <div>
+                <h3 className="text-2xl font-bold text-white">Article Preview</h3>
+                <p className="text-blue-100 text-sm mt-1">
+                  {calculateReadTime()} min read · {formData.category || 'Uncategorized'}
+                </p>
+              </div>
+              <button onClick={() => setShowPreview(false)} className="text-white hover:text-blue-200">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Preview Content */}
+            <div className="p-8">
+              {/* Featured Image */}
+              {formData.featured_image_url && (
+                <div className="mb-8 rounded-lg overflow-hidden">
+                  <Image
+                    src={formData.featured_image_url}
+                    alt={formData.title}
+                    width={800}
+                    height={400}
+                    className="w-full h-64 object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
+
+              {/* Title */}
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">{formData.title}</h1>
+
+              {/* Metadata */}
+              <div className="flex items-center gap-4 text-sm text-gray-600 mb-6 pb-6 border-b border-gray-200">
+                <span>{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                <span>·</span>
+                <span>{calculateReadTime()} min read</span>
+                {formData.category && (
+                  <>
+                    <span>·</span>
+                    <span className="text-blue-600 font-medium">{formData.category}</span>
+                  </>
+                )}
+              </div>
+
+              {/* Excerpt */}
+              {formData.excerpt && (
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                  <p className="text-lg text-gray-700 italic">{formData.excerpt}</p>
+                </div>
+              )}
+
+              {/* Content */}
+              <div
+                className="prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: formData.content }}
+              />
+
+              {/* Tags */}
+              {formData.tags.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="flex flex-wrap gap-2">
+                    {formData.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Preview Footer */}
+            <div className="bg-gray-50 p-6 rounded-b-lg flex justify-between items-center">
+              <p className="text-sm text-gray-600">
+                This is how your article will appear when published
+              </p>
+              <button
+                onClick={() => setShowPreview(false)}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

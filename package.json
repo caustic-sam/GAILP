@@ -6,7 +6,10 @@
   "author": "Wren / CortexAI",
   "license": "MIT",
   "packageManager": "pnpm@9.12.0",
-  "engines": { "node": ">=18.0.0", "pnpm": ">=8.0.0" },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "scripts": {
     "preinstall": "corepack enable",
     "dev": "next dev",
@@ -45,6 +48,10 @@
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.79.0",
+    "@tiptap/extension-link": "^3.10.7",
+    "@tiptap/extension-placeholder": "^3.10.7",
+    "@tiptap/react": "^3.10.7",
+    "@tiptap/starter-kit": "^3.10.7",
     "@types/remarkable": "^2.0.8",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
@@ -66,6 +73,7 @@
     "remarkable": "^2.0.1",
     "rss-parser": "^3.13.0",
     "sharp": "^0.34.4",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "typescript": "^5.9.3",
     "xml2js": "^0.6.2",

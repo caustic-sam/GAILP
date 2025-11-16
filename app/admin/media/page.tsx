@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
+import { SkeletonGrid } from '@/components/ui/Skeleton';
 import {
   Upload,
   Image as ImageIcon,
@@ -14,6 +15,7 @@ import {
   Filter
 } from 'lucide-react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { toast } from 'sonner';
 
 interface MediaFile {
   id: string;
@@ -32,6 +34,7 @@ export default function MediaVaultPage() {
   const [uploading, setUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<FileTypeFilter>('all');
+  const [isDragging, setIsDragging] = useState(false);
   const supabase = createClientComponentClient();
 
   console.log('💡 MediaVaultPage component rendered');
@@ -91,8 +94,7 @@ export default function MediaVaultPage() {
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const fileList = event.target.files;
+  const uploadFiles = async (fileList: FileList) => {
     if (!fileList || fileList.length === 0) return;
 
     setUploading(true);
@@ -113,18 +115,50 @@ export default function MediaVaultPage() {
         if (error) {
           console.error('❌ Upload error for', fileName, ':', error);
           console.error('Error details:', JSON.stringify(error, null, 2));
-          alert(`Upload failed: ${error.message}`);
+          toast.error('Upload failed', { description: error.message });
         } else {
           console.log('✅ Uploaded:', fileName);
+          toast.success('File uploaded', { description: fileName });
         }
       }
 
       await fetchFiles();
+      toast.success('Upload complete', { description: `${fileList.length} file(s) uploaded successfully` });
     } catch (error) {
       console.error('❌ Upload exception:', error);
-      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error('Upload failed', { description: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files;
+    if (fileList) {
+      await uploadFiles(fileList);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const droppedFiles = e.dataTransfer.files;
+    if (droppedFiles.length > 0) {
+      await uploadFiles(droppedFiles);
     }
   };
 
@@ -141,15 +175,16 @@ export default function MediaVaultPage() {
       if (error) {
         console.error('❌ Delete error:', error);
         console.error('Error details:', JSON.stringify(error, null, 2));
-        alert(`Delete failed: ${error.message}`);
+        toast.error('Delete failed', { description: error.message });
         return;
       }
 
       console.log('✅ Deleted:', fileName);
+      toast.success('File deleted', { description: fileName });
       await fetchFiles();
     } catch (error) {
       console.error('❌ Delete exception:', error);
-      alert(`Delete failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error('Delete failed', { description: error instanceof Error ? error.message : 'Unknown error' });
     }
   };
 
@@ -192,27 +227,47 @@ export default function MediaVaultPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Upload Section */}
-        <Card className="p-6 mb-8">
+        {/* Upload Section with Drag & Drop */}
+        <Card
+          className={`p-6 mb-8 transition-all ${
+            isDragging
+              ? 'border-2 border-blue-500 border-dashed bg-blue-50'
+              : 'border-2 border-transparent'
+          }`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Upload Files</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                {isDragging ? 'Drop files here...' : 'Upload Files'}
+              </h2>
               <p className="text-sm text-gray-600">
-                Supports images (JPG, PNG, WebP), videos (MP4, WebM), and documents (PDF)
+                {isDragging
+                  ? 'Release to upload your files'
+                  : 'Drag & drop files here, or click to browse'}
               </p>
+              {!isDragging && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Supports images (JPG, PNG, WebP), videos (MP4, WebM), and documents (PDF)
+                </p>
+              )}
             </div>
-            <label className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
-              <Upload className="w-5 h-5" />
-              <span>{uploading ? 'Uploading...' : 'Choose Files'}</span>
-              <input
-                type="file"
-                multiple
-                accept="image/*,video/*,.pdf"
-                onChange={handleFileUpload}
-                disabled={uploading}
-                className="hidden"
-              />
-            </label>
+            {!isDragging && (
+              <label className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+                <Upload className="w-5 h-5" />
+                <span>{uploading ? 'Uploading...' : 'Choose Files'}</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*,video/*,.pdf"
+                  onChange={handleFileUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
+              </label>
+            )}
           </div>
         </Card>
 
@@ -247,9 +302,7 @@ export default function MediaVaultPage() {
 
         {/* Files Grid */}
         {loading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">Loading files...</p>
-          </div>
+          <SkeletonGrid count={8} />
         ) : filteredFiles.length === 0 ? (
           <Card className="p-12 text-center">
             <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />

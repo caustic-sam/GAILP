@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { Header } from "@/components/Header";
 import { RightSidebar } from "@/components/RightSidebar";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "GAILP — Global AI & Identity Policy",
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </main>
             <RightSidebar />
           </div>
+          <Toaster position="top-right" richColors />
         </AuthProvider>
       </body>
     </html>

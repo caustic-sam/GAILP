@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
+import { Skeleton } from '@/components/ui/Skeleton';
 import {
   FileText,
   Clock,
@@ -293,11 +294,41 @@ export default function AdminDashboard() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                      Loading articles...
-                    </td>
-                  </tr>
+                  Array.from({ length: 5 }).map((_, idx) => (
+                    <tr key={idx}>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="w-5 h-5 rounded" />
+                          <div>
+                            <Skeleton className="h-4 w-64 mb-2" />
+                            <Skeleton className="h-3 w-32" />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Skeleton className="h-6 w-20 rounded-full" />
+                      </td>
+                      <td className="px-6 py-4">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <Skeleton className="h-4 w-12 mx-auto" />
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <Skeleton className="h-4 w-8 mx-auto" />
+                      </td>
+                      <td className="px-6 py-4">
+                        <Skeleton className="h-4 w-24" />
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Skeleton className="w-8 h-8 rounded" />
+                          <Skeleton className="w-8 h-8 rounded" />
+                          <Skeleton className="w-8 h-8 rounded" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 ) : articles.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
