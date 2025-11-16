@@ -34,12 +34,21 @@ export default function MediaVaultPage() {
   const [filterType, setFilterType] = useState<FileTypeFilter>('all');
   const supabase = createClientComponentClient();
 
+  console.log('💡 MediaVaultPage component rendered');
+  console.log('💡 Supabase client initialized:', !!supabase);
+
   useEffect(() => {
-    fetchFiles();
+    console.log('🔄 Media page mounted, starting fetchFiles...');
+    fetchFiles().catch(err => {
+      console.error('❌ fetchFiles failed:', err);
+      setLoading(false);
+    });
   }, []);
 
   const fetchFiles = async () => {
     try {
+      console.log('📂 Fetching files from media bucket...');
+
       const { data, error } = await supabase
         .storage
         .from('media')
@@ -50,12 +59,15 @@ export default function MediaVaultPage() {
         });
 
       if (error) {
-        console.error('Error fetching files:', error);
+        console.error('❌ Error fetching files:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
         setFiles([]);
         return;
       }
 
-      const filesWithUrls = data.map(file => {
+      console.log('✅ Files fetched:', data?.length || 0);
+
+      const filesWithUrls = (data || []).map(file => {
         const { data: urlData } = supabase.storage
           .from('media')
           .getPublicUrl(file.name);
@@ -72,7 +84,7 @@ export default function MediaVaultPage() {
 
       setFiles(filesWithUrls);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('❌ Exception:', error);
       setFiles([]);
     } finally {
       setLoading(false);
@@ -86,22 +98,31 @@ export default function MediaVaultPage() {
     setUploading(true);
 
     try {
+      console.log('📤 Uploading', fileList.length, 'file(s)...');
+
       for (const file of Array.from(fileList)) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
 
-        const { error } = await supabase.storage
+        console.log('📤 Uploading:', fileName, '(', file.size, 'bytes)');
+
+        const { data, error } = await supabase.storage
           .from('media')
           .upload(fileName, file);
 
         if (error) {
-          console.error('Upload error:', error);
+          console.error('❌ Upload error for', fileName, ':', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
+          alert(`Upload failed: ${error.message}`);
+        } else {
+          console.log('✅ Uploaded:', fileName);
         }
       }
 
       await fetchFiles();
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('❌ Upload exception:', error);
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setUploading(false);
     }
@@ -111,18 +132,24 @@ export default function MediaVaultPage() {
     if (!confirm(`Delete ${fileName}?`)) return;
 
     try {
-      const { error } = await supabase.storage
+      console.log('🗑️ Deleting:', fileName);
+
+      const { data, error } = await supabase.storage
         .from('media')
         .remove([fileName]);
 
       if (error) {
-        console.error('Delete error:', error);
+        console.error('❌ Delete error:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        alert(`Delete failed: ${error.message}`);
         return;
       }
 
+      console.log('✅ Deleted:', fileName);
       await fetchFiles();
     } catch (error) {
-      console.error('Delete error:', error);
+      console.error('❌ Delete exception:', error);
+      alert(`Delete failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 

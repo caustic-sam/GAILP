@@ -28,6 +28,7 @@ interface ArticleCreatePayload {
   status?: ArticleStatus;
   featured_image_url?: string;
   published_at?: string | null;
+  scheduled_for?: string | null;
   seo_description?: string;
 }
 
@@ -248,9 +249,11 @@ export async function POST(request: Request) {
       slug: body.slug,
       content: body.content,
       summary: body.excerpt || body.content.substring(0, 200) + '...', // Base schema requires summary
-      status: body.status === 'scheduled' ? 'draft' : body.status || 'draft', // Base schema doesn't have 'scheduled'
+      excerpt: body.excerpt || body.content.substring(0, 200) + '...', // Also save to excerpt
+      status: body.status || 'draft', // Keep scheduled status
       featured_image_url: body.featured_image_url || null,
       published_at: body.published_at || null,
+      scheduled_for: body.scheduled_for || null, // Save scheduled date
       read_time_minutes: readTime,
       word_count: wordCount,
       meta_description: body.seo_description || body.excerpt || null,
