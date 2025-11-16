@@ -27,6 +27,8 @@
     "validate": "pnpm typecheck && pnpm lint && pnpm test:ci",
     "seed": "tsx scripts/seed.ts",
     "search:index": "tsx scripts/build-search-index.ts",
+    "audit": "tsx scripts/audit-site.ts",
+    "audit:web3": "tsx scripts/audit-web3-readiness.ts",
     "clean": "rm -rf .next out node_modules/.cache",
     "prepare": "husky install"
   },
