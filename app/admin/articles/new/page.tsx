@@ -428,32 +428,48 @@ export default function NewArticlePage() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Publish Date & Time
                 </label>
                 <input
                   type="datetime-local"
                   value={formData.scheduled_for}
                   onChange={(e) => setFormData(prev => ({ ...prev, scheduled_for: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 font-medium focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={{
+                    colorScheme: 'light'
+                  }}
                 />
+                {formData.scheduled_for && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Article will be published on {new Date(formData.scheduled_for).toLocaleString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true
+                    })}
+                  </p>
+                )}
               </div>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowScheduler(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  disabled={saving}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    handleSave('schedule');
+                  onClick={async () => {
+                    await handleSave('schedule');
                     setShowScheduler(false);
                   }}
-                  disabled={!formData.scheduled_for}
-                  className="flex-1 px-4 py-2 bg-[#4a6fa5] text-white rounded-lg hover:bg-[#3d5c8a] disabled:opacity-50"
+                  disabled={!formData.scheduled_for || saving}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
-                  Schedule
+                  {saving ? 'Scheduling...' : 'Schedule Article'}
                 </button>
               </div>
             </div>
