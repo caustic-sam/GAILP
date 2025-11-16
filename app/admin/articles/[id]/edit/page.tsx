@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
+import { toast } from 'sonner';
 import {
   Save,
   Send,
@@ -13,6 +14,7 @@ import {
   Globe,
   X,
   Upload,
+  Trash2,
 } from 'lucide-react';
 
 interface ArticleFormData {
@@ -169,6 +171,34 @@ export default function EditArticlePage() {
     }));
   };
 
+  const handleDelete = async () => {
+    if (!confirm(`Delete "${formData.title}"?\n\nThis action cannot be undone.`)) return;
+
+    try {
+      toast.info('Deleting article...', { duration: 1000 });
+
+      const response = await fetch(`/api/admin/articles/${articleId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete article');
+      }
+
+      toast.success('Article deleted successfully!', {
+        description: formData.title,
+      });
+
+      // Redirect to dashboard after successful delete
+      router.push('/admin');
+    } catch (error) {
+      console.error('❌ Error deleting article:', error);
+      toast.error('Failed to delete article', {
+        description: error instanceof Error ? error.message : 'Please try again',
+      });
+    }
+  };
+
   const calculateReadTime = () => {
     const wordsPerMinute = 200;
     const wordCount = formData.content.split(/\s+/).length;
@@ -197,6 +227,18 @@ export default function EditArticlePage() {
               >
                 Cancel
               </button>
+
+              <button
+                onClick={handleDelete}
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
+                title="Delete article"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </button>
+
+              <div className="w-px h-8 bg-gray-300" />
 
               <button
                 onClick={() => handleSave('draft')}

@@ -35,6 +35,7 @@ export default function MediaVaultPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<FileTypeFilter>('all');
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<MediaFile | null>(null);
   const supabase = createClientComponentClient();
 
   console.log('💡 MediaVaultPage component rendered');
@@ -321,7 +322,11 @@ export default function MediaVaultPage() {
             {filteredFiles.map((file) => (
               <Card key={file.id} className="p-2 hover:shadow-lg transition-shadow">
                 {/* Preview */}
-                <div className="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
+                <div
+                  className="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center overflow-hidden cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                  onClick={() => setSelectedFile(file)}
+                  title="Click to view details"
+                >
                   {file.type.startsWith('image/') ? (
                     <img
                       src={file.url}
@@ -389,6 +394,109 @@ export default function MediaVaultPage() {
           </Card>
         </div>
       </div>
+
+      {/* Quick View Modal */}
+      {selectedFile && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedFile(null)}
+        >
+          <div
+            className="bg-white rounded-lg max-w-4xl max-h-[90vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 truncate flex-1 mr-4">
+                {selectedFile.name}
+              </h3>
+              <button
+                onClick={() => setSelectedFile(null)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Close"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Image Preview */}
+            <div className="p-6 flex items-center justify-center bg-gray-50">
+              {selectedFile.type.startsWith('image/') ? (
+                <img
+                  src={selectedFile.url}
+                  alt={selectedFile.name}
+                  className="max-w-full max-h-[60vh] object-contain rounded-lg"
+                />
+              ) : (
+                <div className="text-gray-400 p-12">
+                  {getFileIcon(selectedFile.type)}
+                  <p className="text-sm text-gray-600 mt-4">Preview not available</p>
+                </div>
+              )}
+            </div>
+
+            {/* Metadata */}
+            <div className="p-6 border-t border-gray-200 bg-white">
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">File Details</h4>
+              <dl className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <dt className="text-gray-500">File Name</dt>
+                  <dd className="text-gray-900 font-medium mt-1 break-all">{selectedFile.name}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-500">File Size</dt>
+                  <dd className="text-gray-900 font-medium mt-1">{formatFileSize(selectedFile.size)}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-500">File Type</dt>
+                  <dd className="text-gray-900 font-medium mt-1">{selectedFile.type}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-500">Uploaded</dt>
+                  <dd className="text-gray-900 font-medium mt-1">
+                    {new Date(selectedFile.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </dd>
+                </div>
+                <div className="col-span-2">
+                  <dt className="text-gray-500">URL</dt>
+                  <dd className="text-gray-900 font-mono text-xs mt-1 break-all bg-gray-50 p-2 rounded">
+                    {selectedFile.url.split('?')[0]}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            {/* Actions */}
+            <div className="p-4 border-t border-gray-200 bg-gray-50 flex gap-2 justify-end">
+              <a
+                href={selectedFile.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download
+              </a>
+              <button
+                onClick={() => {
+                  handleDelete(selectedFile.name);
+                  setSelectedFile(null);
+                }}
+                className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
