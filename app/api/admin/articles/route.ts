@@ -135,11 +135,10 @@ export async function GET(request: Request) {
       });
     }
 
-    // Build Supabase query - use only columns that exist in base schema
-    // Compatible with both original and enhanced schemas
+    // Build Supabase query - select all needed columns
     let query = supabase
       .from('articles')
-      .select('id, title, slug, status, published_at, created_at, updated_at')
+      .select('id, title, slug, status, published_at, scheduled_for, created_at, updated_at, view_count, revision_count')
       .order('updated_at', { ascending: false });
 
     // Apply status filter
@@ -157,10 +156,10 @@ export async function GET(request: Request) {
     // Map to expected format, adding defaults for missing fields
     const articles = (data || []).map(article => ({
       ...article,
-      scheduled_for: null,
+      scheduled_for: article.scheduled_for || null,
       author_name: 'Admin',
-      view_count: 0,
-      revision_count: 0,
+      view_count: article.view_count || 0,
+      revision_count: article.revision_count || 0,
     }));
 
     return NextResponse.json({
