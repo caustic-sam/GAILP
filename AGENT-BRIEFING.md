@@ -108,14 +108,26 @@ git checkout -b feature/x    # New feature branch
 - ✅ Policy Pulse page (complete, working)
 - ✅ Atlassian MCP server (configured)
 - ✅ Homepage layout (navy blue, 3-column)
+- ✅ **Studio/Admin System** (Session 2025-11-15)
+  - Draft system with schema fixes
+  - Media vault with drag & drop uploads
+  - Article scheduling functionality
+  - Toast notifications (sonner)
+  - Rich text editor (TipTap)
+  - Article preview mode
+  - Loading skeleton screens
 
 ---
 
 ## 🎯 Current Priorities (see CURRENT-WORK.md for details)
 
-1. Complete Atlassian integration (Jira setup, doc migration)
-2. Enhance Policy Pulse features
-3. Production optimization (SEO, performance, analytics)
+1. **Quick Posts Feature** (In Progress - Branch: feature/quick-posts)
+   - Tweet-to-site mechanism via Drafts app
+   - Micro-blogging system for quick thoughts
+   - Database schema, API endpoint, admin UI
+2. Complete Atlassian integration (Jira setup, doc migration)
+3. Enhance Policy Pulse features
+4. Production optimization (SEO, performance, analytics)
 
 ---
 
