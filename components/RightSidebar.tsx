@@ -12,11 +12,10 @@ type NavItem = { label: string; href: string; icon: React.ElementType; flagKey?:
 const allPublicNavItems: NavItem[] = [
   { label: 'Home', href: '/', icon: Home },
   { label: 'Policy Updates', href: '/policy-updates', icon: FileText },
-  { label: 'Blog', href: '/blog', icon: FileText, flagKey: 'showBlog' },
+  { label: 'Think Tank', href: '/blog', icon: FileText, flagKey: 'showBlog' },
   { label: 'Policy Pulse', href: '/policy-pulse', icon: BookOpen, flagKey: 'showPolicyPulse' },
-  { label: 'Articles', href: '/articles', icon: FileText, flagKey: 'showArticles' },
+  { label: 'Global Service Announcement', href: '/videos', icon: BookOpen, flagKey: 'showVideos' },
   { label: 'Policies', href: '/policies', icon: BookOpen, flagKey: 'showPolicies' },
-  { label: 'Videos', href: '/videos', icon: BookOpen, flagKey: 'showVideos' },
   { label: 'About', href: '/about', icon: Users },
   { label: 'Contact', href: '/contact', icon: Mail },
 ];

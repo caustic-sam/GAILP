@@ -71,30 +71,42 @@ export default function MediaVaultPage() {
       }
 
       console.log('✅ Files fetched:', data?.length || 0);
+      console.log('Raw data:', JSON.stringify(data, null, 2));
 
       // Filter out folders (items with null id or null metadata) and map to files
-      const filesWithUrls = (data || [])
-        .filter(item => item.id !== null && item.metadata !== null)
-        .map(file => {
-          const { data: urlData } = supabase.storage
-            .from('media')
-            .getPublicUrl(file.name);
+      const filesOnly = (data || []).filter(item => {
+        const isFile = item.id !== null && item.metadata !== null;
+        if (!isFile) {
+          console.log('Filtering out folder/null:', item.name);
+        }
+        return isFile;
+      });
 
-          // Add cache-busting timestamp to ensure fresh images
-          const urlWithCacheBust = `${urlData.publicUrl}?t=${Date.now()}`;
+      console.log('Files after filtering:', filesOnly.length);
 
-          return {
-            id: file.id,
-            name: file.name,
-            type: file.metadata?.mimetype || 'unknown',
-            size: file.metadata?.size || 0,
-            url: urlWithCacheBust,
-            created_at: file.created_at || new Date().toISOString()
-          };
-        });
+      const filesWithUrls = filesOnly.map(file => {
+        const { data: urlData } = supabase.storage
+          .from('media')
+          .getPublicUrl(file.name);
+
+        console.log('Generated URL for', file.name, ':', urlData.publicUrl);
+
+        // Add cache-busting timestamp to ensure fresh images
+        const urlWithCacheBust = `${urlData.publicUrl}?t=${Date.now()}`;
+
+        return {
+          id: file.id!,
+          name: file.name,
+          type: file.metadata?.mimetype || 'unknown',
+          size: file.metadata?.size || 0,
+          url: urlWithCacheBust,
+          created_at: file.created_at || new Date().toISOString()
+        };
+      });
 
       setFiles(filesWithUrls);
       console.log('✅ Files state updated with', filesWithUrls.length, 'items');
+      console.log('First file:', filesWithUrls[0]);
     } catch (error) {
       console.error('❌ Exception:', error);
       setFiles([]);

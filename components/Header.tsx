@@ -12,7 +12,7 @@ import { useComingSoon } from '@/hooks/useComingSoon';
 const navItems = [
   { id: 'home', label: 'Policy Updates', href: '/policy-updates' },
   { id: 'analysis', label: 'Think Tank', href: '/blog' },
-  { id: 'videos', label: 'GSA', href: '/videos' },
+  { id: 'videos', label: 'Global Service Announcement', href: '/videos' },
   { id: 'policy-pulse', label: 'Policy Pulse', href: '/policy-pulse' },
   { id: 'policies', label: 'Policies', href: '/policies' },
   { id: 'about', label: 'About', href: '/about' }
