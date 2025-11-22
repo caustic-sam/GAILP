@@ -44,11 +44,14 @@ export default function MediaVaultPage() {
 
   useEffect(() => {
     console.log('🔄 Media page mounted, starting fetchFiles...');
+    // Force a fresh fetch on every mount
+    setLoading(true);
+    setFiles([]);
     fetchFiles().catch(err => {
       console.error('❌ fetchFiles failed:', err);
       setLoading(false);
     });
-  }, []);
+  }, []); // Empty array means run on mount/unmount only
 
   const fetchFiles = async () => {
     try {
@@ -245,8 +248,25 @@ export default function MediaVaultPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] border-b border-blue-900/20">
         <div className="max-w-7xl mx-auto px-6 py-12">
-          <h1 className="text-4xl font-bold text-white mb-2">Media Vault</h1>
-          <p className="text-xl text-blue-100">Upload and manage your media files</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-white mb-2">Media Vault</h1>
+              <p className="text-xl text-blue-100">Upload and manage your media files</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setLoading(true);
+                setFiles([]);
+                fetchFiles();
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+              disabled={loading}
+            >
+              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              {loading ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
         </div>
       </div>
 
