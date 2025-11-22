@@ -36,7 +36,7 @@ export default function ArticlesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Expert Blog</h1>
+              <h1 className="text-4xl font-bold text-white mb-2">Think Tank</h1>
               <p className="text-blue-200">Global policy analysis and commentary</p>
             </div>
             <a
@@ -127,7 +127,7 @@ export default function ArticlesPage() {
       <div className="bg-white border-t border-gray-200 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-gray-600">
-            World Papers Expert Blog - Coming Soon
+            World Papers Think Tank - Coming Soon
           </p>
         </div>
       </div>

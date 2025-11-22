@@ -78,29 +78,33 @@ export function RightSidebar() {
           </>
         )}
 
-        {/* Public Navigation */}
-        <h3 className="text-xs font-semibold text-blue-200 uppercase tracking-wider mb-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap overflow-hidden">
-          Quick Nav
-        </h3>
-        <ul className="space-y-1">
-          {publicNavItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <li key={item.label}>
-                <Link
-                  href={item.href}
-                  className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-blue-100 hover:text-white hover:bg-white/10 rounded-lg transition-colors overflow-hidden"
-                  title={item.label}
-                >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    {item.label}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        {/* Public Navigation - Hidden for admins since they have the top nav bar */}
+        {!isAdmin && (
+          <>
+            <h3 className="text-xs font-semibold text-blue-200 uppercase tracking-wider mb-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap overflow-hidden">
+              Quick Nav
+            </h3>
+            <ul className="space-y-1">
+              {publicNavItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-blue-100 hover:text-white hover:bg-white/10 rounded-lg transition-colors overflow-hidden"
+                      title={item.label}
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        {item.label}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
 
         {/* World Clocks */}
         <div className="mt-8 pt-6 border-t border-blue-800/30">

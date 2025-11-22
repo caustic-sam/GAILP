@@ -40,7 +40,7 @@ export default function SettingsPage() {
     { key: 'showVideos' as keyof FeatureFlags, label: 'Videos', description: 'Video content library' },
     { key: 'showArticles' as keyof FeatureFlags, label: 'Articles', description: 'Articles archive' },
     { key: 'showPolicies' as keyof FeatureFlags, label: 'Policies', description: 'Policy documentation' },
-    { key: 'showBlog' as keyof FeatureFlags, label: 'Expert Blog', description: 'Expert analysis and commentary' },
+    { key: 'showBlog' as keyof FeatureFlags, label: 'Think Tank', description: 'Expert analysis and commentary' },
   ];
 
   return (

@@ -1,0 +1,45 @@
+Ok, Claude.  We're gearing up for a pre-public launch to a live domain in 10 days.  Section s that can;t be ready realistically will be hidden with our "fearture flag" utility.  The homepage is looking great but needs polish, the admin functionality is almost acceptable for a pre-public release but not quite there, reliable publishing and creation of content still meassy, etc.
+
+We've made notes. below are some of my outstanding items.  come up with a plan after reading through whastever you need to.
+
+1.  feeds need to work and be updated reliably
+2.  custom content (exoert blog) must poluate with imageds reliably
+3.  media vault still has issues
+4.  post do not accept cutom imsgaes
+5.  mouse stramgely does not chage when mousing over buttons or other lnks
+6.  We have a drafts auth error
+7.  "Loading...." still occurs and we're not sure why.  I have noticed, however, that when the avatar appears the right nav bar changes to show the admin options but not until then
+8.  Rght admin nav bar also shows the regular NAV bar along with it.  It should not.
+9.  UNder policyn posts some cards are not updating orh have no content.
+10. CTReat programmatic check of all liniks - is this good practice?
+11. Change  of Expert Blog to THink Tank
+12. "Return to articles". ->. DOews not return to articles....again, link validation
+13. Live Hub -> Global Service Announcement -> FIreside CHat
+14. BOOK: 86ed
+15. Can we setup a nomenclature or Taxnomoy
+    1.  Homepage
+    2.  H.policy-updateas
+    3.  H.blog
+    4.  H.vidoes 
+    5.  H.research (url reads /policies btw)
+    6.  A way to demark regular secdev tests 
+        1.  
+
+********************
+QUESTIONS FOR YOU
+Before I start implementation, please clarify:
+Live Hub naming: Is the final name "Global Service Announcement" OR "Fireside Chat"? (you mentioned both)
+BOOK section: Where is this located? (I didn't find it in navigation - is it a future feature to remove?)
+Policy cards: Which specific cards are not updating? All of them or certain jurisdictions?
+Admin nav behavior: Should regular nav HIDE when user is admin, or just be visually separated?
+Feature flags for launch: Which sections should be HIDDEN on day 1? (videos, policies, articles, etc.?)
+URL change: Should I rename /policies → /research to match your taxonomy, or update nav label to "Policies"?
+Once you confirm these details, I'll start executing the plan in priority order!
+*************************
+
+1.  Let's go with GSA
+2.  Froget Book Section - unrelated npte
+3.  I was referring to Policy and Regulstion Card, Research and STudies, etc, dont populate with content
+4.  disappear.  admins dont need another identical navbar on the right as they have as every oither user on the top
+5.  We should have the ability to hide any section to be prepared for hising any section that is not finished enough to present
+6.  keep it to /research

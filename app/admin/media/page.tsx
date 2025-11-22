@@ -72,23 +72,26 @@ export default function MediaVaultPage() {
 
       console.log('✅ Files fetched:', data?.length || 0);
 
-      const filesWithUrls = (data || []).map(file => {
-        const { data: urlData } = supabase.storage
-          .from('media')
-          .getPublicUrl(file.name);
+      // Filter out folders (items with null id or null metadata) and map to files
+      const filesWithUrls = (data || [])
+        .filter(item => item.id !== null && item.metadata !== null)
+        .map(file => {
+          const { data: urlData } = supabase.storage
+            .from('media')
+            .getPublicUrl(file.name);
 
-        // Add cache-busting timestamp to ensure fresh images
-        const urlWithCacheBust = `${urlData.publicUrl}?t=${Date.now()}`;
+          // Add cache-busting timestamp to ensure fresh images
+          const urlWithCacheBust = `${urlData.publicUrl}?t=${Date.now()}`;
 
-        return {
-          id: file.id,
-          name: file.name,
-          type: file.metadata?.mimetype || 'unknown',
-          size: file.metadata?.size || 0,
-          url: urlWithCacheBust,
-          created_at: file.created_at || new Date().toISOString()
-        };
-      });
+          return {
+            id: file.id,
+            name: file.name,
+            type: file.metadata?.mimetype || 'unknown',
+            size: file.metadata?.size || 0,
+            url: urlWithCacheBust,
+            created_at: file.created_at || new Date().toISOString()
+          };
+        });
 
       setFiles(filesWithUrls);
       console.log('✅ Files state updated with', filesWithUrls.length, 'items');

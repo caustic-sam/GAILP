@@ -231,7 +231,7 @@ export default function HomePage() {
                   href={policy.url || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full text-left"
+                  className="block w-full text-left cursor-pointer"
                 >
                   <Card hover className="p-4 hover:bg-orange-50 transition-all">
                     <div className="flex items-start gap-3">

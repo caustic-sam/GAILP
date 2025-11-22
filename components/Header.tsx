@@ -11,10 +11,10 @@ import { useComingSoon } from '@/hooks/useComingSoon';
 
 const navItems = [
   { id: 'home', label: 'Policy Updates', href: '/policy-updates' },
-  { id: 'analysis', label: 'Expert Blog', href: '/blog' },
-  { id: 'videos', label: 'Live Hub', href: '/videos' },
+  { id: 'analysis', label: 'Think Tank', href: '/blog' },
+  { id: 'videos', label: 'GSA', href: '/videos' },
   { id: 'policy-pulse', label: 'Policy Pulse', href: '/policy-pulse' },
-  { id: 'policies', label: 'Research', href: '/policies' },
+  { id: 'policies', label: 'Policies', href: '/policies' },
   { id: 'about', label: 'About', href: '/about' }
 ];
 
