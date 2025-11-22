@@ -286,13 +286,11 @@ export default function WordPressImportPage() {
             Alternative Import Methods
           </h2>
           <div className="grid grid-cols-2 gap-4">
-            <Link href="/admin/import/linkedin">
-              <div className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer">
-                <FileText className="w-6 h-6 text-blue-600 mb-2" />
-                <h3 className="font-medium text-gray-900 mb-1">LinkedIn Posts</h3>
-                <p className="text-sm text-gray-600">Copy and paste to republish</p>
-              </div>
-            </Link>
+            <div className="p-4 border border-gray-200 rounded-lg opacity-50">
+              <FileText className="w-6 h-6 text-gray-400 mb-2" />
+              <h3 className="font-medium text-gray-500 mb-1">LinkedIn Posts</h3>
+              <p className="text-sm text-gray-400">Coming soon</p>
+            </div>
             <div className="p-4 border border-gray-200 rounded-lg opacity-50">
               <Download className="w-6 h-6 text-gray-400 mb-2" />
               <h3 className="font-medium text-gray-500 mb-1">CSV Import</h3>

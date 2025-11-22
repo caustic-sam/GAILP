@@ -447,6 +447,7 @@ export default function AdminDashboard() {
             </Card>
           </Link>
 
+          {/* Coming Soon: LinkedIn Import
           <Link href="/admin/import/linkedin">
             <Card className="p-6 hover:shadow-md transition-shadow cursor-pointer">
               <FileText className="w-8 h-8 text-blue-600 mb-3" />
@@ -454,7 +455,9 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-600">Copy and paste LinkedIn posts to republish</p>
             </Card>
           </Link>
+          */}
 
+          {/* Coming Soon: Scheduled Posts
           <Link href="/admin/scheduled">
             <Card className="p-6 hover:shadow-md transition-shadow cursor-pointer">
               <Clock className="w-8 h-8 text-blue-600 mb-3" />
@@ -462,6 +465,7 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-600">View and manage upcoming scheduled publications</p>
             </Card>
           </Link>
+          */}
         </div>
       </div>
     </div>

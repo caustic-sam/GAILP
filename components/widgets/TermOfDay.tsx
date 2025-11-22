@@ -102,11 +102,16 @@ export function TermOfDay({ customTerm, showSource = true, compact = false }: Te
         </div>
       )}
 
-      {/* View Full Glossary Link */}
-      <Link href="/glossary" className="mt-4 w-full flex items-center justify-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors" aria-label="View full glossary of digital policy terms">
+      {/* View Full Glossary Link - Coming Soon */}
+      <button
+        type="button"
+        onClick={() => alert('Glossary coming soon!')}
+        className="mt-4 w-full flex items-center justify-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+        aria-label="View full glossary of digital policy terms"
+      >
         View Full Glossary
         <ChevronRight className="w-4 h-4" aria-hidden="true" />
-      </Link>
+      </button>
     </Card>
   );
 }

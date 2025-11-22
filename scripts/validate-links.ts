@@ -50,11 +50,14 @@ const dynamicRoutePatterns = [
 const issues: LinkIssue[] = [];
 
 function isValidRoute(href: string): boolean {
+  // Strip query params and hash for validation
+  const urlPath = href.split('?')[0].split('#')[0];
+
   // Exact match
-  if (validRoutes.has(href)) return true;
+  if (validRoutes.has(urlPath)) return true;
 
   // Dynamic route match
-  return dynamicRoutePatterns.some(pattern => pattern.test(href));
+  return dynamicRoutePatterns.some(pattern => pattern.test(urlPath));
 }
 
 function extractLinks(content: string, filePath: string) {

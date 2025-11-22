@@ -10,7 +10,7 @@ export default function Navigation() {
             GAILP
           </Link>
           <nav className="hidden md:flex items-center gap-4 text-sm">
-            <Link href="/feeds" className="hover:underline">Feeds</Link>
+            <Link href="/policy-pulse" className="hover:underline">Policy Pulse</Link>
             <Link href="/articles" className="hover:underline">Articles</Link>
             <Link href="/about" className="hover:underline">About</Link>
           </nav>

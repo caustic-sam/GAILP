@@ -643,7 +643,7 @@ export default function HomePage() {
               <h3 className="text-white font-semibold mb-3">Research</h3>
               <ul className="space-y-2 text-sm">
                 <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Policy Database'); }} className="hover:text-white transition-colors cursor-pointer">Policy Database</a></li>
-                <li><Link href="/glossary" className="hover:text-white transition-colors">Digital Identity</Link></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Glossary'); }} className="hover:text-white transition-colors cursor-pointer">Digital Identity</a></li>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('AI Governance'); }} className="hover:text-white transition-colors cursor-pointer">AI Governance</a></li>
                 <li><a href="#" onClick={(e) => { e.preventDefault(); showComingSoon('Cross-Border Data'); }} className="hover:text-white transition-colors cursor-pointer">Cross-Border Data</a></li>
               </ul>
