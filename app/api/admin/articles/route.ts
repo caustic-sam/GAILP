@@ -135,14 +135,61 @@ export async function GET(request: Request) {
       });
     }
 
+    // Get current user to check role and apply filters
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    // Fetch user profile to check role
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (!profile) {
+      return NextResponse.json(
+        { error: 'User profile not found' },
+        { status: 403 }
+      );
+    }
+
+    const userRole = profile.role;
+
     // Build Supabase query - select all needed columns
     let query = supabase
       .from('articles')
-      .select('id, title, slug, status, published_at, scheduled_for, created_at, updated_at, view_count, revision_count')
+      .select('id, title, slug, status, published_at, scheduled_for, created_at, updated_at, view_count, revision_count, author_id')
       .order('updated_at', { ascending: false });
 
-    // Apply status filter
-    if (statusFilter) {
+    // Apply role-based filtering
+    // Contributors: Only see their own drafts
+    // Publishers/Admins: See all articles
+    if (userRole === 'contributor') {
+      query = query.eq('author_id', session.user.id);
+
+      // If no status filter specified, only show drafts for contributors
+      if (!statusFilter) {
+        query = query.eq('status', 'draft');
+      } else if (statusFilter !== 'draft') {
+        // Contributors can only see their own drafts
+        // If they request other statuses, return empty array
+        return NextResponse.json({
+          articles: [],
+          source: 'supabase',
+          count: 0,
+          message: 'Contributors can only view their own drafts',
+        });
+      }
+    }
+
+    // Apply status filter for publishers/admins
+    if (statusFilter && userRole !== 'contributor') {
       query = query.eq('status', statusFilter);
     }
 
@@ -157,7 +204,7 @@ export async function GET(request: Request) {
     const articles = (data || []).map(article => ({
       ...article,
       scheduled_for: article.scheduled_for || null,
-      author_name: 'Admin',
+      author_name: 'Admin', // TODO: Join with user_profiles to get actual author name
       view_count: article.view_count || 0,
       revision_count: article.revision_count || 0,
     }));
@@ -166,6 +213,7 @@ export async function GET(request: Request) {
       articles,
       source: 'supabase',
       count: articles.length,
+      role: userRole, // Include role for debugging
     });
   } catch (error) {
     console.error('Error fetching articles:', error);
@@ -241,6 +289,47 @@ export async function POST(request: Request) {
       });
     }
 
+    // Get current user to set as author
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in to create articles' },
+        { status: 401 }
+      );
+    }
+
+    // Fetch user profile to verify role
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (!profile) {
+      return NextResponse.json(
+        { error: 'User profile not found' },
+        { status: 403 }
+      );
+    }
+
+    // Verify user has permission to create articles
+    if (!['contributor', 'publisher', 'admin'].includes(profile.role)) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions to create articles' },
+        { status: 403 }
+      );
+    }
+
+    // Contributors can only create drafts
+    const requestedStatus = body.status || 'draft';
+    if (profile.role === 'contributor' && requestedStatus !== 'draft') {
+      return NextResponse.json(
+        { error: 'Contributors can only create draft articles. Contact a publisher to publish.' },
+        { status: 403 }
+      );
+    }
+
     // Insert into Supabase - using base schema column names
     // Base schema uses: summary (not excerpt), read_time_minutes (not read_time)
     const articleData: Record<string, unknown> = {
@@ -249,7 +338,8 @@ export async function POST(request: Request) {
       content: body.content,
       summary: body.excerpt || body.content.substring(0, 200) + '...', // Base schema requires summary
       excerpt: body.excerpt || body.content.substring(0, 200) + '...', // Also save to excerpt
-      status: body.status || 'draft', // Keep scheduled status
+      status: requestedStatus,
+      author_id: session.user.id, // Set current user as author
       featured_image_url: body.featured_image_url || null,
       published_at: body.published_at || null,
       scheduled_for: body.scheduled_for || null, // Save scheduled date
@@ -258,7 +348,7 @@ export async function POST(request: Request) {
       meta_description: body.seo_description || body.excerpt || null,
     };
 
-    // Use admin client to bypass RLS policies
+    // Use admin client to bypass RLS policies for insert
     const { data, error } = await supabaseAdmin
       .from('articles')
       .insert([articleData])

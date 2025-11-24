@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Globe, Menu, X, Settings, User, LogOut, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { useAuth } from '@/contexts/AuthContext';
 import { ComingSoonModal } from '@/components/ui/ComingSoonModal';
 import { useComingSoon } from '@/hooks/useComingSoon';
@@ -63,7 +64,10 @@ export function Header() {
           {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
             {loading ? (
-              <div className="px-4 py-2 text-blue-100 text-sm">Loading...</div>
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-9 w-20 bg-white/10" />
+                <Skeleton className="h-9 w-24 bg-white/10 rounded-full" />
+              </div>
             ) : user ? (
               <>
                 <Link
