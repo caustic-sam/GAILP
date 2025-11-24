@@ -162,10 +162,11 @@ export async function GET(request: Request) {
     const userRole = profile.role;
 
     // Build Supabase query - select all needed columns
-    let query = supabase
+    // Use admin client to bypass RLS (we handle permissions in code above)
+    let query = supabaseAdmin
       .from('articles')
       .select('id, title, slug, status, published_at, scheduled_for, created_at, updated_at, view_count, revision_count, author_id')
-      .order('updated_at', { ascending: false });
+      .order('updated_at', { ascending: false});
 
     // Apply role-based filtering
     // Contributors: Only see their own drafts
