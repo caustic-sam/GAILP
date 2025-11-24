@@ -1,18 +1,38 @@
 // Feature flags for controlling section visibility
 export interface FeatureFlags {
+  // Navigation sections
   showPolicyPulse: boolean;
   showVideos: boolean;
   showArticles: boolean;
   showPolicies: boolean;
   showBlog: boolean;
+
+  // Homepage sections
+  showHeroSection: boolean;
+  showDataBoxes: boolean;
+  showPolicyFeed: boolean;
+  showFeaturedArticle: boolean;
+  showVideoInsights: boolean;
+  showNewsletter: boolean;
+  showResourceLibrary: boolean;
 }
 
 export const DEFAULT_FLAGS: FeatureFlags = {
+  // Navigation sections
   showPolicyPulse: true,
   showVideos: true,
   showArticles: true,
   showPolicies: true,
   showBlog: true,
+
+  // Homepage sections
+  showHeroSection: true,
+  showDataBoxes: true,
+  showPolicyFeed: true,
+  showFeaturedArticle: true,
+  showVideoInsights: true,
+  showNewsletter: true,
+  showResourceLibrary: true,
 };
 
 const STORAGE_KEY = 'gailp_feature_flags';
