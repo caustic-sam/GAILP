@@ -81,6 +81,9 @@
     "xml2js": "^0.6.2",
     "zod": "^4.1.12"
   },
+  "overrides": {
+    "eslint": "^9.39.1"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.16",
     "@tailwindcss/typography": "^0.5.19",
