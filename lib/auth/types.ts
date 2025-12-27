@@ -1,5 +1,6 @@
-// WordPress-style role hierarchy
-export type UserRole = 'admin' | 'publisher' | 'contributor' | 'reader';
+// Simplified role hierarchy for MVP launch
+// V1.1 may add back 'publisher' | 'contributor'
+export type UserRole = 'admin' | 'reader';
 
 export interface UserProfile {
   id: string;
@@ -20,7 +21,7 @@ export interface AuthContextType {
   hasRole: (role: UserRole | UserRole[]) => boolean;
 }
 
-// Role capability helpers (WordPress-inspired)
+// Role capability helpers - Simplified for MVP
 export const RoleCapabilities = {
   admin: {
     canManageUsers: true,
@@ -30,24 +31,7 @@ export const RoleCapabilities = {
     canAccessMedia: true,
     canAccessAnalytics: true,
     canAccessSecurity: true,
-  },
-  publisher: {
-    canManageUsers: false,
-    canManageSettings: false,
-    canPublish: true,
-    canEditAllContent: true,
-    canAccessMedia: true,
-    canAccessAnalytics: true,
-    canAccessSecurity: false,
-  },
-  contributor: {
-    canManageUsers: false,
-    canManageSettings: false,
-    canPublish: false,
-    canEditAllContent: false, // only own content
-    canAccessMedia: true, // limited
-    canAccessAnalytics: false,
-    canAccessSecurity: false,
+    canAccessAdmin: true,
   },
   reader: {
     canManageUsers: false,
@@ -57,6 +41,7 @@ export const RoleCapabilities = {
     canAccessMedia: false,
     canAccessAnalytics: false,
     canAccessSecurity: false,
+    canAccessAdmin: false,
   },
 } as const;
 

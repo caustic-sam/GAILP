@@ -4,13 +4,18 @@ import { Shield, Lock, Globe, CheckCircle } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: { redirectTo?: string };
+}) {
   const supabase = await getSupabaseServer();
   const { data: { session } } = await supabase.auth.getSession();
   if (session) redirect('/');
 
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-  const redirectTo = `${origin}/auth/callback`;
+  const returnTo = searchParams.redirectTo || '/admin';
+  const redirectTo = `${origin}/auth/callback?redirectTo=${encodeURIComponent(returnTo)}`;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6 py-12">

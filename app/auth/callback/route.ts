@@ -84,13 +84,14 @@ export async function GET(request: NextRequest) {
         .eq('id', data.session.user.id);
     }
 
-    // Determine redirect based on role
+    // Determine redirect based on role and query parameter
     let redirectTo = '/';
-    if (profile && ['admin', 'publisher', 'contributor'].includes(profile.role)) {
+    if (profile && profile.role === 'admin') {
       redirectTo = '/admin';
     }
 
-    const finalUrl = requestUrl.searchParams.get('redirectedFrom') || redirectTo;
+    // Check for explicit redirectTo parameter (from login page)
+    const finalUrl = requestUrl.searchParams.get('redirectTo') || redirectTo;
     console.log('✅ Redirecting to:', finalUrl);
 
     // If the final URL is different from /admin, create a new response with the right redirect

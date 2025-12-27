@@ -40,6 +40,16 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Protect admin routes - require authentication
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      // Redirect to login with return URL
+      const redirectUrl = new URL('/login', request.url);
+      redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
   return response;
 }
 

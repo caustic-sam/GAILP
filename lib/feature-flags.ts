@@ -15,6 +15,10 @@ export interface FeatureFlags {
   showVideoInsights: boolean;
   showNewsletter: boolean;
   showResourceLibrary: boolean;
+
+  // MVP Launch - Features deferred to V1.1
+  showQuickPosts: boolean;
+  showScheduledPublishing: boolean;
 }
 
 export const DEFAULT_FLAGS: FeatureFlags = {
@@ -33,6 +37,10 @@ export const DEFAULT_FLAGS: FeatureFlags = {
   showVideoInsights: true,
   showNewsletter: true,
   showResourceLibrary: true,
+
+  // MVP Launch - Features deferred to V1.1
+  showQuickPosts: false,
+  showScheduledPublishing: false,
 };
 
 const STORAGE_KEY = 'gailp_feature_flags';
