@@ -15,7 +15,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     .eq('id', session.user.id)
     .single();
 
-  if (!profile || !['admin', 'publisher', 'contributor'].includes(profile.role)) {
+  // Simplified roles for MVP - only admin can access admin area
+  if (!profile || profile.role !== 'admin') {
     redirect('/');
   }
 
