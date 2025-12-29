@@ -32,7 +32,8 @@ const adminNavItems: NavItem[] = [
 // Named export expected by: import { RightSidebar } from '@/components/RightSidebar'
 export function RightSidebar() {
   const { user } = useAuth();
-  const isAdmin = user && ['admin', 'publisher', 'contributor'].includes(user.role);
+  // Simplified for MVP - only admin has access to admin features
+  const isAdmin = user && user.role === 'admin';
   const [publicNavItems, setPublicNavItems] = useState(allPublicNavItems);
 
   useEffect(() => {
