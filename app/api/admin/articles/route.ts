@@ -168,29 +168,9 @@ export async function GET(request: Request) {
       .select('id, title, slug, status, published_at, scheduled_for, created_at, updated_at, view_count, revision_count, author_id')
       .order('updated_at', { ascending: false});
 
-    // Apply role-based filtering
-    // Contributors: Only see their own drafts
-    // Publishers/Admins: See all articles
-    if (userRole === 'contributor') {
-      query = query.eq('author_id', session.user.id);
-
-      // If no status filter specified, only show drafts for contributors
-      if (!statusFilter) {
-        query = query.eq('status', 'draft');
-      } else if (statusFilter !== 'draft') {
-        // Contributors can only see their own drafts
-        // If they request other statuses, return empty array
-        return NextResponse.json({
-          articles: [],
-          source: 'supabase',
-          count: 0,
-          message: 'Contributors can only view their own drafts',
-        });
-      }
-    }
-
-    // Apply status filter for publishers/admins
-    if (statusFilter && userRole !== 'contributor') {
+    // Simplified for MVP - only admins have access to admin API
+    // Apply status filter
+    if (statusFilter) {
       query = query.eq('status', statusFilter);
     }
 
@@ -314,19 +294,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify user has permission to create articles
-    if (!['contributor', 'publisher', 'admin'].includes(profile.role)) {
+    // Simplified for MVP - only admins can create articles
+    if (profile.role !== 'admin') {
       return NextResponse.json(
-        { error: 'Insufficient permissions to create articles' },
-        { status: 403 }
-      );
-    }
-
-    // Contributors can only create drafts
-    const requestedStatus = body.status || 'draft';
-    if (profile.role === 'contributor' && requestedStatus !== 'draft') {
-      return NextResponse.json(
-        { error: 'Contributors can only create draft articles. Contact a publisher to publish.' },
+        { error: 'Only admins can create articles' },
         { status: 403 }
       );
     }
