@@ -388,7 +388,7 @@ export default function HomePage() {
                             {featuredArticle.author?.name || 'Author'}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {featuredArticle.author?.title || 'Contributor'}
+                            {featuredArticle.author?.title || 'Author'}
                           </div>
                         </div>
                       </div>
