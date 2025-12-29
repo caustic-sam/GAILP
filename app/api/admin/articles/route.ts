@@ -302,6 +302,9 @@ export async function POST(request: Request) {
       );
     }
 
+    // Get requested status, default to draft
+    const requestedStatus = body.status || 'draft';
+
     // Insert into Supabase - using base schema column names
     // Base schema uses: summary (not excerpt), read_time_minutes (not read_time)
     const articleData: Record<string, unknown> = {
