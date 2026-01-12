@@ -24,6 +24,12 @@
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
     "test:freshrss": "jest __tests__/lib/freshrss.test.ts __tests__/api/feeds.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:codegen": "playwright codegen http://localhost:3000",
     "validate": "pnpm typecheck && pnpm lint && pnpm test:ci",
     "seed": "tsx scripts/seed.ts",
     "search:index": "tsx scripts/build-search-index.ts",
@@ -82,9 +88,11 @@
     "zod": "^4.1.12"
   },
   "overrides": {
-    "eslint": "^9.39.1"
+    "@typescript-eslint/eslint-plugin": "8.46.2",
+    "@typescript-eslint/parser": "8.46.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.16",
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.9.1",
@@ -111,10 +119,6 @@
     "tailwindcss": "^4.1.16",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.20.6"
-  },
-  "overrides": {
-    "@typescript-eslint/eslint-plugin": "8.46.2",
-    "@typescript-eslint/parser": "8.46.2"
   },
   "pnpm": {
     "overrides": {
